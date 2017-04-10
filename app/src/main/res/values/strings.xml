@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">EFAR</string>
+    <string name="login_button">EFAR Login</string>
+    <string name="help_button">I Need\nHelp!</string>
+    <string name="back_button">Back</string>
+    <string name="submit_login_button">Submit</string>
+    <string name="login_name_field">Name</string>
+    <string name="login_id_field">ID Number</string>
+    <string name="login_title">Login</string>
+    <string name="logout_button">Logout</string>
+</resources>
