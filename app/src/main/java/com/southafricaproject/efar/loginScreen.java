@@ -36,42 +36,19 @@ public class loginScreen extends AppCompatActivity {
         final EditText user_name = (EditText) findViewById(R.id.login_name_field);
         final EditText user_id = (EditText) findViewById(R.id.login_id_field);
 
+        // logic for the login submit button
         submitButton.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
 
-                        FirebaseDatabase database = FirebaseDatabase.getInstance();
-                        DatabaseReference userRef = database.getReference("users");
-
                         final String name = user_name.getText().toString();
                         final String id = user_id.getText().toString();
+                        // make sure there is some data so app doesn't crash
                         if (name.equals("") || id.equals("")) {
                             Log.wtf("Login", "No data input. Cannot attempt login");
-                        }
-                        else{
-                            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot snapshot) {
-                                    // Check if id number match
-
-                                    if (snapshot.hasChild(id)) {
-                                        // check if name matches id
-                                        String check_name = snapshot.child(id + "/name").getValue().toString();
-
-                                        if (check_name.equals(name)) {
-                                            //if all matches then go onto the efar screen
-                                            finish();
-                                            launchEfarScreen();
-                                        }
-                                    } else {
-                                        Log.wtf("Login", "FAILURE!");
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(DatabaseError firebaseError) {
-                                }
-                            });
+                        } else {
+                            // check and validate the user
+                            checkUser(name, id);
                         }
                     }
                 }
@@ -87,5 +64,45 @@ public class loginScreen extends AppCompatActivity {
         startActivity(toEfarScreen);
     }
 
+    // checks to see if  a user exists in the database
+    private void checkUser(String user_name, String user_id) {
+
+        final String name = user_name;
+        final String id = user_id;
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference userRef = database.getReference("users");
+
+        userRef.addListenerForSingleValueEvent(new
+
+        ValueEventListener() {
+            @Override
+            public void onDataChange (DataSnapshot snapshot){
+                // Check if id number is in database
+
+                if (snapshot.hasChild(id)) {
+                    // check if name matches id in database
+                    String check_name = snapshot.child(id + "/name").getValue().toString();
+
+                    if (check_name.equals(name)) {
+                        //if all matches then go onto the efar screen
+                        finish();
+                        launchEfarScreen();
+                    } else {
+                        //TODO: tell user they have the wrong name or id
+                    }
+                } else {
+                    Log.wtf("Login", "FAILURE!");
+                }
+            }
+
+            @Override
+            public void onCancelled (DatabaseError firebaseError){
+            }
+            }
+
+        );
+    }
+
 }
+
 
