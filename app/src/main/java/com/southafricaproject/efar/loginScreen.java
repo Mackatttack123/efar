@@ -6,6 +6,9 @@ import android.view.View;
 import android.widget.Button;
 import android.content.Intent;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 public class loginScreen extends AppCompatActivity {
 
     @Override
@@ -29,6 +32,12 @@ public class loginScreen extends AppCompatActivity {
         submitButton.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
+
+                        FirebaseDatabase database = FirebaseDatabase.getInstance();
+                        DatabaseReference myRef = database.getReference("message");
+
+                        myRef.setValue("Hello, World!");
+
                         // go to EFAR screen
                         finish();
                         launchEfarScreen();
@@ -47,3 +56,4 @@ public class loginScreen extends AppCompatActivity {
     }
 
 }
+

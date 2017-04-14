@@ -10,6 +10,37 @@
       "client_info": {
         "mobilesdk_app_id": "1:788853816459:android:19a678cd4b6a62fc",
         "android_client_info": {
+          "package_name": "com.EFAR.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "788853816459-fhtpqgjeq59b9kgf0lfae0n7v7nb73bu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUXNcE7f1872SzChb3lCoobO7A4U0emMw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:788853816459:android:aacc7d1c664e640e",
+        "android_client_info": {
           "package_name": "com.southafricaproject.efar"
         }
       },
