@@ -29,6 +29,7 @@ public class loginScreen extends AppCompatActivity {
 
         Button submitButton = (Button) findViewById(R.id.login_submit_button);
 
+
         submitButton.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
