@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "788853816459",
+    "firebase_url": "https://efarapp-a5f18.firebaseio.com",
+    "project_id": "efarapp-a5f18",
+    "storage_bucket": "efarapp-a5f18.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:788853816459:android:19a678cd4b6a62fc",
+        "android_client_info": {
+          "package_name": "com.southafricaproject.efar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "788853816459-fhtpqgjeq59b9kgf0lfae0n7v7nb73bu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUXNcE7f1872SzChb3lCoobO7A4U0emMw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
