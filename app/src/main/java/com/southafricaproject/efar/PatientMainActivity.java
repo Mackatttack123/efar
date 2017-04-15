@@ -66,13 +66,27 @@ public class PatientMainActivity extends AppCompatActivity {
         cancelButton.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
-                        // cancel EFAR here
-                        TextView userUpdate = (TextView) findViewById(R.id.user_update);
-                        userUpdate.setText("EFAR Cancled!");
-                        // fade out text
-                        userUpdate.animate().alpha(0.0f).setDuration(3000);
-                        // take away cancel button
-                        cancelButton.setVisibility(View.INVISIBLE);
+                        //send and alert asking if they are sure they want to cancel the efar
+                        new AlertDialog.Builder(PatientMainActivity.this)
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .setTitle("Cancel EFAR")
+                                .setMessage("Are you sure you want to cancel your EFAR?")
+                                .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        // cancel EFAR here
+                                        TextView userUpdate = (TextView) findViewById(R.id.user_update);
+                                        userUpdate.setText("EFAR Cancled!");
+                                        // fade out text
+                                        userUpdate.animate().alpha(0.0f).setDuration(3000);
+                                        // take away cancel button
+                                        cancelButton.setVisibility(View.INVISIBLE);
+                                    }
+
+                                })
+                                .setNegativeButton("No", null)
+                                .show();
 
                     }
                 }
