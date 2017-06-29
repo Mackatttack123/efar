@@ -1,5 +1,6 @@
 package com.southafricaproject.efar;
 
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -10,7 +11,14 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.content.SharedPreferences;
 
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 public class PatientMainActivity extends AppCompatActivity {
 
     @Override
@@ -22,32 +30,39 @@ public class PatientMainActivity extends AppCompatActivity {
 
         Button helpMeButton = (Button)findViewById(R.id.help_me_button);
 
+        GPSTracker gps = new GPSTracker(this);
+        // check if GPS is avalible
+        if(!gps.canGetLocation()){
+            gps.showSettingsAlert();
+        }
+
         //I NEED HELP button logic
         helpMeButton.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
 
-                        //send and alert asking if they are sure they want to call
-                        new AlertDialog.Builder(PatientMainActivity.this)
-                                .setIcon(android.R.drawable.ic_dialog_alert)
-                                .setTitle("Call EFAR")
-                                .setMessage("Are you sure you want to call an EFAR?")
-                                .setPositiveButton("Yes", new DialogInterface.OnClickListener()
-                                {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        TextView userUpdate = (TextView) findViewById(R.id.user_update);
-                                        userUpdate.animate().alpha(1.0f).setDuration(1);
-                                        userUpdate.setText("EFARs in your area are being contacted...");
-                                        cancelButton.setVisibility(View.VISIBLE);
-                                        blinkText();
-                                        launchPatientInfoScreen();
-                                    }
+                        if(!(cancelButton.getVisibility() == View.VISIBLE)){
+                            //send and alert asking if they are sure they want to call
+                            new AlertDialog.Builder(PatientMainActivity.this)
+                                    .setIcon(android.R.drawable.ic_dialog_alert)
+                                    .setTitle("Call EFAR")
+                                    .setMessage("Are you sure you want to call an EFAR?")
+                                    .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                                    {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            TextView userUpdate = (TextView) findViewById(R.id.user_update);
+                                            userUpdate.animate().alpha(1.0f).setDuration(1);
+                                            userUpdate.setText("EFARs in your area are being contacted...");
+                                            cancelButton.setVisibility(View.VISIBLE);
+                                            blinkText();
+                                            launchPatientInfoScreen();
+                                        }
 
-                                })
-                                .setNegativeButton("No", null)
-                                .show();
-
+                                    })
+                                    .setNegativeButton("No", null)
+                                    .show();
+                        }
                     }
                 }
         );
@@ -80,6 +95,13 @@ public class PatientMainActivity extends AppCompatActivity {
                                         userUpdate.setText("EFAR Cancled!");
                                         // fade out text
                                         userUpdate.animate().alpha(0.0f).setDuration(3000);
+                                        // when canceled, delete the emergancy
+                                        // TODO: instead you should just move the data to a seperate part to keep track of cancled data
+                                        SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                                        String emergency_key_to_delete = sharedPreferences.getString("emergency_key", "");
+                                        FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                        DatabaseReference emergency_ref = database.getReference("emergencies/" + emergency_key_to_delete );
+                                        emergency_ref.removeValue();
                                         // take away cancel button
                                         cancelButton.setVisibility(View.INVISIBLE);
                                     }
@@ -87,7 +109,6 @@ public class PatientMainActivity extends AppCompatActivity {
                                 })
                                 .setNegativeButton("No", null)
                                 .show();
-
                     }
                 }
         );
@@ -118,6 +139,5 @@ public class PatientMainActivity extends AppCompatActivity {
         anim.setRepeatCount(Animation.INFINITE);
         userUpdate.startAnimation(anim);
     }
-
 
 }

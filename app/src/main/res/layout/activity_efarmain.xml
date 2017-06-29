@@ -50,7 +50,9 @@
         android:id="@+id/patient_list"
         android:layout_below="@id/alert_text"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:backgroundTint="#1d66c6"
+        android:background="#ffffff">
     </ListView>
 
     <Switch

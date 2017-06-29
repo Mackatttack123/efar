@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.southafricaproject.efar">
 
+
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
     <supports-screens
         android:largeScreens="true"
         android:smallScreens="true"
@@ -25,5 +28,6 @@
         <activity android:name=".EFARMainActivity" />
         <activity android:name=".PatientInfoActivity"></activity>
     </application>
+
 
 </manifest>
