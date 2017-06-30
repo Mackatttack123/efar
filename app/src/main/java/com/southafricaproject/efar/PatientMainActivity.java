@@ -12,7 +12,7 @@ import android.widget.TextView;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.content.SharedPreferences;
-
+import android.util.Log;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -34,6 +34,9 @@ public class PatientMainActivity extends AppCompatActivity {
         // check if GPS is avalible
         if(!gps.canGetLocation()){
             gps.showSettingsAlert();
+        }else{
+            Double lat =  gps.getLatitude();
+            Log.wtf("Patient Main", lat.toString());
         }
 
         //I NEED HELP button logic
@@ -139,5 +142,7 @@ public class PatientMainActivity extends AppCompatActivity {
         anim.setRepeatCount(Animation.INFINITE);
         userUpdate.startAnimation(anim);
     }
+
+
 
 }
