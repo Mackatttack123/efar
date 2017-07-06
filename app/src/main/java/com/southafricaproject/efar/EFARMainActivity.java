@@ -1,43 +1,37 @@
 package com.southafricaproject.efar;
 
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.ListView;
-import 	android.graphics.Color;
-import android.widget.TextView;
-import android.text.SpannableString;
-import android.text.util.Linkify;
 
-import java.io.IOException;
-import java.util.Comparator;
-import java.util.Collections;
-import android.text.Html;
-
+import android.app.AlertDialog;
 import android.location.Address;
 import android.location.Geocoder;
-import java.util.List;
-import java.util.Locale;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
+import android.text.SpannableString;
+import android.text.util.Linkify;
+import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListView;
 
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
 
 class Emergency {
     private String key;
@@ -75,6 +69,11 @@ public class EFARMainActivity extends AppCompatActivity {
     //TODO: sort emergencics by distance away
     final ArrayList<String> disctanceArray = new ArrayList<String>();
     final ArrayList<Emergency> emergenecyArray = new ArrayList<Emergency>();
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,9 +135,10 @@ public class EFARMainActivity extends AppCompatActivity {
                             //String e_address = address + " " + city + " " + state + " " + country; //+ " " + postalCode + " " + knownName;
                             String e_address = getCompleteAddressString(e_lat, e_long);
                             emergenecyArray.add(new Emergency(e_key, e_address, e_lat, e_long, e_phone_number, e_info));
-                            disctanceArray.add("Emergancy: " + String.format( "%.2f", distance(e_lat, e_long, my_lat, my_long)) + " km away");
+                            disctanceArray.add("Emergancy: " + String.format("%.2f", distance(e_lat, e_long, my_lat, my_long)) + " km away");
                         }
                     }
+
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
                     }
@@ -157,8 +157,8 @@ public class EFARMainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
 
                 Object o = listView.getItemAtPosition(position);
-                final SpannableString message = new SpannableString(Html.fromHtml("<b>Location:</b> (" + String.format( "%.2f", emergenecyArray.get(position).getLatitude())
-                        + ", " + String.format( "%.2f", emergenecyArray.get(position).getLongitude()) + ")<p><b>Address:</b> " + emergenecyArray.get(position).getAddress()
+                final SpannableString message = new SpannableString(Html.fromHtml("<b>Location:</b> (" + String.format("%.2f", emergenecyArray.get(position).getLatitude())
+                        + ", " + String.format("%.2f", emergenecyArray.get(position).getLongitude()) + ")<p><b>Address:</b> " + emergenecyArray.get(position).getAddress()
                         + "</p><p><b>Senders #:</b> " + emergenecyArray.get(position).getPhone() + "</p><p><b>Other Info:</b> " + emergenecyArray.get(position).getInfo(), 0));
                 Linkify.addLinks(message, Linkify.ALL);
                 new AlertDialog.Builder(EFARMainActivity.this)
@@ -181,6 +181,9 @@ public class EFARMainActivity extends AppCompatActivity {
                 finish();
             }
         });
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client2 = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     private double distance(double lat1, double lon1, double lat2, double lon2) {
@@ -229,4 +232,32 @@ public class EFARMainActivity extends AppCompatActivity {
         }
         return strAdd;
     }
+
+    /*public JSONObject getLocationInfo() {
+
+        HttpGet httpGet = new HttpGet("http://maps.google.com/maps/api/geocode/json?latlng=" + lat + "," + lng + "&sensor=true");
+        HttpClient client = new DefaultHttpClient();
+        HttpResponse response;
+        StringBuilder stringBuilder = new StringBuilder();
+
+        try {
+            response = client.execute(httpGet);
+            HttpEntity entity = response.getEntity();
+            InputStream stream = entity.getContent();
+            int b;
+            while ((b = stream.read()) != -1) {
+                stringBuilder.append((char) b);
+            }
+        } catch (ClientProtocolException e) {
+        } catch (IOException e) {
+        }
+
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject = new JSONObject(stringBuilder.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
+    }*/
 }
