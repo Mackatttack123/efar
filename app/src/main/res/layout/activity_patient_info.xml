@@ -37,52 +37,30 @@
             android:layout_marginTop="100dp"
             android:layout_centerHorizontal="true"
             android:background="#FFFFFF"
-            android:padding="10dp"/>
-
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="textPostalAddress"
-            android:ems="10"
-            android:layout_marginTop="160dp"
-            android:id="@+id/patient_address"
-            android:hint="Specific Address"
-            android:layout_centerHorizontal="true"
-            android:background="#FFFFFF"
-            android:padding="10dp"/>
+            android:padding="10dp"
+            android:maxLength="14"/>
 
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:inputType="textPersonName"
             android:ems="15"
-            android:layout_marginTop="250dp"
-            android:layout_centerHorizontal="true"
-            android:id="@+id/patient_whats_wrong"
-            android:hint="What's wrong?"
-            android:background="#FFFFFF"
-            android:padding="10dp"/>
-
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="textPersonName"
-            android:ems="15"
-            android:layout_marginTop="340dp"
-            android:layout_centerHorizontal="true"
+            android:layout_marginTop="32dp"
             android:id="@+id/patient_other_info"
             android:hint="Other Information"
             android:background="#FFFFFF"
-            android:padding="10dp"/>
+            android:padding="10dp"
+            android:layout_below="@+id/patient_phone_number"
+            android:layout_centerHorizontal="true" />
 
         <Button
             android:text="@string/submit_login_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="400dp"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="18dp"
-            android:id="@+id/patient_info_sumbmit_button" />
+            android:layout_marginTop="50dp"
+            android:id="@+id/patient_info_sumbmit_button"
+            android:layout_below="@+id/patient_other_info"
+            android:layout_centerHorizontal="true" />
 
     </RelativeLayout>
 

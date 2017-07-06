@@ -14,6 +14,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+//TODO: Make it so that if an EFAR logs in then there password and username is saved
+// that way they are automatically logged in when they iopen the app
+
 public class loginScreen extends AppCompatActivity {
 
     @Override

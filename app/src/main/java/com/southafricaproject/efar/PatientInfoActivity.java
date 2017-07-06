@@ -16,6 +16,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.util.Log;
 import android.content.SharedPreferences;
+import android.telephony.PhoneNumberUtils;
+import android.telephony.PhoneNumberFormattingTextWatcher;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -37,13 +39,11 @@ public class PatientInfoActivity extends AppCompatActivity {
         }
 
         TextView userInfoScreenUpdate = (TextView) findViewById(R.id.user_update_info_screen);
-        userInfoScreenUpdate.setText("EFARs in your area are being contacted!\n\nThis survey will " +
-                "let us get you help sooner.");
+        userInfoScreenUpdate.setText("An EFAR will be contacted once you fill in this inforamtion:");
 
         Button infoSumbitButton = (Button)findViewById(R.id.patient_info_sumbmit_button);
         final EditText patient_phone_number = (EditText) findViewById(R.id.patient_phone_number);
-        final EditText patient_address = (EditText) findViewById(R.id.patient_address);
-        final EditText patient_whats_wrong = (EditText) findViewById(R.id.patient_whats_wrong);
+        patient_phone_number.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
         final EditText patient_other_info = (EditText) findViewById(R.id.patient_other_info);
 
         infoSumbitButton.setOnClickListener(
@@ -51,11 +51,9 @@ public class PatientInfoActivity extends AppCompatActivity {
                     public void onClick(View v) {
 
                         final String phone_number = patient_phone_number.getText().toString();
-                        final String address = patient_address.getText().toString();
-                        final String whats_wrong = patient_whats_wrong.getText().toString();
                         final String other_info = patient_other_info.getText().toString();
 
-                        add_emergency(phone_number, address, whats_wrong, other_info);
+                        add_emergency(phone_number, other_info);
 
                         // go to main screen
                         finish();
@@ -66,15 +64,13 @@ public class PatientInfoActivity extends AppCompatActivity {
     }
 
 
-    private void add_emergency(String phone_number, String address, String whats_wrong, String other_info) {
+    private void add_emergency(String phone_number, String other_info) {
         // Create new emergency in the database
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference emergency_ref = database.getReference("emergencies");
         DatabaseReference emergency_key = emergency_ref.push();
         //TODO: send cordinates too
         emergency_key.child("phone_number").setValue(phone_number);
-        emergency_key.child("address").setValue(address);
-        emergency_key.child("whats_wrong").setValue(whats_wrong);
         emergency_key.child("other_info").setValue(other_info);
 
         GPSTracker gps = new GPSTracker(this);
@@ -90,4 +86,6 @@ public class PatientInfoActivity extends AppCompatActivity {
     }
 
 }
+
+
 

@@ -95,7 +95,7 @@ public class PatientMainActivity extends AppCompatActivity {
                                     public void onClick(DialogInterface dialog, int which) {
                                         // cancel EFAR here
                                         TextView userUpdate = (TextView) findViewById(R.id.user_update);
-                                        userUpdate.setText("EFAR Cancled!");
+                                        userUpdate.setText("EFAR Cancelled!");
                                         // fade out text
                                         userUpdate.animate().alpha(0.0f).setDuration(3000);
                                         // when canceled, delete the emergancy
