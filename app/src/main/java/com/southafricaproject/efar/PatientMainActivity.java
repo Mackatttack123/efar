@@ -19,12 +19,21 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
 public class PatientMainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_patient_main);
+
+        // to auto login if possible
+        SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+        String id = sharedPreferences.getString("id", "");
+        String name = sharedPreferences.getString("name", "");
+        if(id != ""){
+            checkUser(name, id);
+        }
 
         final Button cancelButton = (Button)findViewById(R.id.canel_efar_button);
 
@@ -115,6 +124,7 @@ public class PatientMainActivity extends AppCompatActivity {
                     }
                 }
         );
+
     }
 
     // Starts up login screen
@@ -141,6 +151,53 @@ public class PatientMainActivity extends AppCompatActivity {
         anim.setRepeatMode(Animation.REVERSE);
         anim.setRepeatCount(Animation.INFINITE);
         userUpdate.startAnimation(anim);
+    }
+
+    // Starts up launchEfarScreen screen
+    private void launchEfarScreen() {
+
+        Intent toEfarScreen = new Intent(this, EFARMainActivity.class);
+
+        startActivity(toEfarScreen);
+    }
+
+    // checks to see if  a user exists in the database for auto login
+    private void checkUser(String user_name, String user_id) {
+
+        final String name = user_name;
+        final String id = user_id;
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference userRef = database.getReference("users");
+
+        userRef.addListenerForSingleValueEvent(new
+
+           ValueEventListener() {
+               @Override
+               public void onDataChange (DataSnapshot snapshot){
+                   // Check if id number is in database
+                   if (snapshot.hasChild(id)) {
+
+                       // check if name matches id in database
+                       String check_name = snapshot.child(id + "/name").getValue().toString();
+
+                       if (check_name.equals(name)) {
+                           //if all matches then go onto the efar screen
+                           finish();
+                           launchEfarScreen();
+                       } else {
+                           //TODO: tell user they have the wrong name or id
+                       }
+                   } else {
+                       Log.wtf("Login", "FAILURE!");
+                   }
+               }
+
+               @Override
+               public void onCancelled (DatabaseError firebaseError){
+               }
+           }
+
+        );
     }
 
 

@@ -1,5 +1,7 @@
 package com.southafricaproject.efar;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -38,6 +40,15 @@ public class loginScreen extends AppCompatActivity {
 
         final EditText user_name = (EditText) findViewById(R.id.login_name_field);
         final EditText user_id = (EditText) findViewById(R.id.login_id_field);
+
+        SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+        String old_id = sharedPreferences.getString("old_id", "");
+        String old_name = sharedPreferences.getString("old_name", "");
+
+        if(old_id != "" && old_name != ""){
+            user_name.setText(old_name);
+            user_id.setText(old_id);
+        }
 
         // logic for the login submit button
         submitButton.setOnClickListener(
@@ -87,6 +98,14 @@ public class loginScreen extends AppCompatActivity {
                     String check_name = snapshot.child(id + "/name").getValue().toString();
 
                     if (check_name.equals(name)) {
+                        // store password and username for auto login
+                        SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString("id", id);
+                        editor.putString("name", name);
+                        editor.putString("old_id", id);
+                        editor.putString("old_name", name);
+                        editor.commit();
                         //if all matches then go onto the efar screen
                         finish();
                         launchEfarScreen();

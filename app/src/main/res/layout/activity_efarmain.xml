@@ -23,6 +23,7 @@
         android:textColor="#0060ba"
         android:id="@+id/logout_button" />
 
+
     <TextView
         android:text="There are no emergencies at this time.\n\n¯\\_(ツ)_/¯"
         android:textAlignment="center"

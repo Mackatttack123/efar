@@ -8,7 +8,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:background="#393c3d"
+    android:background="#ffffff"
     tools:context="com.southafricaproject.efar.PatientMainActivity">
 
     <Button
@@ -19,6 +19,7 @@
         android:textColor="#0060ba"
         android:id="@+id/to_login_button" />
 
+
     <TextView
         android:text=""
         android:textSize="25dp"
@@ -26,10 +27,11 @@
         android:layout_height="wrap_content"
         android:textColor="#ff0000"
         android:id="@+id/user_update"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="80dp"
         android:layout_centerHorizontal="true"
         android:textAlignment="center"/>
 
+    <!--
     <Button
         android:text="@string/help_button"
         android:layout_width="wrap_content"
@@ -40,6 +42,18 @@
         android:textColor="#ffe3e3"
         android:id="@+id/help_me_button"
         android:layout_marginTop="145dp"
+        android:layout_centerHorizontal="true" />
+        -->
+
+    <Button
+        android:text="@string/help_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="30dp"
+        android:padding="40dp"
+        android:textColor="#e20505"
+        android:id="@+id/help_me_button"
+        android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
 
     <Button

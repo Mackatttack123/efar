@@ -19,11 +19,17 @@ import android.content.SharedPreferences;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.PhoneNumberFormattingTextWatcher;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+import java.util.HashMap;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.Map;
 
 public class PatientInfoActivity extends AppCompatActivity {
 
@@ -53,7 +59,11 @@ public class PatientInfoActivity extends AppCompatActivity {
                         final String phone_number = patient_phone_number.getText().toString();
                         final String other_info = patient_other_info.getText().toString();
 
-                        add_emergency(phone_number, other_info);
+                        try {
+                            add_emergency(phone_number, other_info);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
 
                         // go to main screen
                         finish();
@@ -64,19 +74,30 @@ public class PatientInfoActivity extends AppCompatActivity {
     }
 
 
-    private void add_emergency(String phone_number, String other_info) {
+    private void add_emergency(String phone_number, String other_info) throws JSONException {
         // Create new emergency in the database
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference emergency_ref = database.getReference("emergencies");
         DatabaseReference emergency_key = emergency_ref.push();
-        //TODO: send cordinates too
+
+        GPSTracker gps = new GPSTracker(this);
+
+        Map<String, String> data = new HashMap<String, String>();
+        data.put("phone_number",phone_number);
+        data.put("other_info",other_info);
+        data.put("latitude",Double.toString(gps.getLatitude()));
+        data.put("longitude",Double.toString(gps.getLongitude()));
+        emergency_ref.child(emergency_key.getKey()).setValue(data);
+
+        /*
         emergency_key.child("phone_number").setValue(phone_number);
         emergency_key.child("other_info").setValue(other_info);
 
-        GPSTracker gps = new GPSTracker(this);
         emergency_key.child("latitude").setValue(gps.getLatitude()); // latitude
         emergency_key.child("longitude").setValue(gps.getLongitude()); // longitude
+        */
 
+        // put emergency key into the users phone to store for later if needed
         SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         String key = emergency_key.getKey().toString();
