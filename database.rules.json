@@ -1,0 +1,16 @@
+{
+  "rules": {
+    "data" : {
+      ".read": "auth === true"
+    },
+    "users": {
+      ".read": true, //"auth != null",
+      ".write": true, //"auth != null"
+      ".indexOn": ["id", "name"]
+    },
+    "emergencies": {
+      ".read": true,
+      ".write": true
+    }
+  }
+}

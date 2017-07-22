@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
+import android.text.method.LinkMovementMethod;
+import android.widget.TextView;
 
 import android.app.AlertDialog;
 import android.location.Address;
@@ -26,6 +28,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
@@ -91,6 +94,10 @@ public class EFARMainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_efarmain);
+
+        // start tracking efar
+        startService(new Intent(this, MyService.class));
+
 
         adapter = new ArrayAdapter<String>(this,
                 R.layout.activity_listview, disctanceArray);
@@ -162,18 +169,23 @@ public class EFARMainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
 
                 Object o = listView.getItemAtPosition(position);
-                final SpannableString message = new SpannableString(Html.fromHtml("<b>Location:</b> (" + String.format("%.2f", emergenecyArray.get(position).getLatitude())
-                        + ", " + String.format("%.2f", emergenecyArray.get(position).getLongitude()) + ")<p><b>Address:</b> " + emergenecyArray.get(position).getAddress()
-                        + "</p><p><b>Senders #:</b> " + emergenecyArray.get(position).getPhone() + "</p><p><b>Other Info:</b> " + emergenecyArray.get(position).getInfo(), 0));
-                Linkify.addLinks(message, Linkify.ALL);
-                new AlertDialog.Builder(EFARMainActivity.this)
+                String phoneLink = "tel:" + emergenecyArray.get(position).getPhone().replaceAll("[^\\d.]", "");
+                String mapLink = "http://maps.google.com/?q=" + emergenecyArray.get(position).getLatitude() + ","  + emergenecyArray.get(position).getLongitude();
+                final SpannableString message = new SpannableString(Html.fromHtml("<b>Location:</b> <a href=" + mapLink + ">(" + String.format("%.2f", emergenecyArray.get(position).getLatitude())
+                        + ", " + String.format("%.2f", emergenecyArray.get(position).getLongitude()) + ")</a><p><b>Address:</b> " + emergenecyArray.get(position).getAddress()
+                        + "</p><p><b>Senders #:</b> <a href=" + phoneLink + ">" + emergenecyArray.get(position).getPhone() + "</a></p><p><b>Other Info:</b> " + emergenecyArray.get(position).getInfo(), 0));
+                final AlertDialog d = new AlertDialog.Builder(EFARMainActivity.this)
                         .setIcon(0)
                         .setTitle(Html.fromHtml("<h3>Emergency Information</h3>", 0))
                         .setMessage(message)
                         .setPositiveButton("Done", null)
                         .setCancelable(false)
-                        .show();
+                        .create();
+                d.show();
+                ((TextView)d.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
             }
+
+
         });
 
         //button to get back to patient screen
@@ -185,9 +197,18 @@ public class EFARMainActivity extends AppCompatActivity {
                 // get rid of stored password and username
                 SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
+
+                // say that user has logged off
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference userRef = database.getReference("users");
+                userRef.child(sharedPreferences.getString("id", "") + "/logged_in").setValue(false);
+
                 editor.putString("id", "");
                 editor.putString("name", "");
+                editor.putBoolean("logged_in", false);
                 editor.commit();
+
+
                 finish();
                 launchPatientMainScreen();
             }

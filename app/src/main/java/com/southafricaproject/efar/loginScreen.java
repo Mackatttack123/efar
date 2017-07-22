@@ -1,5 +1,6 @@
 package com.southafricaproject.efar;
 
+import android.app.IntentService;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
@@ -9,12 +10,16 @@ import android.view.View;
 import android.widget.Button;
 import android.content.Intent;
 import android.widget.EditText;
+import android.preference.PreferenceManager;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+
+import java.io.IOException;
 
 //TODO: Make it so that if an EFAR logs in then there password and username is saved
 // that way they are automatically logged in when they iopen the app
@@ -105,7 +110,22 @@ public class loginScreen extends AppCompatActivity {
                         editor.putString("name", name);
                         editor.putString("old_id", id);
                         editor.putString("old_name", name);
+                        editor.putBoolean("logged_in", true);
                         editor.commit();
+
+                        // update users info
+                        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+                        FirebaseDatabase database = FirebaseDatabase.getInstance();
+                        DatabaseReference userRef = database.getReference("users");
+                        GPSTracker gps = new GPSTracker(loginScreen.this);
+                        double my_lat = gps.getLatitude(); // latitude
+                        double my_long = gps.getLongitude(); // longitude
+                        userRef.child(id + "/name").setValue(name);
+                        userRef.child(id + "/token").setValue(refreshedToken);
+                        userRef.child(id + "/latitude").setValue(my_lat);
+                        userRef.child(id + "/longitude").setValue(my_long);
+                        userRef.child(id + "/logged_in").setValue(true);
+
                         //if all matches then go onto the efar screen
                         finish();
                         launchEfarScreen();
@@ -126,5 +146,60 @@ public class loginScreen extends AppCompatActivity {
     }
 
 }
+
+/*public class DeleteTokenService extends IntentService {
+    public static final String TAG = DeleteTokenService.class.getSimpleName();
+
+    public DeleteTokenService()
+    {
+        super(TAG);
+    }
+
+    @Override
+    protected void onHandleIntent(Intent intent)
+    {
+        try
+        {
+            // Check for current token
+            String originalToken = getTokenFromPrefs();
+            Log.d(TAG, "Token before deletion: " + originalToken);
+
+            // Resets Instance ID and revokes all tokens.
+            FirebaseInstanceId.getInstance().deleteInstanceId();
+
+            // Clear current saved token
+            saveTokenToPrefs("");
+
+            // Check for success of empty token
+            String tokenCheck = getTokenFromPrefs();
+            Log.d(TAG, "Token deleted. Proof: " + tokenCheck);
+
+            // Now manually call onTokenRefresh()
+            Log.d(TAG, "Getting new token");
+            FirebaseInstanceId.getInstance().getToken();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    private void saveTokenToPrefs(String _token)
+    {
+        // Access Shared Preferences
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = preferences.edit();
+
+        // Save to SharedPreferences
+        editor.putString("registration_id", _token);
+        editor.apply();
+    }
+
+    private String getTokenFromPrefs()
+    {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        return preferences.getString("registration_id", null);
+    }
+}*/
 
 
