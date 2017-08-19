@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.content.Intent;
 import android.widget.EditText;
 import android.preference.PreferenceManager;
+import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -46,6 +47,8 @@ public class loginScreen extends AppCompatActivity {
         final EditText user_name = (EditText) findViewById(R.id.login_name_field);
         final EditText user_id = (EditText) findViewById(R.id.login_id_field);
 
+        final TextView errorText = (TextView) findViewById(R.id.errorLoginText);
+
         SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
         String old_id = sharedPreferences.getString("old_id", "");
         String old_name = sharedPreferences.getString("old_name", "");
@@ -65,6 +68,7 @@ public class loginScreen extends AppCompatActivity {
                         // make sure there is some data so app doesn't crash
                         if (name.equals("") || id.equals("")) {
                             Log.wtf("Login", "No data input. Cannot attempt login");
+                            errorText.setText("ERROR: missing username or id...");
                         } else {
                             // check and validate the user
                             checkUser(name, id);
@@ -85,6 +89,8 @@ public class loginScreen extends AppCompatActivity {
 
     // checks to see if  a user exists in the database
     private void checkUser(String user_name, String user_id) {
+
+        final TextView errorText = (TextView) findViewById(R.id.errorLoginText);
 
         final String name = user_name;
         final String id = user_id;
@@ -127,13 +133,15 @@ public class loginScreen extends AppCompatActivity {
                         userRef.child(id + "/logged_in").setValue(true);
 
                         //if all matches then go onto the efar screen
+                        errorText.setText("");
                         finish();
                         launchEfarScreen();
                     } else {
-                        //TODO: tell user they have the wrong name or id
+                        errorText.setText("ERROR: username or id is incorrect...");
                     }
                 } else {
                     Log.wtf("Login", "FAILURE!");
+                    errorText.setText("ERROR: username or id is incorrect...");
                 }
             }
 
