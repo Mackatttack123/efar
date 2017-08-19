@@ -22,6 +22,8 @@ import com.google.firebase.database.ValueEventListener;
 
 public class PatientMainActivity extends AppCompatActivity {
 
+    boolean calling_efar = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,9 +37,7 @@ public class PatientMainActivity extends AppCompatActivity {
             checkUser(name, id);
         }
 
-        final Button cancelButton = (Button)findViewById(R.id.canel_efar_button);
-
-        Button helpMeButton = (Button)findViewById(R.id.help_me_button);
+        final Button helpMeButton = (Button)findViewById(R.id.help_me_button);
 
         GPSTracker gps = new GPSTracker(this);
         // check if GPS is avalible
@@ -53,7 +53,7 @@ public class PatientMainActivity extends AppCompatActivity {
                 new Button.OnClickListener() {
                     public void onClick(View v) {
 
-                        if(!(cancelButton.getVisibility() == View.VISIBLE)){
+                        if(!(calling_efar)){
                             //send and alert asking if they are sure they want to call
                             new AlertDialog.Builder(PatientMainActivity.this)
                                     .setIcon(android.R.drawable.ic_dialog_alert)
@@ -66,9 +66,40 @@ public class PatientMainActivity extends AppCompatActivity {
                                             TextView userUpdate = (TextView) findViewById(R.id.user_update);
                                             userUpdate.animate().alpha(1.0f).setDuration(1);
                                             userUpdate.setText("EFARs in your area are being contacted...");
-                                            cancelButton.setVisibility(View.VISIBLE);
+                                            helpMeButton.setText("CANCEL EFAR");
+                                            calling_efar = true;
                                             blinkText();
                                             launchPatientInfoScreen();
+                                        }
+
+                                    })
+                                    .setNegativeButton("No", null)
+                                    .show();
+                        }else{
+                            //send and alert asking if they are sure they want to cancel the efar
+                            new AlertDialog.Builder(PatientMainActivity.this)
+                                    .setIcon(android.R.drawable.ic_dialog_alert)
+                                    .setTitle("Cancel EFAR")
+                                    .setMessage("Are you sure you want to cancel your EFAR?")
+                                    .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                                    {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            // cancel EFAR here
+                                            TextView userUpdate = (TextView) findViewById(R.id.user_update);
+                                            userUpdate.setText("EFAR Cancelled!");
+                                            // fade out text
+                                            userUpdate.animate().alpha(0.0f).setDuration(3000);
+                                            // when canceled, delete the emergancy
+                                            // TODO: instead you should just move the data to a seperate part to keep track of cancled data
+                                            SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                                            String emergency_key_to_delete = sharedPreferences.getString("emergency_key", "");
+                                            FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                            DatabaseReference emergency_ref = database.getReference("emergencies/" + emergency_key_to_delete );
+                                            emergency_ref.removeValue();
+                                            // take away cancel button
+                                            calling_efar = false;
+                                            helpMeButton.setText("CALL FOR EFAR");
                                         }
 
                                     })
@@ -86,41 +117,6 @@ public class PatientMainActivity extends AppCompatActivity {
                     public void onClick(View v) {
                         // go to login screen
                         launchLoginScreen();
-                    }
-                }
-        );
-
-        cancelButton.setOnClickListener(
-                new Button.OnClickListener() {
-                    public void onClick(View v) {
-                        //send and alert asking if they are sure they want to cancel the efar
-                        new AlertDialog.Builder(PatientMainActivity.this)
-                                .setIcon(android.R.drawable.ic_dialog_alert)
-                                .setTitle("Cancel EFAR")
-                                .setMessage("Are you sure you want to cancel your EFAR?")
-                                .setPositiveButton("Yes", new DialogInterface.OnClickListener()
-                                {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        // cancel EFAR here
-                                        TextView userUpdate = (TextView) findViewById(R.id.user_update);
-                                        userUpdate.setText("EFAR Cancelled!");
-                                        // fade out text
-                                        userUpdate.animate().alpha(0.0f).setDuration(3000);
-                                        // when canceled, delete the emergancy
-                                        // TODO: instead you should just move the data to a seperate part to keep track of cancled data
-                                        SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
-                                        String emergency_key_to_delete = sharedPreferences.getString("emergency_key", "");
-                                        FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                        DatabaseReference emergency_ref = database.getReference("emergencies/" + emergency_key_to_delete );
-                                        emergency_ref.removeValue();
-                                        // take away cancel button
-                                        cancelButton.setVisibility(View.INVISIBLE);
-                                    }
-
-                                })
-                                .setNegativeButton("No", null)
-                                .show();
                     }
                 }
         );

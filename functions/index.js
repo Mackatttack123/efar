@@ -26,7 +26,7 @@ exports.sendPushNotification = functions.database.ref('/emergencies/{id}').onCre
 		}
 	};
 
-	efarArray = [];
+	/*efarArray = [];
 	return admin.database().ref('/users').on('value', function(snapshot){
 	    snapshot.forEach(function(child){
 	        var name = child.child("name").val();
@@ -62,8 +62,15 @@ exports.sendPushNotification = functions.database.ref('/emergencies/{id}').onCre
 				});
 			};
 		});
-	});
+	});*/
+	return admin.database().ref('tokens').once("value").then(allToken => {
+		if (allToken.val()){
+			const token = Object.keys(allToken.val());
+			return admin.messaging().sendToDevice(token, payload).then(response => {
 
+			});
+		};
+	});
 		
 });
 
