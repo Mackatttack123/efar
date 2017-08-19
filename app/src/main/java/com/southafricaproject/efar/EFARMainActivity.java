@@ -31,6 +31,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -97,6 +98,13 @@ public class EFARMainActivity extends AppCompatActivity {
 
         // start tracking efar
         startService(new Intent(this, MyService.class));
+
+        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference userRef = database.getReference("users");
+        SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        userRef.child(sharedPreferences.getString("id", "") + "/token").setValue(refreshedToken);
 
 
         adapter = new ArrayAdapter<String>(this,
