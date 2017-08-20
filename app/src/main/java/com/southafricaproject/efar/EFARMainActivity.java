@@ -22,6 +22,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.os.Handler;
 import android.util.Log;
+import android.content.DialogInterface;
 
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -168,14 +169,12 @@ public class EFARMainActivity extends AppCompatActivity {
                 }
             });
 
-        /*checkForEmergencies();
-        handler.postDelayed(update_runnable, 5000);*/
-
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
 
+                final int pos = position;
                 Object o = listView.getItemAtPosition(position);
                 String phoneLink = "tel:" + emergenecyArray.get(position).getPhone().replaceAll("[^\\d.]", "");
                 String mapLink = "http://maps.google.com/?q=" + emergenecyArray.get(position).getLatitude() + ","  + emergenecyArray.get(position).getLongitude();
@@ -186,8 +185,33 @@ public class EFARMainActivity extends AppCompatActivity {
                         .setIcon(0)
                         .setTitle(Html.fromHtml("<h3>Emergency Information</h3>", 0))
                         .setMessage(message)
-                        .setPositiveButton("Done", null)
+                        .setPositiveButton("Exit", null)
                         .setCancelable(false)
+                        .setNegativeButton("End Emergency", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        new AlertDialog.Builder(EFARMainActivity.this)
+                                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                                .setTitle("End Emergency")
+                                                .setMessage("Are you sure you want to end this emergency?\n" +
+                                                        "Ending it will remove it from the emergency stream for good.")
+                                                .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                                                {
+                                                    // to delete the emergency
+                                                    final String keyToDelete = emergenecyArray.get(pos).getKey();
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                                        DatabaseReference emergency_ref = database.getReference("emergencies/" + keyToDelete);
+                                                        emergency_ref.removeValue();
+                                                    }
+
+                                                })
+                                                .setNegativeButton("No", null)
+                                                .show();
+                                    }
+                                }
+                        )
                         .create();
                 d.show();
                 ((TextView)d.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
@@ -226,90 +250,6 @@ public class EFARMainActivity extends AppCompatActivity {
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client2 = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
-
-    /*private void checkForEmergencies() {
-
-        disctanceArray.clear();
-        emergenecyArray.clear();
-        GPSTracker gps = new GPSTracker(this);
-        final double my_lat = gps.getLatitude(); // latitude
-        final double my_long = gps.getLongitude(); // longitude
-
-        // go through all the emergencies and put there data in the array
-        FirebaseDatabase.getInstance().getReference().child("emergencies")
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                            String e_key = snapshot.getKey();
-                            Double e_lat = Double.parseDouble(snapshot.child("latitude").getValue().toString());
-                            Double e_long = Double.parseDouble(snapshot.child("longitude").getValue().toString());
-                            String e_phone_number = snapshot.child("phone_number").getValue().toString();
-                            String e_info = snapshot.child("other_info").getValue().toString();
-
-                            //TODO: THIS ADDRESS THING ISN't working any more!??!?!?! WTF...
-                            // to get address
-                            Geocoder geocoder = new Geocoder(EFARMainActivity.this, Locale.getDefault());
-                            List<Address> addressList = null;
-                            try {
-                                addressList = geocoder.getFromLocation(e_lat, e_long, 1);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            String address, city, state, country;
-
-                            if(addressList.size() > 0){
-                                Address emergency_address = addressList.get(0);
-
-                                address = emergency_address.getAddressLine(0);
-                                city = emergency_address.getLocality();
-                                state = emergency_address.getAdminArea();
-                                country = emergency_address.getCountryName();
-                            }else{
-                                address = "";
-                                city = "";
-                                state = "";
-                                country = "";
-                            }
-
-
-                            String postalCode = emergency_address.getPostalCode();
-                            String knownName = emergency_address.getFeatureName(); // Only if available else return NULL
-                            if(postalCode == null){
-                                postalCode = "";
-                            }
-                            if(knownName == null){
-                                knownName = "";
-                            }
-
-                            //String e_address = address + " " + city + " " + state + " " + country; //+ " " + postalCode + " " + knownName;
-                            String e_address = getCompleteAddressString(e_lat, e_long);
-                            emergenecyArray.add(new Emergency(e_key, e_address, e_lat, e_long, e_phone_number, e_info));
-                            disctanceArray.add("Emergancy: " + String.format("%.2f", distance(e_lat, e_long, my_lat, my_long)) + " km away");
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                    }
-                });
-        Log.wtf("emergenecyArray", Integer.toString(emergenecyArray.size()));
-        Log.wtf("disctanceArray", Integer.toString(disctanceArray.size()));
-        adapter.clear();
-        adapter.addAll(disctanceArray);
-        Log.wtf("disctanceArray", Integer.toString(adapter.getCount()));
-        adapter.notifyDataSetChanged();
-    }*/
-
-    /* updates the listview*/
-    /*private Runnable update_runnable = new Runnable() {
-        @Override
-        public void run() {
-            checkForEmergencies();
-
-            handler.postDelayed(this, 5000);
-        }
-    };*/
 
     // Goes to patient info tab to send more to EFARs
     private void launchPatientMainScreen() {
