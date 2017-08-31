@@ -2,6 +2,7 @@ package com.southafricaproject.efar;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import android.app.PendingIntent;

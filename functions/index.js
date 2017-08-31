@@ -16,7 +16,7 @@ admin.initializeApp(functions.config().firebase);
 
 efarArray = [];
 
-exports.sendPushNotification = functions.database.ref('/emergencies/{id}').onCreate(event => {
+/*exports.sendPushNotification = functions.database.ref('/emergencies/{id}').onCreate(event => {
 	const payload = {
 		notification: {
 			title: "NEW EMERGANCY:",
@@ -26,7 +26,7 @@ exports.sendPushNotification = functions.database.ref('/emergencies/{id}').onCre
 		}
 	};
 
-	/*efarArray = [];
+	efarArray = [];
 	return admin.database().ref('/users').on('value', function(snapshot){
 	    snapshot.forEach(function(child){
 	        var name = child.child("name").val();
@@ -62,7 +62,7 @@ exports.sendPushNotification = functions.database.ref('/emergencies/{id}').onCre
 				});
 			};
 		});
-	});*/
+	});
 	return admin.database().ref('tokens').once("value").then(allToken => {
 		if (allToken.val()){
 			const token = Object.keys(allToken.val());
@@ -72,14 +72,52 @@ exports.sendPushNotification = functions.database.ref('/emergencies/{id}').onCre
 		};
 	});
 		
+});*/
+
+exports.sendPushNotificationAdded = functions.database.ref('/emergencies/{id}').onCreate(event => {
+	const payload = {
+		notification: {
+			title: "NEW EMERGANCY:",
+			body: "Info given: \"" + event.data.child('other_info').val() + "\"",
+			//badge: '1',
+			sound: 'default',
+		}
+	};
+	return admin.database().ref('tokens').once("value").then(allToken => {
+		if (allToken.val()){
+			const token = Object.keys(allToken.val());
+			return admin.messaging().sendToDevice(token, payload).then(response => {
+
+			});
+		};
+	});
 });
 
-exports.sendPushNotificationDeleted = functions.database.ref('/emergencies/{id}').onDelete(event => {
+exports.sendPushNotificationCanceled = functions.database.ref('/canceled/{id}').onCreate(event => {
+	const payload = {
+		notification: {
+			title: "Emergency Canceled:",
+			body: 'An emergancy in your area has been canceled.',
+			//badge: '1',
+			sound: 'default',
+		}
+	};
+	return admin.database().ref('tokens').once("value").then(allToken => {
+		if (allToken.val()){
+			const token = Object.keys(allToken.val());
+			return admin.messaging().sendToDevice(token, payload).then(response => {
+
+			});
+		};
+	});
+});
+
+exports.sendPushNotificationCompleted = functions.database.ref('/completed/{id}').onCreate(event => {
 	const payload = {
 		notification: {
 			title: "Emergency Over:",
-			body: 'An emergancy in your area has been cancled or is over now...',
-			badge: '1',
+			body: 'An emergancy in your area is now over.',
+			//badge: '1',
 			sound: 'default',
 		}
 	};

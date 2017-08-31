@@ -280,29 +280,19 @@ public class EFARMainActivity extends AppCompatActivity {
                                             .setIcon(android.R.drawable.ic_dialog_alert)
                                             .setTitle("End Emergency")
                                             .setMessage("Are you sure you want to end this emergency?\n\n" +
-                                                    "Ending it will remove it from the emergency stream for good.")
+                                                    "Ending it will remove it from the emergency stream for good, and you will need to fill out and Emergency Write-Up.")
                                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                                 // to delete the emergency
                                                 final String keyToMove = emergenecyArray.get(pos).getKey();
 
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
-                                                    FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                                    DatabaseReference emergency_ref = database.getReference("emergencies/" + keyToMove);
-                                                    emergency_ref.child("/state").setValue("2");
-                                                    Date currentTime = Calendar.getInstance().getTime();
-                                                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZZZZZ");
-                                                    String timestamp = simpleDateFormat.format(currentTime);
-                                                    emergency_ref.child("/ended_date").setValue(timestamp);
-                                                    Date e_creation_date = null;
-                                                    try {
-                                                        e_creation_date = simpleDateFormat.parse(emergenecyArray.get(pos).getCreationDate());
-                                                    } catch (ParseException e) {
-                                                        e.printStackTrace();
-                                                    }
-                                                    emergency_ref.child("/elapsed_time_in_milliseconds").setValue(e_creation_date.getTime() - currentTime.getTime());
-                                                    moveFirebaseRecord(emergency_ref, database.getReference("completed/" + keyToMove));
-                                                    emergency_ref.removeValue();
+                                                    SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                                                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                                                    editor.putString("finished_emergency_key", keyToMove);
+                                                    editor.putString("finished_emergency_date", emergenecyArray.get(pos).getCreationDate());
+                                                    editor.commit();
+                                                    launchEfarWriteUpScreen();
                                                 }
 
                                             })
@@ -406,36 +396,12 @@ public class EFARMainActivity extends AppCompatActivity {
         return strAdd;
     }
 
-    public void moveFirebaseRecord(DatabaseReference fromPath, final DatabaseReference toPath)
-    {
-        fromPath.addListenerForSingleValueEvent(new ValueEventListener()
-        {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot)
-            {
-                toPath.setValue(dataSnapshot.getValue(), new DatabaseReference.CompletionListener()
-                {
-                    @Override
-                    public void onComplete(DatabaseError firebaseError, DatabaseReference firebase)
-                    {
-                        if (firebaseError != null)
-                        {
-                            System.out.println("Copy failed");
-                        }
-                        else
-                        {
-                            System.out.println("Success");
-                        }
-                    }
-                });
-            }
+    // Starts up launchEfarWriteUpScreen screen
+    private void launchEfarWriteUpScreen() {
 
-            @Override
-            public void onCancelled(DatabaseError firebaseError)
-            {
-                System.out.println("Copy failed");
-            }
-        });
+        Intent toLaunchEfarWriteUPScreen = new Intent(this, EFARInfoActivity.class);
+
+        startActivity(toLaunchEfarWriteUPScreen);
     }
 
 }

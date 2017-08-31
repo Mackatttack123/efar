@@ -54,6 +54,14 @@ public class MyService extends Service {
                 tokens_ref.child(token).child("latitude").setValue(my_lat);
                 tokens_ref.child(token).child("longitude").setValue(my_long);
 
+                SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                String id = sharedPreferences.getString("id", "");
+                if(!id.equals("")){
+                    DatabaseReference users_ref = database.getReference("users/" + id);
+                    users_ref.child("latitude").setValue(my_lat);
+                    users_ref.child("longitude").setValue(my_long);
+                }
+
                 Log.wtf("location updated:", "(" + my_lat + ", " + my_long + ") ---> token: " + token);
                 Toast.makeText(context, "Service is still running", Toast.LENGTH_LONG).show();
                 handler.postDelayed(runnable, 10000);

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_efarinfo"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.southafricaproject.efar.EFARInfoActivity">
+
+    <TextView
+        android:text="Emergency \nWrite Up:"
+        android:textSize="35dp"
+        android:textAlignment="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:id="@+id/textView" />
+
+    <TextView
+        android:text="Please explain breifly what you saw and how you helped the patient:"
+        android:textSize="18dp"
+        android:ems="12"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="125dp"
+        android:id="@+id/textView" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:gravity="top|left"
+        android:layout_height="160dp"
+        android:inputType="textMultiLine"
+        android:ems="12"
+        android:layout_below="@+id/textView3"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="195dp"
+        android:background="#ddd"
+        android:id="@+id/efar_writeup_editText"
+        android:clickable="true"
+        android:focusableInTouchMode="true" />
+
+    <Button
+        android:text="@string/submit_login_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="370dp"
+        android:id="@+id/efar_info_submit_button"
+        android:layout_centerHorizontal="true" />
+
+</RelativeLayout>
