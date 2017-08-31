@@ -70,6 +70,13 @@ public class PatientMainActivity extends AppCompatActivity {
                     if(e_state.equals("1")){
                         userUpdate.setText("An EFAR has been contacted and is responding...");
                         userUpdate.setTextColor(Color.BLUE);
+                    }else if(e_state.equals("2")){
+                        userUpdate.setTextColor(Color.GREEN);
+                        helpMeButton.setText("CALL FOR EFAR");
+                        userUpdate.setText("An EFAR has ended your emergency.");
+                        // fade out text
+                        userUpdate.animate().alpha(0.0f).setDuration(10000);
+                        calling_efar = false;
                     }
                 }
             }
@@ -133,12 +140,14 @@ public class PatientMainActivity extends AppCompatActivity {
                                             userUpdate.setText("EFAR Cancelled!");
                                             // fade out text
                                             userUpdate.animate().alpha(0.0f).setDuration(3000);
-                                            // when canceled, delete the emergancy
-                                            // TODO: instead you should just move the data to a seperate part to keep track of cancled data
+                                            // when canceled, delete the emergancy and move to canceled
                                             SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
                                             String emergency_key_to_delete = sharedPreferences.getString("emergency_key", "");
                                             FirebaseDatabase database = FirebaseDatabase.getInstance();
                                             DatabaseReference emergency_ref = database.getReference("emergencies/" + emergency_key_to_delete );
+                                            DatabaseReference emergency_state_ref = database.getReference("emergencies/" + emergency_key_to_delete + "/state");
+                                            emergency_state_ref.setValue("-1");
+                                            moveFirebaseRecord(emergency_ref, database.getReference("canceled/" + emergency_key_to_delete));
                                             emergency_ref.removeValue();
                                             // take away cancel button
                                             calling_efar = false;
@@ -239,6 +248,35 @@ public class PatientMainActivity extends AppCompatActivity {
         );
     }
 
+    public void moveFirebaseRecord(DatabaseReference fromPath, final DatabaseReference toPath) {
+        fromPath.addListenerForSingleValueEvent(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                toPath.setValue(dataSnapshot.getValue(), new DatabaseReference.CompletionListener()
+                {
+                    @Override
+                    public void onComplete(DatabaseError firebaseError, DatabaseReference firebase)
+                    {
+                        if (firebaseError != null)
+                        {
+                            System.out.println("Copy failed");
+                        }
+                        else
+                        {
+                            System.out.println("Success");
+                        }
+                    }
+                });
+            }
 
+            @Override
+            public void onCancelled(DatabaseError firebaseError)
+            {
+                System.out.println("Copy failed");
+            }
+        });
+    }
 
 }

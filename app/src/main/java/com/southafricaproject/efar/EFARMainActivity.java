@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -282,15 +283,26 @@ public class EFARMainActivity extends AppCompatActivity {
                                                     "Ending it will remove it from the emergency stream for good.")
                                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                                 // to delete the emergency
-                                                final String keyToDelete = emergenecyArray.get(pos).getKey();
+                                                final String keyToMove = emergenecyArray.get(pos).getKey();
 
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                                    DatabaseReference emergency_ref = database.getReference("emergencies/" + keyToDelete);
+                                                    DatabaseReference emergency_ref = database.getReference("emergencies/" + keyToMove);
+                                                    emergency_ref.child("/state").setValue("2");
+                                                    Date currentTime = Calendar.getInstance().getTime();
+                                                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZZZZZ");
+                                                    String timestamp = simpleDateFormat.format(currentTime);
+                                                    emergency_ref.child("/ended_date").setValue(timestamp);
+                                                    Date e_creation_date = null;
+                                                    try {
+                                                        e_creation_date = simpleDateFormat.parse(emergenecyArray.get(pos).getCreationDate());
+                                                    } catch (ParseException e) {
+                                                        e.printStackTrace();
+                                                    }
+                                                    emergency_ref.child("/elapsed_time_in_milliseconds").setValue(e_creation_date.getTime() - currentTime.getTime());
+                                                    moveFirebaseRecord(emergency_ref, database.getReference("completed/" + keyToMove));
                                                     emergency_ref.removeValue();
-                                                    // TODO: instead of removing the emergency values, move them to a "finished" part of an emergency
-                                                    // TODO: have efars fill out a surveay when the emergecny is ended...and calulate responce time
                                                 }
 
                                             })
@@ -393,4 +405,37 @@ public class EFARMainActivity extends AppCompatActivity {
         }
         return strAdd;
     }
+
+    public void moveFirebaseRecord(DatabaseReference fromPath, final DatabaseReference toPath)
+    {
+        fromPath.addListenerForSingleValueEvent(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                toPath.setValue(dataSnapshot.getValue(), new DatabaseReference.CompletionListener()
+                {
+                    @Override
+                    public void onComplete(DatabaseError firebaseError, DatabaseReference firebase)
+                    {
+                        if (firebaseError != null)
+                        {
+                            System.out.println("Copy failed");
+                        }
+                        else
+                        {
+                            System.out.println("Success");
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(DatabaseError firebaseError)
+            {
+                System.out.println("Copy failed");
+            }
+        });
+    }
+
 }
