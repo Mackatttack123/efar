@@ -43,17 +43,6 @@
         android:background="#d73636">
     </ListView>
 
-    <Switch
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New Switch"
-        android:id="@+id/switch1"
-        android:layout_alignBottom="@+id/patient_list"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginLeft="391dp"
-        android:layout_marginStart="391dp" />
-
     <!--<Button
         android:text="@string/help_button"
         android:layout_width="wrap_content"

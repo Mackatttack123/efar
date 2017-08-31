@@ -8,4 +8,6 @@
     <string name="login_id_field">ID Number</string>
     <string name="login_title">Login</string>
     <string name="logout_button">Logout</string>
+    <string name="Other_Information">Other Information</string>
+    <string name="Phone_Number">Phone Number</string>
 </resources>

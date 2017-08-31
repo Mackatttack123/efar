@@ -1,6 +1,7 @@
 package com.southafricaproject.efar;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -14,6 +15,7 @@ import android.view.animation.Animation;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -48,6 +50,46 @@ public class PatientMainActivity extends AppCompatActivity {
             Log.wtf("Patient Main", lat.toString());
         }
 
+        FirebaseDatabase.getInstance().getReference().child("emergencies").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                String userEmergencyKey = sharedPreferences.getString("emergency_key", "");
+
+                String e_key = dataSnapshot.getKey();
+                if(e_key.equals(userEmergencyKey)){
+                    TextView userUpdate = (TextView) findViewById(R.id.user_update );
+                    String e_state = dataSnapshot.child("state").getValue().toString();
+                    if(e_state.equals("1")){
+                        userUpdate.setText("An EFAR has been contacted and is responding...");
+                        userUpdate.setTextColor(Color.BLUE);
+                    }
+                }
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
         //I NEED HELP button logic
         helpMeButton.setOnClickListener(
                 new Button.OnClickListener() {
@@ -66,6 +108,7 @@ public class PatientMainActivity extends AppCompatActivity {
                                             TextView userUpdate = (TextView) findViewById(R.id.user_update);
                                             userUpdate.animate().alpha(1.0f).setDuration(1);
                                             userUpdate.setText("EFARs in your area are being contacted...");
+                                            userUpdate.setTextColor(Color.RED);
                                             helpMeButton.setText("CANCEL EFAR");
                                             calling_efar = true;
                                             blinkText();
@@ -181,10 +224,10 @@ public class PatientMainActivity extends AppCompatActivity {
                            finish();
                            launchEfarScreen();
                        } else {
-                           //TODO: tell user they have the wrong name or id
+                           Log.wtf("AutoLogin", "FAILURE!");
                        }
                    } else {
-                       Log.wtf("Login", "FAILURE!");
+                       Log.wtf("AutoLogin", "FAILURE!");
                    }
                }
 

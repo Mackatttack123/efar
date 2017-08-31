@@ -3,8 +3,10 @@ package com.southafricaproject.efar;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.LinkMovementMethod;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import android.app.AlertDialog;
@@ -39,9 +41,13 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 class Emergency {
     private String key;
@@ -50,15 +56,20 @@ class Emergency {
     private Double longitude;
     private String phone_number;
     private String info;
+    private String creationDate;
+    private String state;
 
     // constructor
-    public Emergency(String key, String address, Double latitude, Double longitude, String phone_number, String info) {
+    public Emergency(String key, String address, Double latitude, Double longitude,
+                     String phone_number, String info, String creationDate, String state) {
         this.key = key;
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
         this.phone_number = phone_number;
         this.info = info;
+        this.creationDate = creationDate;
+        this.state = state;
     }
 
     // getter
@@ -68,14 +79,13 @@ class Emergency {
     public Double getLongitude() { return longitude; }
     public String getPhone() { return phone_number; }
     public String getInfo() { return info; }
+    public String getCreationDate() { return creationDate; }
+    public String getState() { return state; }
 }
 
 
 public class EFARMainActivity extends AppCompatActivity {
 
-    //TODO: make and emergency array that store an emergancy struct (which you need to make)
-    //TODO: When you click on the emergency it will show you it in detail
-    //TODO: display distance using cordinates in the arrayview for the EFARS
     //TODO: sort emergencics by distance away
     final ArrayList<String> disctanceArray = new ArrayList<String>();
     final ArrayList<Emergency> emergenecyArray = new ArrayList<Emergency>();
@@ -91,6 +101,8 @@ public class EFARMainActivity extends AppCompatActivity {
     public ListView listView;
     private double my_lat;
     private double my_long;
+
+    String alertButtonOption = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,13 +120,24 @@ public class EFARMainActivity extends AppCompatActivity {
         userRef.child(sharedPreferences.getString("id", "") + "/token").setValue(refreshedToken);
 
 
-        adapter = new ArrayAdapter<String>(this,
-                R.layout.activity_listview, disctanceArray);
+        adapter = new ArrayAdapter<String>(this, R.layout.activity_listview, disctanceArray){
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent)
+            {
+                View itemView = super.getView(position, convertView, parent);
+                if (emergenecyArray.get(position).getState().equals("0")){
+                    itemView.setBackgroundColor(Color.argb(100, 255, 0, 0));
+                }else{
+                    itemView.setBackgroundColor(Color.argb(100, 0, 0, 255));
+                }
+                return itemView;
+            }
+        };
+
         listView = (ListView) findViewById(R.id.patient_list);
         listView.setAdapter(adapter);
         listView.setClickable(true);
 
-        // TODO: get listView to auto update when emergencies are addded or deleted to the database
         GPSTracker gps = new GPSTracker(this);
         my_lat = gps.getLatitude(); // latitude
         my_long = gps.getLongitude(); // longitude
@@ -128,7 +151,9 @@ public class EFARMainActivity extends AppCompatActivity {
                     Double e_lat = Double.parseDouble(dataSnapshot.child("latitude").getValue().toString());
                     Double e_long = Double.parseDouble(dataSnapshot.child("longitude").getValue().toString());
                     String e_address = getCompleteAddressString(e_lat, e_long);
-                    emergenecyArray.add(new Emergency(e_key, e_address, e_lat, e_long, e_phone_number, e_info));
+                    String e_creationDate = dataSnapshot.child("creation_date").getValue().toString();
+                    String e_state = dataSnapshot.child("state").getValue().toString();
+                    emergenecyArray.add(new Emergency(e_key, e_address, e_lat, e_long, e_phone_number, e_info, e_creationDate, e_state));
                     disctanceArray.add("Emergancy: " + String.format("%.2f", distance(e_lat, e_long, my_lat, my_long)) + " km away");
                     adapter.notifyDataSetChanged();
                 }catch (NullPointerException e){
@@ -139,7 +164,32 @@ public class EFARMainActivity extends AppCompatActivity {
 
                 @Override
                 public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
+                    String key = dataSnapshot.getKey();
+                    for (int j = 0; j < emergenecyArray.size(); j++){
+                        Emergency e = emergenecyArray.get(j);
+                        if(e.getKey().equals(key)){
+                            //found, delete.
+                            emergenecyArray.remove(j);
+                            disctanceArray.remove(j);
+                            adapter.notifyDataSetChanged();
+                            break;
+                        }
+                    }
+                    try{
+                        String e_key = dataSnapshot.getKey();
+                        String e_phone_number = dataSnapshot.child("phone_number").getValue().toString();
+                        String e_info = dataSnapshot.child("other_info").getValue().toString();
+                        Double e_lat = Double.parseDouble(dataSnapshot.child("latitude").getValue().toString());
+                        Double e_long = Double.parseDouble(dataSnapshot.child("longitude").getValue().toString());
+                        String e_address = getCompleteAddressString(e_lat, e_long);
+                        String e_creationDate = dataSnapshot.child("creation_date").getValue().toString();
+                        String e_state = dataSnapshot.child("state").getValue().toString();
+                        emergenecyArray.add(new Emergency(e_key, e_address, e_lat, e_long, e_phone_number, e_info, e_creationDate, e_state));
+                        disctanceArray.add("Emergancy: " + String.format("%.2f", distance(e_lat, e_long, my_lat, my_long)) + " km away");
+                        adapter.notifyDataSetChanged();
+                    }catch (NullPointerException e){
+                        Log.wtf("added", "not yet");
+                    }
                 }
 
                 @Override
@@ -178,40 +228,79 @@ public class EFARMainActivity extends AppCompatActivity {
                 Object o = listView.getItemAtPosition(position);
                 String phoneLink = "tel:" + emergenecyArray.get(position).getPhone().replaceAll("[^\\d.]", "");
                 String mapLink = "http://maps.google.com/?q=" + emergenecyArray.get(position).getLatitude() + ","  + emergenecyArray.get(position).getLongitude();
-                final SpannableString message = new SpannableString(Html.fromHtml("<b>Location:</b> <a href=" + mapLink + ">(" + String.format("%.2f", emergenecyArray.get(position).getLatitude())
-                        + ", " + String.format("%.2f", emergenecyArray.get(position).getLongitude()) + ")</a><p><b>Address:</b> " + emergenecyArray.get(position).getAddress()
-                        + "</p><p><b>Senders #:</b> <a href=" + phoneLink + ">" + emergenecyArray.get(position).getPhone() + "</a></p><p><b>Other Info:</b> " + emergenecyArray.get(position).getInfo(), 0));
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZZZZZ");
+                Date timeCreated = null;
+                try {
+                    timeCreated = simpleDateFormat.parse(emergenecyArray.get(position).getCreationDate());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                SimpleDateFormat displayTimeFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");
+                String dipslayTime = displayTimeFormat.format(timeCreated);
+
+                final SpannableString message = new SpannableString(Html.fromHtml("<p><b>Created: </b>" + dipslayTime + "</p><p><b>Location:</b> <a href=" + mapLink + ">(" + String.format("%.2f", emergenecyArray.get(position).getLatitude())
+                        + ", " + String.format("%.2f", emergenecyArray.get(position).getLongitude()) + ")</a></p><p><b>Address:</b> <a href=" + mapLink + ">" + emergenecyArray.get(position).getAddress()
+                        + "</a></p><p><b>Senders #:</b> <a href=" + phoneLink + ">" + emergenecyArray.get(position).getPhone() + "</a></p><p><b>Other Info:</b> " + emergenecyArray.get(position).getInfo(), 0));
+
+                if(emergenecyArray.get(position).getState().equals("0")){
+                    alertButtonOption = "Respond";
+                }else{
+                    alertButtonOption = "End Emergency";
+                }
+
                 final AlertDialog d = new AlertDialog.Builder(EFARMainActivity.this)
                         .setIcon(0)
-                        .setTitle(Html.fromHtml("<h3>Emergency Information</h3>", 0))
+                        .setTitle(Html.fromHtml("<h3><u>Emergency Information</u></h3>", 0))
                         .setMessage(message)
                         .setPositiveButton("Exit", null)
-                        .setCancelable(false)
-                        .setNegativeButton("End Emergency", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        new AlertDialog.Builder(EFARMainActivity.this)
-                                                .setIcon(android.R.drawable.ic_dialog_alert)
-                                                .setTitle("End Emergency")
-                                                .setMessage("Are you sure you want to end this emergency?\n" +
-                                                        "Ending it will remove it from the emergency stream for good.")
-                                                .setPositiveButton("Yes", new DialogInterface.OnClickListener()
-                                                {
-                                                    // to delete the emergency
-                                                    final String keyToDelete = emergenecyArray.get(pos).getKey();
-                                                    @Override
-                                                    public void onClick(DialogInterface dialog, int which) {
-                                                        FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                                        DatabaseReference emergency_ref = database.getReference("emergencies/" + keyToDelete);
-                                                        emergency_ref.removeValue();
-                                                    }
+                        .setNeutralButton(alertButtonOption, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if(alertButtonOption.equals("Respond")){
+                                    new AlertDialog.Builder(EFARMainActivity.this)
+                                            .setIcon(android.R.drawable.ic_dialog_alert)
+                                            .setTitle("Respond to Emergency:")
+                                            .setMessage("Are you able to respond to this emergency?")
+                                            .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                                            {
+                                                final String keyToUpdate = emergenecyArray.get(pos).getKey();
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                                    DatabaseReference emergency_ref = database.getReference("emergencies/" + keyToUpdate + "/state");
+                                                    emergency_ref.setValue("1");
+                                                }
 
-                                                })
-                                                .setNegativeButton("No", null)
-                                                .show();
-                                    }
+                                            })
+                                            .setNegativeButton("No", null)
+                                            .show();
+                                }else if(alertButtonOption.equals("End Emergency")) {
+                                    new AlertDialog.Builder(EFARMainActivity.this)
+                                            .setIcon(android.R.drawable.ic_dialog_alert)
+                                            .setTitle("End Emergency")
+                                            .setMessage("Are you sure you want to end this emergency?\n\n" +
+                                                    "Ending it will remove it from the emergency stream for good.")
+                                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                                // to delete the emergency
+                                                final String keyToDelete = emergenecyArray.get(pos).getKey();
+
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                                    DatabaseReference emergency_ref = database.getReference("emergencies/" + keyToDelete);
+                                                    emergency_ref.removeValue();
+                                                    // TODO: instead of removing the emergency values, move them to a "finished" part of an emergency
+                                                    // TODO: have efars fill out a surveay when the emergecny is ended...and calulate responce time
+                                                }
+
+                                            })
+                                            .setNegativeButton("No", null)
+                                            .show();
                                 }
-                        )
+
+                            }
+                        })
+                        .setCancelable(false)
                         .create();
                 d.show();
                 ((TextView)d.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());

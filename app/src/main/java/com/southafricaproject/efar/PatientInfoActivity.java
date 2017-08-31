@@ -29,7 +29,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Calendar;
+
+
 import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class PatientInfoActivity extends AppCompatActivity {
 
@@ -87,6 +92,11 @@ public class PatientInfoActivity extends AppCompatActivity {
         data.put("other_info",other_info);
         data.put("latitude",Double.toString(gps.getLatitude()));
         data.put("longitude",Double.toString(gps.getLongitude()));
+        Date currentTime = Calendar.getInstance().getTime();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZZZZZ");
+        String timestamp = simpleDateFormat.format(currentTime);
+        data.put("creation_date",timestamp);
+        data.put("state","0");
         emergency_ref.child(emergency_key.getKey()).setValue(data);
 
         /*

@@ -54,5 +54,5 @@
         android:textColor="#e20505"
         android:id="@+id/help_me_button"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"/>
 </RelativeLayout>
