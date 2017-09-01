@@ -139,6 +139,8 @@ public class EFARMainActivity extends AppCompatActivity {
         listView.setAdapter(adapter);
         listView.setClickable(true);
 
+        listView.setBackgroundColor(Color.TRANSPARENT);
+
         GPSTracker gps = new GPSTracker(this);
         my_lat = gps.getLatitude(); // latitude
         my_long = gps.getLongitude(); // longitude
@@ -160,6 +162,9 @@ public class EFARMainActivity extends AppCompatActivity {
                 }catch (NullPointerException e){
                     Log.wtf("added", "not yet");
                 }
+
+                listView.setVisibility(View.VISIBLE);
+                listView.setBackgroundColor(Color.WHITE);
 
             }
 
@@ -205,6 +210,14 @@ public class EFARMainActivity extends AppCompatActivity {
                             adapter.notifyDataSetChanged();
                             break;
                         }
+                    }
+
+                    if(emergenecyArray.size() == 0){
+                        listView.setVisibility(View.GONE);
+                        Log.d("SIZE:", String.valueOf(emergenecyArray.size()));
+                    }else{
+                        listView.setVisibility(View.VISIBLE);
+                        Log.d("SIZE:", String.valueOf(emergenecyArray.size()));
                     }
 
                 }
@@ -330,7 +343,6 @@ public class EFARMainActivity extends AppCompatActivity {
                 editor.putString("name", "");
                 editor.putBoolean("logged_in", false);
                 editor.commit();
-
 
                 finish();
                 launchPatientMainScreen();
