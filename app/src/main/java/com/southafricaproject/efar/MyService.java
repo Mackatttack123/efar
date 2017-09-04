@@ -36,7 +36,7 @@ public class MyService extends Service {
 
     @Override
     public void onCreate() {
-        Toast.makeText(this, "Service created!", Toast.LENGTH_LONG).show();
+        //Toast.makeText(this, "Service created!", Toast.LENGTH_LONG).show();
 
         handler = new Handler();
         runnable = new Runnable() {
@@ -63,7 +63,7 @@ public class MyService extends Service {
                 }
 
                 Log.wtf("location updated:", "(" + my_lat + ", " + my_long + ") ---> token: " + token);
-                Toast.makeText(context, "Service is still running", Toast.LENGTH_LONG).show();
+                //Toast.makeText(context, "Service is still running", Toast.LENGTH_LONG).show();
                 handler.postDelayed(runnable, 10000);
             }
         };
@@ -73,13 +73,16 @@ public class MyService extends Service {
 
     @Override
     public void onDestroy() {
-        /* IF YOU WANT THIS SERVICE KILLED WITH THE APP THEN UNCOMMENT THE FOLLOWING LINE */
-        //handler.removeCallbacks(runnable);
-        Toast.makeText(this, "Service stopped", Toast.LENGTH_LONG).show();
+        SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+        boolean logged_in = sharedPreferences.getBoolean("logged_in", false);
+        if(logged_in = false){
+            handler.removeCallbacks(runnable);
+        }
+        //Toast.makeText(this, "Service stopped", Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void onStart(Intent intent, int startid) {
-        Toast.makeText(this, "Service started by user.", Toast.LENGTH_LONG).show();
+        //Toast.makeText(this, "Service started by user.", Toast.LENGTH_LONG).show();
     }
 }

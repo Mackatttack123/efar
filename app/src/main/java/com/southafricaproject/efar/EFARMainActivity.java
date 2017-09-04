@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.LinkMovementMethod;
 import android.view.ViewGroup;
@@ -252,9 +253,15 @@ public class EFARMainActivity extends AppCompatActivity {
                 SimpleDateFormat displayTimeFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");
                 String dipslayTime = displayTimeFormat.format(timeCreated);
 
-                final SpannableString message = new SpannableString(Html.fromHtml("<p><b>Created: </b>" + dipslayTime + "</p><p><b>Location:</b> <a href=" + mapLink + ">(" + String.format("%.2f", emergenecyArray.get(position).getLatitude())
+                SpannableString message = new SpannableString("<p><b>Created: </b>" + dipslayTime + "</p><p><b>Location:</b> <a href=" + mapLink + ">(" + String.format("%.2f", emergenecyArray.get(position).getLatitude())
                         + ", " + String.format("%.2f", emergenecyArray.get(position).getLongitude()) + ")</a></p><p><b>Address:</b> <a href=" + mapLink + ">" + emergenecyArray.get(position).getAddress()
-                        + "</a></p><p><b>Senders #:</b> <a href=" + phoneLink + ">" + emergenecyArray.get(position).getPhone() + "</a></p><p><b>Other Info:</b> " + emergenecyArray.get(position).getInfo(), 0));
+                        + "</a></p><p><b>Senders #:</b> <a href=" + phoneLink + ">" + emergenecyArray.get(position).getPhone() + "</a></p><p><b>Other Info:</b> " + emergenecyArray.get(position).getInfo());
+
+                if (Build.VERSION.SDK_INT >= 24) {
+                    message = SpannableString.valueOf(Html.fromHtml(String.valueOf(message), 0)); // for 24 api and more
+                } else {
+                    message = SpannableString.valueOf(Html.fromHtml(String.valueOf(message))); // or for older api
+                }
 
                 if(emergenecyArray.get(position).getState().equals("0")){
                     alertButtonOption = "Respond";
@@ -264,7 +271,6 @@ public class EFARMainActivity extends AppCompatActivity {
 
                 final AlertDialog d = new AlertDialog.Builder(EFARMainActivity.this)
                         .setIcon(0)
-                        .setTitle(Html.fromHtml("<h3><u>Emergency Information</u></h3>", 0))
                         .setMessage(message)
                         .setPositiveButton("Exit", null)
                         .setNeutralButton(alertButtonOption, new DialogInterface.OnClickListener() {
@@ -317,6 +323,12 @@ public class EFARMainActivity extends AppCompatActivity {
                         })
                         .setCancelable(false)
                         .create();
+
+                if (Build.VERSION.SDK_INT >= 24) {
+                    d.setTitle(Html.fromHtml("<h3><u>Emergency Information</u></h3>", 0)); // for 24 api and more
+                } else {
+                    d.setTitle(Html.fromHtml("<h3><u>Emergency Information</u></h3>")); // or for older api
+                }
                 d.show();
                 ((TextView)d.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
             }
@@ -330,7 +342,6 @@ public class EFARMainActivity extends AppCompatActivity {
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // get rid of stored password and username
                 SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
 
@@ -338,10 +349,10 @@ public class EFARMainActivity extends AppCompatActivity {
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference userRef = database.getReference("users");
                 userRef.child(sharedPreferences.getString("id", "") + "/logged_in").setValue(false);
-
                 editor.putString("id", "");
                 editor.putString("name", "");
                 editor.putBoolean("logged_in", false);
+                stopService(new Intent(EFARMainActivity.this, MyService.class));
                 editor.commit();
 
                 finish();
