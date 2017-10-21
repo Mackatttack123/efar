@@ -1,6 +1,36 @@
 <head>
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"/>
     <script src="e-info.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
+    <script>
+        // Initialize Firebase
+        var config = {
+          apiKey: "AIzaSyBFuWlzZHNH98eipwY9H9H3eLoKKugGDUM",
+          authDomain: "efarapp-a5f18.firebaseapp.com",
+          databaseURL: "https://efarapp-a5f18.firebaseio.com",
+          projectId: "efarapp-a5f18",
+          storageBucket: "efarapp-a5f18.appspot.com",
+          messagingSenderId: "788853816459"
+        };
+        firebase.initializeApp(config);
+
+        // Get a reference to the database service
+        var database = firebase.database();
+    </script>
+    <script>
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          // User is signed in.
+          user_email = user.email;
+          user_name = user_email.replace('@email.com','');
+          // ...
+        } else {
+          // User is signed out.
+          window.location = 'index.html';
+        }
+        // ...
+      });
+    </script>
 </head>
 <div class="col-md-6 col-md-offset-3">
     <h2 style="padding-bottom: 10px;">Emergency Information</h2>
