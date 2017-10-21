@@ -1,7 +1,7 @@
 var canvas;
 
 function setup() {
-    canvas = createCanvas(800, 600);
+    canvas = createCanvas(790, 590);
     // Move the canvas so it's inside our <div id="sketch-holder">.
     canvas.parent('sketch-holder');
 }
@@ -24,7 +24,14 @@ function draw(){
 	});
 	for (var i = messages.length - 1; i >= 0; i--) {
 		textSize(20);
-		text(users[messages.length - 1 - i] + ": " + messages[messages.length - 1 - i], 75, height - 100 - (35 * i) - text_scroll_offset);
+		if(users[messages.length - 1 - i] == user_name){
+			fill(0,100,0);
+			text(users[messages.length - 1 - i] + ": " + messages[messages.length - 1 - i], 75, height - 100 - (35 * i) - text_scroll_offset);
+		}else{
+			fill(100,0,0);
+			text(users[messages.length - 1 - i] + ": " + messages[messages.length - 1 - i], 75, height - 100 - (35 * i) - text_scroll_offset);
+		}
+		fill(0);
 	}
 }
 
@@ -53,7 +60,7 @@ ref.update(obj); // Updates only the specified attributes
 
 function send_message(){
 	var message_to_send = document.getElementById("message").value;
-	var package = {message: message_to_send, user: user_email}
+	var package = {message: message_to_send, user: user_name}
 	firebase.database().ref('/messages/').push(package);
 	document.getElementById("message").value = "";
 }
