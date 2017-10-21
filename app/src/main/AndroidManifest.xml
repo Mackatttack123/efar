@@ -62,8 +62,11 @@
         </service>
         <service android:name=".MyService"/>
 
-        <activity android:name=".EFARInfoActivity"
-                  android:screenOrientation="portrait">
+        <activity
+            android:name=".EFARInfoActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity android:name=".MessagingScreenActivity">
         </activity>
     </application>
 

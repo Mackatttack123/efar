@@ -365,6 +365,17 @@ public class EFARMainActivity extends AppCompatActivity {
             }
         });
 
+        //button to get back to patient screen
+        Button messagesButton = (Button) findViewById(R.id.messages_button);
+
+        messagesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+                launchMessagingScreen();
+            }
+        });
+
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client2 = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
@@ -375,6 +386,12 @@ public class EFARMainActivity extends AppCompatActivity {
 
         Intent toPatientMainScreen = new Intent(this, PatientMainActivity.class);
         startActivity(toPatientMainScreen);
+    }
+
+    // Goes to patient info tab to send more to EFARs
+    private void launchMessagingScreen() {
+        Intent launchMessagingScreen = new Intent(this, MessagingScreenActivity.class);
+        startActivity(launchMessagingScreen);
     }
 
     private double distance(double lat1, double lon1, double lat2, double lon2) {
