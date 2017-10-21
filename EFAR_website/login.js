@@ -32,6 +32,7 @@ function check_password(password_entered, username_entered){
 				  var errorCode = error.code;
 				  var errorMessage = error.message;
 				  // ...
+				  console.log("Auth error!!! Code: " + errorCode + " --- Message: " + errorMessage);
 				});
 				window.location = 'message.html';
 		  	}else{
