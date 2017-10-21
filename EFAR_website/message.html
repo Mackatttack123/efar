@@ -43,10 +43,108 @@
         }
         // ...
       });
+      
+});
     </script>
+
+    <style>
+        .dropbtn {
+          display: inline-block;
+          margin-bottom: 0;
+          font-weight: 400;
+          text-align: center;
+          vertical-align: middle;
+          cursor: pointer;
+          background-image: none;
+          border: 1px solid transparent;
+          white-space: nowrap;
+          padding: 6px 12px;
+          font-size: 20px;
+          line-height: 1.42857143;
+          border-radius: 4px;
+          -webkit-user-select: none;
+          -moz-user-select: none;
+          -ms-user-select: none;
+          user-select: none;
+          color: #357ebd;
+          background-color: white;
+          border-color: none;
+        }
+        
+        .dropbtn:hover, .dropbtn:focus {
+            color: lightgrey;
+        }
+        
+        .dropdown {
+            float: right;
+            position: relative;
+            display: inline-block;
+            
+        }
+        
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            overflow: auto;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            right: 0;
+            z-index: 1;
+        }
+        
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+        
+        .dropdown a:hover {background-color: #f1f1f1}
+        
+        .show {display:block;}
+        </style>
   
   </head>
   <body>
+      <!-- <div class="dropdown">
+          <button onclick="showDropdown()" class="dropbtn">Hello, 
+            <script type="text/javascript">
+              document.write(user_name)
+          </script></button>
+          <div id="myDropdown" class="dropdown-content">
+            <a class="btn btn-link" onclick="logOut()">Logout</a>
+          </div>
+      </div>
+      <script>
+          /* When the user clicks on the button, 
+          toggle between hiding and showing the dropdown content */
+          function showDropdown() {
+              document.getElementById("myDropdown").classList.toggle("show");
+          }
+          
+          // Close the dropdown if the user clicks outside of it
+          window.onclick = function(event) {
+            if (!event.target.matches('.dropbtn')) {
+          
+              var dropdowns = document.getElementsByClassName("dropdown-content");
+              var i;
+              for (i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                  openDropdown.classList.remove('show');
+                }
+              }
+            }
+          }
+
+          // function logOut(){
+          //   firebase.auth().signOut().then(function() {
+          //     // Sign-out successful.
+          //   }).catch(function(error) {
+          //     // An error happened.
+          // } -->
+      </script>
     <center>
       <div class="footer logo text-center">
         <p>
