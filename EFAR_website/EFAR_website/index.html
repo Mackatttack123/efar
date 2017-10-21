@@ -1,0 +1,72 @@
+﻿<!DOCTYPE html>
+<html ng-app="app">
+<head>
+    <meta charset="utf-8" />
+    <title>EFAR</title>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" />
+    <link href="app-content/app.css" rel="stylesheet" />
+
+    <script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
+  <script>
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyBFuWlzZHNH98eipwY9H9H3eLoKKugGDUM",
+      authDomain: "efarapp-a5f18.firebaseapp.com",
+      databaseURL: "https://efarapp-a5f18.firebaseio.com",
+      projectId: "efarapp-a5f18",
+      storageBucket: "efarapp-a5f18.appspot.com",
+      messagingSenderId: "788853816459"
+    };
+    firebase.initializeApp(config);
+
+    // Get a reference to the database service
+    var database = firebase.database();
+  </script>
+  <!--P5.js-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.10/p5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.10/addons/p5.dom.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.10/addons/p5.sound.min.js"></script>
+  <!--Alertify-->
+  <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+  <link href="alertify.core.css" rel="stylesheet">
+  <link href="alertify.default.css" rel="stylesheet">
+  <script src="alertify.js"></script>
+  <script src="login.js"></script>
+
+</head>
+<body>
+    <div class="credits text-center">
+        <p>
+            <a href="http://www.efarsystem.com/"><img src="images/logo.png" alt="Girl in a jacket"></a>
+        </p>
+    </div>
+    <div class="jumbotron">
+        <div class="container">
+            <div class="col-sm-8 col-sm-offset-2">
+                <div ng-class="{ 'alert': flash, 'alert-success': flash.type === 'success', 'alert-danger': flash.type === 'error' }" ng-if="flash" ng-bind="flash.message"></div>
+                <div ng-view></div>
+            </div>
+        </div>
+    </div>
+    
+
+    <script src="//code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="//code.angularjs.org/1.6.0/angular.min.js"></script>
+    <script src="//code.angularjs.org/1.6.0/angular-route.min.js"></script>
+    <script src="//code.angularjs.org/1.6.0/angular-cookies.min.js"></script>
+
+    <script src="app.js"></script>
+    <script src="app-services/authentication.service.js"></script>
+    <script src="app-services/flash.service.js"></script>
+
+    <!-- Real user service that uses an api -->
+    <!-- <script src="app-services/user.service.js"></script> -->
+
+    <!-- Fake user service for demo that uses local storage -->
+    <script src="app-services/user.service.local-storage.js"></script>
+
+    <script src="home/home.controller.js"></script>
+    <script src="login/login.controller.js"></script>
+    <script src="register/register.controller.js"></script>
+</body>
+</html>
