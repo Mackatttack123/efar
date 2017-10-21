@@ -33,7 +33,7 @@ function check_password(password_entered, username_entered){
 				  var errorMessage = error.message;
 				  // ...
 				});
-				window.location = 'test.html';
+				window.location = 'message.html';
 		  	}else{
 		  		alertify.error("Wrong password! Try Again...");
 		  	}
