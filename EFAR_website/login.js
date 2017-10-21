@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 });
 
 var user_email;
+var user_name;
 
 function check_username(){
 	console.log("checking name");
@@ -26,8 +27,9 @@ function check_username(){
         if (user) {
           // User is signed in.
           user_email = user.email;
+          user_name = user_email.replace('@email.com','');
           // ...
           window.location = 'message.html';
         } 
-      });
+    });
 }
