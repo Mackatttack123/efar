@@ -13,7 +13,36 @@
   <link href="alertify.default.css" rel="stylesheet">
   <script src="home.js"></script>
   <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" />
+  <script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
+    <script>
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyBFuWlzZHNH98eipwY9H9H3eLoKKugGDUM",
+      authDomain: "efarapp-a5f18.firebaseapp.com",
+      databaseURL: "https://efarapp-a5f18.firebaseio.com",
+      projectId: "efarapp-a5f18",
+      storageBucket: "efarapp-a5f18.appspot.com",
+      messagingSenderId: "788853816459"
+    };
+    firebase.initializeApp(config);
 
+    // Get a reference to the database service
+    var database = firebase.database();
+  </script>
+  <script>
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          // User is signed in.
+          user_email = user.email;
+          user_name = user_email.replace('@email.com','');
+          // ...
+        } else {
+          // User is signed out.
+          window.location = 'index.html';
+        }
+        // ...
+      });
+    </script>
   <style>
       .btn-large {
         font-size: 60px;
