@@ -1,7 +1,7 @@
 var canvas;
 
 function setup() {
-    canvas = createCanvas(790, 590);
+    canvas = createCanvas(windowWidth*0.54, windowHeight*0.64);
     // Move the canvas so it's inside our <div id="sketch-holder">.
     canvas.parent('sketch-holder');
 }
@@ -25,14 +25,32 @@ function draw(){
 	for (var i = messages.length - 1; i >= 0; i--) {
 		textSize(20);
 		if(users[messages.length - 1 - i] == user_name){
-			fill(0,200,0);
-			text(users[messages.length - 1 - i] + ": " + messages[messages.length - 1 - i], 75, height - 100 - (35 * i) - text_scroll_offset);
+			var display_message = messages[messages.length - 1 - i];
+			var display_name = users[messages.length - 1 - i] + "  ";
+			fill(0,50,255,50);
+			rect(textWidth(display_name) + 5, height - 73 - (35 * i) - text_scroll_offset, textWidth(display_message) + 10, 30, 20);
+			fill(0);
+			text(display_name + display_message, 10, height - 50 - (35 * i) - text_scroll_offset);
 		}else{
-			fill(200,0,0);
-			text(users[messages.length - 1 - i] + ": " + messages[messages.length - 1 - i], 75, height - 100 - (35 * i) - text_scroll_offset);
+			var display_message = messages[messages.length - 1 - i];
+			var display_name =  "  " + users[messages.length - 1 - i];
+			fill(80,80,80,50);
+			rect(width - textWidth(display_name) - textWidth(display_message) - 18, height - 73 - (35 * i) - text_scroll_offset, textWidth(display_message) + 10, 30, 20);
+			fill(0);
+			text(display_message + display_name, width - 2 - textWidth(display_message) - textWidth(display_name) - 10, height - 50 - (35 * i) - text_scroll_offset);
 		}
 		fill(0);
 	}
+	if((height - 50 - (35 * (messages.length - 1)) - text_scroll_offset) > 30){
+		text_scroll_offset += 10;
+	}
+	if(text_scroll_offset > 0){
+		text_scroll_offset -= 10;
+	}
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth*0.54, windowHeight*0.64);
 }
 
 var last_message = "";
@@ -60,9 +78,11 @@ ref.update(obj); // Updates only the specified attributes
 
 function send_message(){
 	var message_to_send = document.getElementById("message").value;
-	var package = {message: message_to_send, user: user_name}
-	firebase.database().ref('/messages/').push(package);
-	document.getElementById("message").value = "";
+	if(message_to_send != ""){
+		var package = {message: message_to_send, user: user_name}
+		firebase.database().ref('/messages/').push(package);
+		document.getElementById("message").value = "";
+	}
 }
 
 function keyPressed() {
