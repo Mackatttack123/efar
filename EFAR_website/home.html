@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html ng-app="app">
+  <head>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" />
+    <script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
+  <!--P5.js-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.10/p5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.10/addons/p5.dom.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.10/addons/p5.sound.min.js"></script>
+  <!--Alertify-->
+  <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+  <link href="alertify.core.css" rel="stylesheet">
+  <link href="alertify.default.css" rel="stylesheet">
+  <script src="home.js"></script>
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" />
+
+  <style>
+      .btn-large {
+        font-size: 60px;
+        display: inline-block;
+        margin-bottom: 0;
+        font-weight: 400;
+        text-align: center;
+        vertical-align: middle;
+        cursor: pointer;
+        background-image: none;
+        border: 1px solid transparent;
+        white-space: nowrap;
+        padding: 6px 12px;
+        line-height: 1.42857143;
+        border-radius: 4px;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        color: white;
+        background-color: #357ebd;
+        border-color: none;
+      }
+  </style>
+  </head>
+  <body>
+    <center>
+      <div class="footer logo text-center">
+        <p>
+            <a href="http://www.efarsystem.com/"><img src="images/logo.png" alt="EFAR logo" style="padding-right: 400px"></a>
+            <button type="submit" class="btn btn-primary" onClick="logout();">Logout</button>
+        </p>
+      </div>
+      <div class="call" style="padding-top: 15em">
+            <button type="submit" ng-disabled="form.$invalid || vm.dataLoading" class="btn-large" onClick="getInfo();">CONTACT AN EFAR</button>
+      </div>
+    </center>
+  </body>
+</html>

@@ -1,0 +1,35 @@
+<head>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"/>
+    <script src="e-info.js"></script>
+</head>
+<div class="col-md-6 col-md-offset-3">
+    <h2 style="padding-bottom: 10px;">Emergency Information</h2>
+    <form name="form" role="form">
+        <div style="float:left; padding-right: 2px" class="form-group" ng-class="{ 'has-error': form.username.$dirty && form.username.$error.required }">
+            <label for="latitude">Latitude</label>
+            <input type="text" name="latitude" id="latitude" class="form-control" ng-model="vm.username" />
+        </div>
+        <div>
+        <div style="float:left;" class="form-group" ng-class="{ 'has-error': form.password.$dirty && form.password.$error.required }">
+            <label for="longitude">Longitude</label>
+            <input type="text" name="longitude" id="longitude" class="form-control" ng-model="vm.password" />
+        </div>
+        <div style="clear:both">
+            <p>
+                -or-
+            </p>
+        </div>
+        <div class="form-group" ng-class="{ 'has-error': form.password.$dirty && form.password.$error.required }">
+                <label for="address">Address</label>
+                <input type="text" name="address" id="address" class="form-control" ng-model="vm.password" />
+        </div>
+        <div class="form-group" ng-class="{ 'has-error': form.password.$dirty && form.password.$error.required }">
+                <label for="notes">Notes (Optional)</label>
+                <input type="text" name="notes" id="notes" class="form-control" ng-model="vm.password"/>
+        </div>
+            <div class="form-actions">
+            <button type="submit" ng-disabled="form.$invalid || vm.dataLoading" class="btn btn-primary" onClick="check_info();">Submit</button>
+            <a href="/home.html" class="btn btn-link">Cancel</a>
+        </div>
+    </form>
+</div>    
