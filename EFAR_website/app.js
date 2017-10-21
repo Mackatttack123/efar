@@ -27,6 +27,12 @@
                 controllerAs: 'vm'
             })
 
+            .when('/message', {
+                controller: 'MessageController',
+                templateUrl: 'message/message.view.html',
+                controllerAs: 'vm'
+            })
+
             .otherwise({ redirectTo: '/login' });
     }
 
