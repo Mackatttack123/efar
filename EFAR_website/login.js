@@ -27,6 +27,13 @@ function check_password(password_entered, username_entered){
   		database.ref("/users/" + username_entered + '/name').once('value', function(snapshot) {
 			if(snapshot.val() == password_entered) {
 		    	alertify.success("Welcome " + username_entered + "!");
+		    	firebase.auth().signInAnonymously().catch(function(error) {
+				  // Handle Errors here.
+				  var errorCode = error.code;
+				  var errorMessage = error.message;
+				  // ...
+				});
+				window.location = 'test.html';
 		  	}else{
 		  		alertify.error("Wrong password! Try Again...");
 		  	}
