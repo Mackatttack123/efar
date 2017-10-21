@@ -5,8 +5,41 @@
     <title>EFAR</title>
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" />
     <link href="app-content/app.css" rel="stylesheet" />
+
+    <script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
+  <script>
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyBFuWlzZHNH98eipwY9H9H3eLoKKugGDUM",
+      authDomain: "efarapp-a5f18.firebaseapp.com",
+      databaseURL: "https://efarapp-a5f18.firebaseio.com",
+      projectId: "efarapp-a5f18",
+      storageBucket: "efarapp-a5f18.appspot.com",
+      messagingSenderId: "788853816459"
+    };
+    firebase.initializeApp(config);
+
+    // Get a reference to the database service
+    var database = firebase.database();
+  </script>
+  <!--P5.js-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.10/p5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.10/addons/p5.dom.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.10/addons/p5.sound.min.js"></script>
+  <!--Alertify-->
+  <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+  <link href="alertify.core.css" rel="stylesheet">
+  <link href="alertify.default.css" rel="stylesheet">
+  <script src="alertify.js"></script>
+  <script src="login.js"></script>
+
 </head>
 <body>
+    <div class="credits text-center">
+        <p>
+            <a href="http://www.efarsystem.com/"><img src="images/logo.png" alt="Girl in a jacket"></a>
+        </p>
+    </div>
     <div class="jumbotron">
         <div class="container">
             <div class="col-sm-8 col-sm-offset-2">
@@ -15,11 +48,7 @@
             </div>
         </div>
     </div>
-    <div class="credits text-center">
-        <p>
-            <a href="http://www.efarsystem.com/"><img src="images/logo.png" alt="Girl in a jacket"></a>
-        </p>
-    </div>
+    
 
     <script src="//code.jquery.com/jquery-3.1.1.min.js"></script>
     <script src="//code.angularjs.org/1.6.0/angular.min.js"></script>
