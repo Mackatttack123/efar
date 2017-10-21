@@ -10,7 +10,7 @@ var text_scroll_offset = 0;
 
 function draw(){
 	clear();
-	background(255);
+	background(240);
 	// for text scroll
 	if(keyIsDown(UP_ARROW)){
     	text_scroll_offset -= 10;
@@ -25,10 +25,10 @@ function draw(){
 	for (var i = messages.length - 1; i >= 0; i--) {
 		textSize(20);
 		if(users[messages.length - 1 - i] == user_name){
-			fill(0,100,0);
+			fill(0,200,0);
 			text(users[messages.length - 1 - i] + ": " + messages[messages.length - 1 - i], 75, height - 100 - (35 * i) - text_scroll_offset);
 		}else{
-			fill(100,0,0);
+			fill(200,0,0);
 			text(users[messages.length - 1 - i] + ": " + messages[messages.length - 1 - i], 75, height - 100 - (35 * i) - text_scroll_offset);
 		}
 		fill(0);
@@ -69,6 +69,16 @@ function keyPressed() {
     if(keyCode == 13) {
        send_message();
     }
+}
+
+function logout(){
+	firebase.auth().signOut().then(function() {
+  	// Sign-out successful.
+  	window.location = 'login.html';
+	}).catch(function(error) {
+	  // An error happened.
+	  alertify.error("An error occured while trying to log you out :(");
+	});
 }
 
 
