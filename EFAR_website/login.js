@@ -8,7 +8,7 @@ var user_name;
 function check_username(){
 	console.log("checking name");
 	var username_entered = document.getElementById("username").value;
-  	var password_entered = document.getElementById("password").value;
+  var password_entered = document.getElementById("password").value;
 
   	firebase.auth().signInWithEmailAndPassword(username_entered + "@email.com", password_entered).catch(function(error) {
 	  // Handle Errors here.
@@ -29,7 +29,7 @@ function check_username(){
           user_email = user.email;
           user_name = user_email.replace('@email.com','');
           // ...
-          window.location = 'message.html';
+          window.location = 'home.html';
         } 
     });
 }
