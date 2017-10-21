@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html ng-app="app">
+  <head>
+    <script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
+    <script>
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyBFuWlzZHNH98eipwY9H9H3eLoKKugGDUM",
+      authDomain: "efarapp-a5f18.firebaseapp.com",
+      databaseURL: "https://efarapp-a5f18.firebaseio.com",
+      projectId: "efarapp-a5f18",
+      storageBucket: "efarapp-a5f18.appspot.com",
+      messagingSenderId: "788853816459"
+    };
+    firebase.initializeApp(config);
+
+    // Get a reference to the database service
+    var database = firebase.database();
+  </script>
+  <!--P5.js-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.10/p5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.10/addons/p5.dom.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.10/addons/p5.sound.min.js"></script>
+  <!--Alertify-->
+  <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+  <link href="alertify.core.css" rel="stylesheet">
+  <link href="alertify.default.css" rel="stylesheet">
+  <script src="alertify.js"></script>
+  <script src="message.js"></script>
+    <script>
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          // User is signed in.
+          var isAnonymous = user.isAnonymous;
+          var uid = user.uid;
+          // ...
+        } else {
+          // User is signed out.
+          //TODO: make this work!!!!!!!!!!!!!!!!!!!!!!!
+          //window.location = 'index.html';
+        }
+        // ...
+      });
+    </script>
+  
+  </head>
+  <body>
+    <center>
+      <div class="footer logo text-center">
+        <p>
+            <a href="http://www.efarsystem.com/"><img src="images/logo.png" alt="EFAR logo"></a>
+        </p>
+      </div>
+      <div id="sketch-holder" style="background: #000; width: 800px; height: 600px; border-width: 5px; border-style: solid; border-color: #000; display: inline-block;">
+        <!-- canvas is here -->
+      </div>
+      <div class="form-group">
+            <label for="message">Message:</label>
+            <input type="text" name="message" id="message" class="form-control"/>
+            <button type="submit" ng-disabled="form.$invalid || vm.dataLoading" class="btn btn-primary" onClick="send_message();">Send</button>
+      </div>
+    </center>
+  </body>
+</html>
