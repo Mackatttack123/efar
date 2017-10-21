@@ -6,15 +6,25 @@ function setup() {
     canvas.parent('sketch-holder');
 }
 
+var text_scroll_offset = 0;
+
 function draw(){
 	clear();
 	background(255);
+	// for text scroll
+	if(keyIsDown(UP_ARROW)){
+    	text_scroll_offset -= 10;
+    }
+    if(keyIsDown(DOWN_ARROW)){
+    	text_scroll_offset += 10;
+    }
+
 	firebase.database().ref("/messages").on('value', function(snapshot) {
 		checkDatabase();
 	});
 	for (var i = messages.length - 1; i >= 0; i--) {
 		textSize(20);
-		text(users[messages.length - 1 - i] + ": " + messages[messages.length - 1 - i], 75, height - 100 - (35 * i));
+		text(users[messages.length - 1 - i] + ": " + messages[messages.length - 1 - i], 75, height - 100 - (35 * i) - text_scroll_offset);
 	}
 }
 
@@ -43,7 +53,7 @@ ref.update(obj); // Updates only the specified attributes
 
 function send_message(){
 	var message_to_send = document.getElementById("message").value;
-	var package = {message: message_to_send, user: "Mack"}
+	var package = {message: message_to_send, user: user_email}
 	firebase.database().ref('/messages/').push(package);
 	document.getElementById("message").value = "";
 }
