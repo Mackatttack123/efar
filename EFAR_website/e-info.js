@@ -1,7 +1,3 @@
-var vm = this;
-
-vm.e-info = e-info;
-
 function didEnterVal(input) {
     var valid = false;
     if (input != null && input != "") {
