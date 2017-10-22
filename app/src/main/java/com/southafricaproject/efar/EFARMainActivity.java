@@ -293,6 +293,9 @@ public class EFARMainActivity extends AppCompatActivity {
                                                     FirebaseDatabase database = FirebaseDatabase.getInstance();
                                                     DatabaseReference emergency_ref = database.getReference("emergencies/" + keyToUpdate + "/state");
                                                     emergency_ref.setValue("1");
+                                                    SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                                                    DatabaseReference efar_ref = database.getReference("emergencies/" + keyToUpdate + "/responding_efar");
+                                                    efar_ref.setValue(sharedPreferences.getString("id", ""));
                                                 }
 
                                             })

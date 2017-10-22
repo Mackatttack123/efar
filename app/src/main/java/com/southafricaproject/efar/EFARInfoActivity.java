@@ -40,7 +40,7 @@ public class EFARInfoActivity extends AppCompatActivity {
 
         Button submitButton = (Button) findViewById(R.id.efar_info_submit_button);
 
-        //TODO: make is so they connot submit an empty report..have a minimum report length?
+        //TODO: make is so they connot submit an empty report...have a minimum report length?
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -51,7 +51,7 @@ public class EFARInfoActivity extends AppCompatActivity {
                 DatabaseReference emergency_ref = database.getReference("emergencies/" + finished_emergency_key);
                 emergency_ref.child("/state").setValue("2");
                 Date currentTime = Calendar.getInstance().getTime();
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZZZZZ");
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
                 String timestamp = simpleDateFormat.format(currentTime);
                 emergency_ref.child("/ended_date").setValue(timestamp);
                 Date e_creation_date = null;
@@ -60,7 +60,7 @@ public class EFARInfoActivity extends AppCompatActivity {
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-                emergency_ref.child("/elapsed_time_in_milliseconds").setValue(currentTime.getTime() - e_creation_date.getTime());
+                emergency_ref.child("/elapsed_time").setValue(currentTime.getTime() - e_creation_date.getTime());
                 emergency_ref.child("/write_up").setValue(efar_writeUp_text.getText().toString());
                 moveFirebaseRecord(emergency_ref, database.getReference("completed/" + finished_emergency_key));
                 emergency_ref.removeValue();
