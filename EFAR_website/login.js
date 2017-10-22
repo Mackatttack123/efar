@@ -23,13 +23,13 @@ function check_username(){
 	    alertify.error(errorMessage);
 	  }
 	});
-  	firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-          // User is signed in.
-          user_email = user.email;
-          user_name = user_email.replace('@email.com','');
-          // ...
-          window.location = 'home.html';
-        } 
-    });
+	firebase.auth().onAuthStateChanged(function(user) {
+			if (user) {
+				// User is signed in.
+				user_email = user.email;
+				user_name = user_email.replace('@email.com','');
+				// ...
+				window.location = 'home.html';
+			} 
+	});
 }
