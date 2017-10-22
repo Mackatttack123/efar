@@ -6,6 +6,7 @@ function setup() {
 	key = window.location.hash.substring(1)
 	console.log(key);
 	button_created = false;
+	alerted = false;
 }
 
 var efar_name;
@@ -14,6 +15,7 @@ var efar_phone;
 var home_button;
 var start_chat_button;
 var button_created = false;
+var alerted = false;
 
 function draw(){
 	var state;
@@ -24,7 +26,10 @@ function draw(){
 	  console.log("The read failed: " + errorObject.code);
 	});
 	if(state == "1"){
-		//TODO: add an alert here!
+		if(!alerted){
+			alert("EFAR has been contacted!");
+			alerted = true;
+		}
 		database.ref("/users/" + efar_id).on("value", function(snapshot) {
 		  efar_name = snapshot.child("name").val();
 		  efar_phone = snapshot.child("phone").val();
