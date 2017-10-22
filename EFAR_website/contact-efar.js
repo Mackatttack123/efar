@@ -7,7 +7,6 @@ function setup() {
 	console.log(key);
 }
 
-var waiting_for_efar = true;
 var efar_name;
 var efar_id;
 var efar_phone;
@@ -21,9 +20,6 @@ function draw(){
 	  console.log("The read failed: " + errorObject.code);
 	});
 	if(state == "1"){
-		waiting_for_efar = false;
-	}
-	if(!waiting_for_efar){
 		//TODO: add an alert here!
 		database.ref("/users/" + efar_id).on("value", function(snapshot) {
 		  efar_name = snapshot.child("name").val();
@@ -32,6 +28,8 @@ function draw(){
 		  console.log("The read failed: " + errorObject.code);
 		});
 		waiting_p.html("<h1><center>EFAR: " + efar_name + "<p>ID #: " + efar_id + "</p><p>Phone: " + efar_phone + "</p></center></h1>");
+	}else if(state == null){
+		waiting_p.html("<h1><center>The EFAR has ended the emergency.</center></h1>");
 	}else{
 		waiting_p.html("<h1><center>Waiting for EFAR...</center></h1>");
 	}
