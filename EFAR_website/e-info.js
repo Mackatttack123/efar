@@ -3,7 +3,7 @@ function add_emergency() {
 
     var latitude = document.getElementById("latitude").value;
     var longitude = document.getElementById("longitude").value;
-    
+
     if ((!isNaN(latitude) && latitude.toString().indexOf('.') != -1) && (!isNaN(longitude) && longitude.toString().indexOf('.') != -1)){
         var other_info = document.getElementById("notes").value;
         var date = new Date();
@@ -17,7 +17,7 @@ function add_emergency() {
             creation_date: time,
             state: "0"}
         firebase.database().ref('/emergencies/').push(package);
-        window.location = "message.html"
+        window.location = "contact-efar.html"
     }else{
         alertify.error("Invalid cordinates.");
     }
