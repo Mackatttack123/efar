@@ -5,6 +5,7 @@ function setup() {
 	waiting_p = createP('<h1>WAITING FOR EFAR...</h1>').addClass('waiting-text');
 	key = window.location.hash.substring(1)
 	console.log(key);
+	button_created = false;
 }
 
 var efar_name;
@@ -35,6 +36,7 @@ function draw(){
 		start_chat_button.mousePressed(startchat);
 		start_chat_button.position(windowWidth/2-40, windowHeight/2);
 		home_button.hide();
+		button_created = false;
 	}else if(state == "0"){
 		waiting_p.html("<h1><center>Waiting for EFAR...</center></h1>");
 		home_button.hide();
