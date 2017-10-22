@@ -360,6 +360,11 @@ public class EFARMainActivity extends AppCompatActivity {
                 stopService(new Intent(EFARMainActivity.this, MyService.class));
                 editor.commit();
 
+                //clear the phones token for the database
+                String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+                DatabaseReference token_ref = database.getReference("tokens/" + refreshedToken);
+                token_ref.removeValue();
+
                 finish();
                 launchPatientMainScreen();
             }
