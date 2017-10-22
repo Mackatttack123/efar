@@ -1,3 +1,4 @@
+var key;
 
 function add_emergency() {
 
@@ -16,8 +17,8 @@ function add_emergency() {
             longitude: longitude,
             creation_date: time,
             state: "0"}
-        firebase.database().ref('/emergencies/').push(package);
-        window.location = "contact-efar.html"
+        key = firebase.database().ref('/emergencies/').push(package).getKey();
+        window.location = "contact-efar.html" + '#' + key;
     }else{
         alertify.error("Invalid cordinates.");
     }

@@ -13,6 +13,7 @@
   <link href="alertify.core.css" rel="stylesheet">
   <link href="alertify.default.css" rel="stylesheet">
   <script src="contact-efar.js"></script>
+  <script src="e-info.js"></script>
   <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" />
   <script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
     <script>
@@ -30,6 +31,20 @@
     // Get a reference to the database service
     var database = firebase.database();
   </script>
+  <script>
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          // User is signed in.
+          user_email = user.email;
+          user_name = user_email.replace('@email.com','');
+          // ...
+        } else {
+          // User is signed out.
+          window.location = 'index.html';
+        }
+        // ...
+      });
+    </script>
   <script>
       firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
