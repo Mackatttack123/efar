@@ -31,6 +31,11 @@
         // ...
       });
     </script>
+      <!--Alertify-->
+  <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+  <link href="alertify.core.css" rel="stylesheet">
+  <link href="alertify.default.css" rel="stylesheet">
+  <script src="alertify.js"></script>
 </head>
 <div class="col-md-6 col-md-offset-3">
     <h2 style="padding-bottom: 10px;">Emergency Information</h2>
@@ -58,7 +63,7 @@
                 <input type="text" name="notes" id="notes" class="form-control" ng-model="vm.password"/>
         </div>
             <div class="form-actions">
-            <button type="submit" ng-disabled="form.$invalid || vm.dataLoading" class="btn btn-primary" onClick="add_emergency();">Submit</button>
+            <button type="button" ng-disabled="form.$invalid || vm.dataLoading" class="btn btn-primary" onClick="add_emergency();">Submit</button>
             <a href="/home.html" class="btn btn-link">Cancel</a>
         </div>
     </form>
