@@ -28,10 +28,10 @@ function draw(){
 		  console.log("The read failed: " + errorObject.code);
 		});
 		waiting_p.html("<h1><center>EFAR: " + efar_name + "<p>ID #: " + efar_id + "</p><p>Phone: " + efar_phone + "</p></center></h1>");
-	}else if(state == null){
-		waiting_p.html("<h1><center>The EFAR has ended the emergency.</center></h1>");
-	}else{
+	}else if(state == "0"){
 		waiting_p.html("<h1><center>Waiting for EFAR...</center></h1>");
+	}else{
+		waiting_p.html("<h1><center>The EFAR has ended the emergency.</center></h1>");
 	}
 	
 }
