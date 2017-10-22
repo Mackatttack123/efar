@@ -93,7 +93,7 @@ public class PatientInfoActivity extends AppCompatActivity {
         data.put("latitude",Double.toString(gps.getLatitude()));
         data.put("longitude",Double.toString(gps.getLongitude()));
         Date currentTime = Calendar.getInstance().getTime();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZZZZZ");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         String timestamp = simpleDateFormat.format(currentTime);
         data.put("creation_date",timestamp);
         data.put("state","0");

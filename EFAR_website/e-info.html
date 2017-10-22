@@ -57,8 +57,8 @@
                 <label for="notes">Notes (Optional)</label>
                 <input type="text" name="notes" id="notes" class="form-control" ng-model="vm.password"/>
         </div>
-        <div class="form-actions">
-            <button type="submit" ng-disabled="form.$invalid || vm.dataLoading" class="btn btn-primary" onClick="check_info();">Submit</button>
+            <div class="form-actions">
+            <button type="submit" ng-disabled="form.$invalid || vm.dataLoading" class="btn btn-primary" onClick="add_emergency();">Submit</button>
             <a href="/home.html" class="btn btn-link">Cancel</a>
         </div>
     </form>

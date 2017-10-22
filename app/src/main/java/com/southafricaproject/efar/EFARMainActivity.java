@@ -247,7 +247,7 @@ public class EFARMainActivity extends AppCompatActivity {
                 Object o = listView.getItemAtPosition(position);
                 String phoneLink = "tel:" + emergenecyArray.get(position).getPhone().replaceAll("[^\\d.]", "");
                 String mapLink = "http://maps.google.com/?q=" + emergenecyArray.get(position).getLatitude() + ","  + emergenecyArray.get(position).getLongitude();
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZZZZZ");
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
                 Date timeCreated = null;
                 try {
                     timeCreated = simpleDateFormat.parse(emergenecyArray.get(position).getCreationDate());
