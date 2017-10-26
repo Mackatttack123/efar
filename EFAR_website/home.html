@@ -37,6 +37,7 @@
           // User is signed in.
           user_email = user.email;
           user_name = user_email.replace('@email.com','');
+          document.getElementById('user_name').innerHTML = "Welcome " + user_name + "!";
           // ...
         } else {
           // User is signed out.
@@ -74,7 +75,8 @@
     <center>
       <div class="footer logo text-center">
         <p>
-            <a href="http://www.efarsystem.com/"><img src="images/logo.png" alt="EFAR logo" style="padding-right: 400px"></a>
+            <a href="http://www.efarsystem.com/"><img src="images/logo.png" alt="EFAR logo" style="padding-right: 180px"></a>
+            <b id="user_name"  style="padding-right: 220px">Welcome Nemo!</b>
             <button type="submit" class="btn btn-primary" onClick="logout();">Logout</button>
         </p>
       </div>

@@ -23,16 +23,6 @@
         android:textColor="#0060ba"
         android:id="@+id/logout_button" />
 
-    <Button
-        android:text="Messages"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@id/logout_button"
-        android:layout_marginLeft="240dp"
-        android:layout_marginTop="10dp"
-        android:textColor="#0060ba"
-        android:id="@+id/messages_button" />
-
     <TextView
         android:text="There are no emergencies at this time.\n\n¯\\_(ツ)_/¯"
         android:textAlignment="center"

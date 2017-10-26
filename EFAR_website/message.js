@@ -1,9 +1,12 @@
 var canvas;
+var key;
 
 function setup() {
     canvas = createCanvas(windowWidth*0.54, windowHeight*0.64);
     // Move the canvas so it's inside our <div id="sketch-holder">.
     canvas.parent('sketch-holder');
+    messaging_key = window.location.hash.substring(1);
+    console.log(key);
 }
 
 var text_scroll_offset = 0;
@@ -19,7 +22,7 @@ function draw(){
     	text_scroll_offset += 10;
     }
 
-	firebase.database().ref("/messages").on('value', function(snapshot) {
+	firebase.database().ref("/emergencies/" + messaging_key + "/messages").on('value', function(snapshot) {
 		checkDatabase();
 	});
 	for (var i = messages.length - 1; i >= 0; i--) {
@@ -27,7 +30,7 @@ function draw(){
 		if(users[messages.length - 1 - i] == user_name){
 			var display_message = messages[messages.length - 1 - i];
 			var display_name = users[messages.length - 1 - i] + "  ";
-			fill(0,50,255,50);
+			fill(0,50,255,100);
 			rect(textWidth(display_name) + 5, height - 73 - (35 * i) - text_scroll_offset, textWidth(display_message) + 10, 30, 20);
 			fill(0);
 			text(display_name + display_message, 10, height - 50 - (35 * i) - text_scroll_offset);
@@ -60,7 +63,7 @@ var users = []
 function checkDatabase(){
 	messages = [];
 	users = []
-	database.ref("/messages").once("value", function(snapshot) {
+	database.ref("/emergencies/" + messaging_key + "/messages").once("value", function(snapshot) {
 	  snapshot.forEach(function(child) {
 	    messages.push(child.child("message").val());
 	    users.push(child.child("user").val());
@@ -80,7 +83,7 @@ function send_message(){
 	var message_to_send = document.getElementById("message").value;
 	if(message_to_send != ""){
 		var package = {message: message_to_send, user: user_name}
-		firebase.database().ref('/messages/').push(package);
+		firebase.database().ref("/emergencies/" + messaging_key + "/messages").update().push(package);
 		document.getElementById("message").value = "";
 	}
 }

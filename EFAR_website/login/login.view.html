@@ -1,4 +1,12 @@
-﻿<div class="col-md-6 col-md-offset-3">
+﻿<script>
+  firebase.auth().onAuthStateChanged(function(user) {
+    if (user) {
+      // User is signed in.
+      // User is signed out.
+      window.location = 'home.html';
+    }});
+</script>
+    <div class="col-md-6 col-md-offset-3">
     <h2>Login</h2>
     <form name="form" role="form">
         <div class="form-group" ng-class="{ 'has-error': form.username.$dirty && form.username.$error.required }">

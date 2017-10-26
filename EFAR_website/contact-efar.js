@@ -62,5 +62,5 @@ function gohome(){
 }
 
 function startchat(){
-	window.location = 'message.html';
+	window.location = 'message.html#' + key;
 }

@@ -63,11 +63,12 @@ class Emergency {
     private String phone_number;
     private String info;
     private String creationDate;
+    private  String respondingEfar;
     private String state;
 
     // constructor
     public Emergency(String key, String address, Double latitude, Double longitude,
-                     String phone_number, String info, String creationDate, String state) {
+                     String phone_number, String info, String creationDate, String respondingEfar, String state) {
         this.key = key;
         this.address = address;
         this.latitude = latitude;
@@ -75,6 +76,7 @@ class Emergency {
         this.phone_number = phone_number;
         this.info = info;
         this.creationDate = creationDate;
+        this.respondingEfar = respondingEfar;
         this.state = state;
     }
 
@@ -86,6 +88,7 @@ class Emergency {
     public String getPhone() { return phone_number; }
     public String getInfo() { return info; }
     public String getCreationDate() { return creationDate; }
+    public String getRespondingEfar() { return respondingEfar; }
     public String getState() { return state; }
 }
 
@@ -108,7 +111,8 @@ public class EFARMainActivity extends AppCompatActivity {
     private double my_lat;
     private double my_long;
 
-    String alertButtonOption = "";
+    String alertButton_respond_end_option = "";
+    String alertButton_message_option = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -160,8 +164,14 @@ public class EFARMainActivity extends AppCompatActivity {
                     Double e_long = Double.parseDouble(dataSnapshot.child("longitude").getValue().toString());
                     String e_address = getCompleteAddressString(e_lat, e_long);
                     String e_creationDate = dataSnapshot.child("creation_date").getValue().toString();
+                    String e_respondingEfar;
+                    try {
+                        e_respondingEfar = dataSnapshot.child("responding_efar").getValue().toString();
+                    }catch (Exception e){
+                        e_respondingEfar = "N/A";
+                    }
                     String e_state = dataSnapshot.child("state").getValue().toString();
-                    emergenecyArray.add(new Emergency(e_key, e_address, e_lat, e_long, e_phone_number, e_info, e_creationDate, e_state));
+                    emergenecyArray.add(new Emergency(e_key, e_address, e_lat, e_long, e_phone_number, e_info, e_creationDate, e_respondingEfar, e_state));
                     disctanceArray.add("Emergancy: " + String.format("%.2f", distance(e_lat, e_long, my_lat, my_long)) + " km away");
                     adapter.notifyDataSetChanged();
                 }catch (NullPointerException e){
@@ -194,8 +204,9 @@ public class EFARMainActivity extends AppCompatActivity {
                         Double e_long = Double.parseDouble(dataSnapshot.child("longitude").getValue().toString());
                         String e_address = getCompleteAddressString(e_lat, e_long);
                         String e_creationDate = dataSnapshot.child("creation_date").getValue().toString();
+                        String e_respondingEfar = dataSnapshot.child("responding_efar").getValue().toString();
                         String e_state = dataSnapshot.child("state").getValue().toString();
-                        emergenecyArray.add(new Emergency(e_key, e_address, e_lat, e_long, e_phone_number, e_info, e_creationDate, e_state));
+                        emergenecyArray.add(new Emergency(e_key, e_address, e_lat, e_long, e_phone_number, e_info, e_creationDate, e_respondingEfar, e_state));
                         disctanceArray.add("Emergancy: " + String.format("%.2f", distance(e_lat, e_long, my_lat, my_long)) + " km away");
                         adapter.notifyDataSetChanged();
                     }catch (NullPointerException e){
@@ -257,9 +268,17 @@ public class EFARMainActivity extends AppCompatActivity {
                 SimpleDateFormat displayTimeFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");
                 String dipslayTime = displayTimeFormat.format(timeCreated);
 
-                SpannableString message = new SpannableString("<p><b>Created: </b>" + dipslayTime + "</p><p><b>Location:</b> <a href=" + mapLink + ">(" + String.format("%.2f", emergenecyArray.get(position).getLatitude())
-                        + ", " + String.format("%.2f", emergenecyArray.get(position).getLongitude()) + ")</a></p><p><b>Address:</b> <a href=" + mapLink + ">" + emergenecyArray.get(position).getAddress()
-                        + "</a></p><p><b>Senders #:</b> <a href=" + phoneLink + ">" + emergenecyArray.get(position).getPhone() + "</a></p><p><b>Other Info:</b> " + emergenecyArray.get(position).getInfo());
+                SpannableString message;
+                if(emergenecyArray.get(position).getState().equals("1")){
+                    message = new SpannableString("<p><b>Created: </b>" + dipslayTime + "</p><p><b>Location:</b> <a href=" + mapLink + ">(" + String.format("%.2f", emergenecyArray.get(position).getLatitude())
+                            + ", " + String.format("%.2f", emergenecyArray.get(position).getLongitude()) + ")</a></p><p><b>Address:</b> <a href=" + mapLink + ">" + emergenecyArray.get(position).getAddress()
+                            + "</a></p><p><b>Senders #:</b> <a href=" + phoneLink + ">" + emergenecyArray.get(position).getPhone() + "</a></p><p><b>Other Info:</b> " + emergenecyArray.get(position).getInfo()
+                            + "</p><p><b>Responder ID:</b> " + emergenecyArray.get(position).getRespondingEfar());
+                }else{
+                    message = new SpannableString("<p><b>Created: </b>" + dipslayTime + "</p><p><b>Location:</b> <a href=" + mapLink + ">(" + String.format("%.2f", emergenecyArray.get(position).getLatitude())
+                            + ", " + String.format("%.2f", emergenecyArray.get(position).getLongitude()) + ")</a></p><p><b>Address:</b> <a href=" + mapLink + ">" + emergenecyArray.get(position).getAddress()
+                            + "</a></p><p><b>Senders #:</b> <a href=" + phoneLink + ">" + emergenecyArray.get(position).getPhone() + "</a></p><p><b>Other Info:</b> " + emergenecyArray.get(position).getInfo());
+                }
 
                 if (Build.VERSION.SDK_INT >= 24) {
                     message = SpannableString.valueOf(Html.fromHtml(String.valueOf(message), 0)); // for 24 api and more
@@ -268,19 +287,38 @@ public class EFARMainActivity extends AppCompatActivity {
                 }
 
                 if(emergenecyArray.get(position).getState().equals("0")){
-                    alertButtonOption = "Respond";
+                    alertButton_respond_end_option = "Respond";
                 }else{
-                    alertButtonOption = "End Emergency";
+                    alertButton_respond_end_option = "End";
+                }
+
+                if(emergenecyArray.get(position).getState().equals("0")){
+                    alertButton_message_option = "";
+                }else{
+                    alertButton_message_option = "messages";
                 }
 
                 final AlertDialog d = new AlertDialog.Builder(EFARMainActivity.this)
                         .setIcon(0)
                         .setMessage(message)
                         .setPositiveButton("Exit", null)
-                        .setNeutralButton(alertButtonOption, new DialogInterface.OnClickListener() {
+                        .setNegativeButton(alertButton_message_option, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                if(alertButtonOption.equals("Respond")){
+                                if(alertButton_message_option.equals("messages")) {
+                                    // store emergency key to be passed to messages
+                                    SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                                    editor.putString("messaging_key", emergenecyArray.get(pos).getKey());
+                                    editor.commit();
+                                    launchMessagingScreen();
+                                }
+                            }
+                        })
+                        .setNeutralButton(alertButton_respond_end_option, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if(alertButton_respond_end_option.equals("Respond")){
                                     new AlertDialog.Builder(EFARMainActivity.this)
                                             .setIcon(android.R.drawable.ic_dialog_alert)
                                             .setTitle("Respond to Emergency:")
@@ -301,7 +339,7 @@ public class EFARMainActivity extends AppCompatActivity {
                                             })
                                             .setNegativeButton("No", null)
                                             .show();
-                                }else if(alertButtonOption.equals("End Emergency")) {
+                                }else if(alertButton_respond_end_option.equals("End")) {
                                     new AlertDialog.Builder(EFARMainActivity.this)
                                             .setIcon(android.R.drawable.ic_dialog_alert)
                                             .setTitle("End Emergency")
@@ -370,17 +408,6 @@ public class EFARMainActivity extends AppCompatActivity {
 
                 finish();
                 launchPatientMainScreen();
-            }
-        });
-
-        //button to get back to patient screen
-        Button messagesButton = (Button) findViewById(R.id.messages_button);
-
-        messagesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                launchMessagingScreen();
             }
         });
 

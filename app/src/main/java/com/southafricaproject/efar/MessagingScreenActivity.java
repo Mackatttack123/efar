@@ -4,9 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.SpannableString;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,12 +37,14 @@ import java.util.Map;
 
 public class MessagingScreenActivity extends AppCompatActivity {
 
-    final ArrayList<String> messageArray = new ArrayList<String>();
+    final ArrayList<SpannableString> messageArray = new ArrayList<SpannableString>();
 
     /* for constant listview updating every few seconds */
     private Handler handler = new Handler();
     public ArrayAdapter adapter;
     public ListView listView;
+
+    public String key = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +52,10 @@ public class MessagingScreenActivity extends AppCompatActivity {
         setContentView(R.layout.activity_messaging_screen);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
-        adapter = new ArrayAdapter<String>(this, R.layout.activity_listview, messageArray){
+        SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+        key = sharedPreferences.getString("messaging_key", "");
+
+        adapter = new ArrayAdapter<SpannableString>(this, R.layout.activity_listview, messageArray){
             @Override
             public View getView(int position, View convertView, ViewGroup parent)
             {
@@ -55,7 +63,7 @@ public class MessagingScreenActivity extends AppCompatActivity {
                 String name = sharedPreferences.getString("name", "");
 
                 View itemView = super.getView(position, convertView, parent);
-                if (messageArray.get(position).startsWith(name)){
+                if (messageArray.get(position).toString().startsWith(name)){
                     itemView.setBackgroundColor(Color.argb(100, 0, 200, 0));
                 }else{
                     itemView.setBackgroundColor(Color.argb(100, 0, 80, 250));
@@ -70,13 +78,22 @@ public class MessagingScreenActivity extends AppCompatActivity {
 
         listView.setBackgroundColor(Color.TRANSPARENT);
 
-        FirebaseDatabase.getInstance().getReference().child("messages").addChildEventListener(new ChildEventListener() {
+        FirebaseDatabase.getInstance().getReference("emergencies/" + key).child("messages").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 try{
                     String user = dataSnapshot.child("user").getValue().toString();
                     String message = dataSnapshot.child("message").getValue().toString();
-                    messageArray.add(user + ": " + message);
+                    //todo: only add the user name if they didn't send the last message
+                    SpannableString display_message = new SpannableString("<i><u>" + user + ":</u></i><br>" + message);
+
+                    if (Build.VERSION.SDK_INT >= 24) {
+                        display_message = SpannableString.valueOf(Html.fromHtml(String.valueOf(display_message), 0)); // for 24 api and more
+                    } else {
+                        display_message = SpannableString.valueOf(Html.fromHtml(String.valueOf(display_message))); // or for older api
+                    }
+
+                    messageArray.add(display_message);
                     adapter.notifyDataSetChanged();
                 }catch (NullPointerException e){
                     Log.wtf("added", "not yet");
@@ -93,7 +110,16 @@ public class MessagingScreenActivity extends AppCompatActivity {
                 try{
                     String user = dataSnapshot.child("user").getValue().toString();
                     String message = dataSnapshot.child("message").getValue().toString();
-                    messageArray.add(user + ": " + message);
+                    SpannableString display_message = new SpannableString("<i><u>" + user + ":</u></i><br>" + message);
+
+
+                    if (Build.VERSION.SDK_INT >= 24) {
+                        display_message = SpannableString.valueOf(Html.fromHtml(String.valueOf(display_message), 0)); // for 24 api and more
+                    } else {
+                        display_message = SpannableString.valueOf(Html.fromHtml(String.valueOf(display_message))); // or for older api
+                    }
+
+                    messageArray.add(display_message);
                     listView.setSelection(adapter.getCount() - 1);
                     adapter.notifyDataSetChanged();
                 }catch (NullPointerException e){
@@ -138,7 +164,9 @@ public class MessagingScreenActivity extends AppCompatActivity {
                 SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
                 String name = sharedPreferences.getString("name", "");
                 try {
-                    add_message(name.toString(), message_to_send.getText().toString());
+                    if(!message_to_send.getText().toString().equals("")){
+                        add_message(name.toString(), message_to_send.getText().toString());
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -157,13 +185,13 @@ public class MessagingScreenActivity extends AppCompatActivity {
     private void add_message(String name, String message) throws JSONException {
         // Create new emergency in the database
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference messsage_ref = database.getReference("messages");
+        DatabaseReference messsage_ref = database.getReference("emergencies/" + key + "/messages");
         DatabaseReference message_key = messsage_ref.push();
 
 
         Map<String, String> data = new HashMap<String, String>();
         data.put("user",name);
-        data.put("message",message);
+        data.put("message",message.trim());
         messsage_ref.child(message_key.getKey()).setValue(data);
     }
 }

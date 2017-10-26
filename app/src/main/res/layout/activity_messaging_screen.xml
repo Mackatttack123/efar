@@ -26,11 +26,11 @@
         android:id="@+id/message_list"
         android:layout_width="match_parent"
         android:layout_height="430dp"
-        android:backgroundTint="#fcfeff"
-        android:background="#d73636"
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        android:stackFromBottom="true"
+        android:background="#d3dee7">
     </ListView>
 
     <Button
