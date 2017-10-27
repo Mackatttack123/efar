@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.SpannableString;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +39,7 @@ import java.util.Map;
 public class MessagingScreenActivity extends AppCompatActivity {
 
     final ArrayList<SpannableString> messageArray = new ArrayList<SpannableString>();
+    final ArrayList<SpannableString> HTMLmessageArray = new ArrayList<SpannableString>();
 
     /* for constant listview updating every few seconds */
     private Handler handler = new Handler();
@@ -82,19 +84,7 @@ public class MessagingScreenActivity extends AppCompatActivity {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 try{
-                    String user = dataSnapshot.child("user").getValue().toString();
-                    String message = dataSnapshot.child("message").getValue().toString();
-                    //todo: only add the user name if they didn't send the last message
-                    SpannableString display_message = new SpannableString("<i><u>" + user + ":</u></i><br>" + message);
-
-                    if (Build.VERSION.SDK_INT >= 24) {
-                        display_message = SpannableString.valueOf(Html.fromHtml(String.valueOf(display_message), 0)); // for 24 api and more
-                    } else {
-                        display_message = SpannableString.valueOf(Html.fromHtml(String.valueOf(display_message))); // or for older api
-                    }
-
-                    messageArray.add(display_message);
-                    adapter.notifyDataSetChanged();
+                    displayMessages(dataSnapshot);
                 }catch (NullPointerException e){
                     Log.wtf("added", "not yet");
                 }
@@ -108,20 +98,7 @@ public class MessagingScreenActivity extends AppCompatActivity {
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
                 try{
-                    String user = dataSnapshot.child("user").getValue().toString();
-                    String message = dataSnapshot.child("message").getValue().toString();
-                    SpannableString display_message = new SpannableString("<i><u>" + user + ":</u></i><br>" + message);
-
-
-                    if (Build.VERSION.SDK_INT >= 24) {
-                        display_message = SpannableString.valueOf(Html.fromHtml(String.valueOf(display_message), 0)); // for 24 api and more
-                    } else {
-                        display_message = SpannableString.valueOf(Html.fromHtml(String.valueOf(display_message))); // or for older api
-                    }
-
-                    messageArray.add(display_message);
-                    listView.setSelection(adapter.getCount() - 1);
-                    adapter.notifyDataSetChanged();
+                    displayMessages(dataSnapshot);
                 }catch (NullPointerException e){
                     Log.wtf("added", "not yet");
                 }
@@ -193,5 +170,33 @@ public class MessagingScreenActivity extends AppCompatActivity {
         data.put("user",name);
         data.put("message",message.trim());
         messsage_ref.child(message_key.getKey()).setValue(data);
+    }
+    private void displayMessages(DataSnapshot dataSnapshot){
+        String user = dataSnapshot.child("user").getValue().toString();
+        String message = dataSnapshot.child("message").getValue().toString();
+        SpannableString display_message;
+        int messageArray_size = messageArray.size() - 1;
+        int HTMLmessageArray_size = HTMLmessageArray.size() - 1;
+        if(messageArray.size() > 0){
+            if(String.valueOf(HTMLmessageArray.get(HTMLmessageArray_size)).startsWith("<i><u>" + user + ":</u></i>")){
+                String last_massage = HTMLmessageArray.get(HTMLmessageArray_size).toString().replace("<i><u>" + user + ":</u></i>", "");
+                display_message = new SpannableString("<i><u>" + user + ":</u></i>" + last_massage + "<br>" + message);
+                messageArray.remove(messageArray_size);
+            }else {
+                display_message = new SpannableString("<i><u>" + user + ":</u></i><br>" + message);
+            }
+        }else{
+            display_message = new SpannableString("<i><u>" + user + ":</u></i><br>" + message);
+        }
+
+        HTMLmessageArray.add(display_message);
+        if (Build.VERSION.SDK_INT >= 24) {
+            display_message = SpannableString.valueOf(Html.fromHtml(String.valueOf(display_message), 0)); // for 24 api and more
+        } else {
+            display_message = SpannableString.valueOf(Html.fromHtml(String.valueOf(display_message))); // or for older api
+        }
+
+        messageArray.add(display_message);
+        adapter.notifyDataSetChanged();
     }
 }

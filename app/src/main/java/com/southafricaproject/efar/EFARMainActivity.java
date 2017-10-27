@@ -127,7 +127,8 @@ public class EFARMainActivity extends AppCompatActivity {
         DatabaseReference userRef = database.getReference("users");
         SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        userRef.child(sharedPreferences.getString("id", "") + "/token").setValue(refreshedToken);
+        final String id = sharedPreferences.getString("id", "");
+        userRef.child(id + "/token").setValue(refreshedToken);
 
 
         adapter = new ArrayAdapter<String>(this, R.layout.activity_listview, disctanceArray){
@@ -137,8 +138,10 @@ public class EFARMainActivity extends AppCompatActivity {
                 View itemView = super.getView(position, convertView, parent);
                 if (emergenecyArray.get(position).getState().equals("0")){
                     itemView.setBackgroundColor(Color.argb(100, 255, 0, 0));
+                }else if(emergenecyArray.get(position).getRespondingEfar().equals(id)){
+                    itemView.setBackgroundColor(Color.argb(100, 0, 255, 0));
                 }else{
-                    itemView.setBackgroundColor(Color.argb(100, 0, 0, 255));
+                    itemView.setBackgroundColor(Color.argb(100, 255, 255, 0));
                 }
                 return itemView;
             }
