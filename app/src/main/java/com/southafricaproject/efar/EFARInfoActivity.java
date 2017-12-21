@@ -5,11 +5,18 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Adapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -30,7 +37,12 @@ public class EFARInfoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_efarinfo);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
-        final EditText efar_writeUp_text = (EditText) findViewById(R.id.efar_writeup_editText);
+
+        ListView writeUpListView = (ListView) findViewById(R.id.writeUpListView);
+        Adapter writeUpAdapter = new WriteUpCustomAdapter();
+        writeUpListView.setAdapter((ListAdapter) writeUpAdapter);
+
+        /*final EditText efar_writeUp_text = (EditText) findViewById(R.id.efar_writeup_editText);
         efar_writeUp_text.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -68,7 +80,46 @@ public class EFARInfoActivity extends AppCompatActivity {
                 emergency_ref.removeValue();
                 finish();
             }
-        });
+        });*/
+    }
+
+    private class WriteUpCustomAdapter extends BaseAdapter {
+
+        @Override //responsible for the number of rows in the list
+        public int getCount() {
+
+            return 6;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return  position;
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return "test String";
+        }
+
+        @Override //renders out each row
+        public View getView(int position, View convertView, ViewGroup parent) {
+            LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View cell = inflater.inflate(R.layout.patient_detail_writeup, parent, false);
+            if(position == 0){
+                cell = inflater.inflate(R.layout.title_writeup, parent, false);
+            } else if(position == 1){
+                 cell = inflater.inflate(R.layout.patient_detail_writeup, parent, false);
+            } else if(position == 2){
+                cell = inflater.inflate(R.layout.incident_details_writeup, parent, false);
+            } else if(position == 3){
+                cell = inflater.inflate(R.layout.injury_details_writeup, parent, false);
+            } else if(position == 4){
+                cell = inflater.inflate(R.layout.treatment_details_writeup, parent, false);
+            } else if(position == 5){
+                cell = inflater.inflate(R.layout.comments_writeup, parent, false);
+            }
+            return cell;
+        }
     }
 
     //TODO: I don't think this works... so check of fix it
