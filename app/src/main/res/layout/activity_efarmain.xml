@@ -2,6 +2,7 @@
 
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_efarmain"
     android:layout_width="match_parent"
@@ -36,10 +37,12 @@
     <ListView
         android:id="@+id/patient_list"
         android:layout_width="match_parent"
-        android:layout_marginTop="62dp"
         android:layout_height="450dp"
-        android:backgroundTint="#fcfeff"
-        android:background="#d73636">
+        android:backgroundTint="#d3dee7"
+        android:background="#d73636"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
     </ListView>
 
     <!--<Button

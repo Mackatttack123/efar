@@ -10,7 +10,7 @@
         android:id="@+id/imageView5"
         android:layout_width="344dp"
         android:layout_height="195dp"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="0dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
         android:background="#eeeeee"

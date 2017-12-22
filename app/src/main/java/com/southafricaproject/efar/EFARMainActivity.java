@@ -11,7 +11,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.LinkMovementMethod;
+import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import android.app.AlertDialog;
@@ -33,6 +35,7 @@ import android.content.DialogInterface;
 
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.vision.text.Text;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -63,7 +66,7 @@ class Emergency {
     private String phone_number;
     private String info;
     private String creationDate;
-    private  String respondingEfar;
+    private String respondingEfar;
     private String state;
 
     // constructor
@@ -135,15 +138,43 @@ public class EFARMainActivity extends AppCompatActivity {
             @Override
             public View getView(int position, View convertView, ViewGroup parent)
             {
-                View itemView = super.getView(position, convertView, parent);
-                if (emergenecyArray.get(position).getState().equals("0")){
-                    itemView.setBackgroundColor(Color.argb(100, 255, 0, 0));
-                }else if(emergenecyArray.get(position).getRespondingEfar().equals(id)){
-                    itemView.setBackgroundColor(Color.argb(100, 0, 255, 0));
-                }else{
-                    itemView.setBackgroundColor(Color.argb(100, 255, 255, 0));
+                LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                View cell = inflater.inflate(R.layout.emergency_cell, parent, false);
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                Date timeCreated = null;
+                try {
+                    timeCreated = simpleDateFormat.parse(emergenecyArray.get(position).getCreationDate());
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
-                return itemView;
+                SimpleDateFormat displayTimeFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");
+                String dipslayTime = displayTimeFormat.format(timeCreated);
+                TextView timeText = (TextView) cell.findViewById(R.id.timeTextView);
+                timeText.setText(dipslayTime);
+                TextView distanceText =  (TextView) cell.findViewById(R.id.distanceTextView);
+                distanceText.setText(disctanceArray.get(position).toString());
+
+                TextView activeStateText =  (TextView) cell.findViewById(R.id.stateTextView);
+                if (emergenecyArray.get(position).getState().equals("0")){
+                    //cell.setBackgroundColor(Color.argb(150, 255, 0, 0));
+                    activeStateText.setText("Awaiting Response!");
+                    activeStateText.setTextColor(Color.argb(255, 200, 0, 0));
+                }else if(emergenecyArray.get(position).getRespondingEfar().equals(id)){
+                    //cell.setBackgroundColor(Color.argb(150, 0, 255, 0));
+                    activeStateText.setText("Responded To (Me)");
+                    activeStateText.setTextColor(Color.argb(255, 0, 153, 0));
+                }else{
+                    //cell.setBackgroundColor(Color.argb(150, 255, 255, 0));
+                    activeStateText.setText("Responded To");
+                    activeStateText.setTextColor(Color.argb(255, 0, 153, 0));
+                }
+
+                if(position % 2 == 0){
+                    cell.setBackgroundColor(Color.argb(150, 255, 255, 255));
+                }else{
+                    cell.setBackgroundColor(Color.argb(150, 224, 224, 224));
+                }
+                return cell;
             }
         };
 
@@ -175,7 +206,7 @@ public class EFARMainActivity extends AppCompatActivity {
                     }
                     String e_state = dataSnapshot.child("state").getValue().toString();
                     emergenecyArray.add(new Emergency(e_key, e_address, e_lat, e_long, e_phone_number, e_info, e_creationDate, e_respondingEfar, e_state));
-                    disctanceArray.add("Emergancy: " + String.format("%.2f", distance(e_lat, e_long, my_lat, my_long)) + " km away");
+                    disctanceArray.add(String.format("%.2f", distance(e_lat, e_long, my_lat, my_long)) + " km");
                     adapter.notifyDataSetChanged();
                 }catch (NullPointerException e){
                     Log.wtf("added", "not yet");
@@ -210,7 +241,7 @@ public class EFARMainActivity extends AppCompatActivity {
                         String e_respondingEfar = dataSnapshot.child("responding_efar").getValue().toString();
                         String e_state = dataSnapshot.child("state").getValue().toString();
                         emergenecyArray.add(new Emergency(e_key, e_address, e_lat, e_long, e_phone_number, e_info, e_creationDate, e_respondingEfar, e_state));
-                        disctanceArray.add("Emergancy: " + String.format("%.2f", distance(e_lat, e_long, my_lat, my_long)) + " km away");
+                        disctanceArray.add(String.format("%.2f", distance(e_lat, e_long, my_lat, my_long)) + " km");
                         adapter.notifyDataSetChanged();
                     }catch (NullPointerException e){
                         Log.wtf("added", "not yet");
