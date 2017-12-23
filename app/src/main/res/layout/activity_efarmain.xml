@@ -1,28 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout
+<android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_efarmain"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="0dp"
-    android:paddingLeft="0dp"
-    android:paddingRight="0dp"
-    android:paddingTop="0dp"
     android:background="#d3dee7"
-    android:fillViewport="true"
-    tools:context="com.southafricaproject.efar.EFARMainActivity">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <Button
         android:text="@string/logout_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
         android:textColor="#0060ba"
-        android:id="@+id/logout_button" />
+        android:id="@+id/logout_button"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="8dp"/>
 
     <TextView
         android:text="There are no emergencies at this time.\n\n¯\\_(ツ)_/¯"
@@ -32,17 +28,32 @@
         android:textSize="45dp"
         android:id="@+id/alert_text"
         android:layout_centerVertical="true"
-        android:layout_below="@id/logout_button" />
+        android:layout_below="@id/logout_button"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toBottomOf="@+id/logout_button"
+        android:layout_marginRight="8dp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"/>
 
     <ListView
         android:id="@+id/patient_list"
-        android:layout_width="match_parent"
-        android:layout_height="450dp"
-        android:backgroundTint="#d3dee7"
-        android:background="#d73636"
-        android:layout_centerVertical="true"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="8dp"
+        android:background="#d73636"
+        android:backgroundTint="#d3dee7"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/logout_button"
+        app:layout_constraintVertical_bias="0.514"
+        app:layout_constraintHorizontal_bias="0.0">
     </ListView>
 
     <!--<Button
@@ -58,4 +69,4 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />-->
 
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>

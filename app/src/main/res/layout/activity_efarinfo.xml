@@ -1,24 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_efarinfo"
+    android:background="#d3dee7"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.southafricaproject.efar.EFARInfoActivity">
+    android:layout_height="match_parent">
 
     <ListView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="visible"
         android:id="@+id/writeUpListView"
-        android:layout_alignParentTop="true"
+        android:layout_width="344dp"
+        android:layout_height="551dp"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"/>
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="0dp"
+        android:visibility="visible"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginRight="0dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="0dp"
+        android:layout_marginLeft="0dp"
+        app:layout_constraintLeft_toLeftOf="parent"/>
 
    <!-- <TextView
         android:text="Emergency \nWrite Up:"
@@ -62,4 +66,4 @@
         android:id="@+id/efar_info_submit_button"
         android:layout_centerHorizontal="true" />-->
 
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>

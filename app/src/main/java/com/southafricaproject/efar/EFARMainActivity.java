@@ -170,7 +170,7 @@ public class EFARMainActivity extends AppCompatActivity {
                 }
 
                 if(position % 2 == 0){
-                    cell.setBackgroundColor(Color.argb(150, 255, 255, 255));
+                    cell.setBackgroundColor(Color.argb(200, 255, 255, 255));
                 }else{
                     cell.setBackgroundColor(Color.argb(150, 224, 224, 224));
                 }

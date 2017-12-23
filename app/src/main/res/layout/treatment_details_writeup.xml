@@ -8,20 +8,19 @@
 
     <ImageView
         android:id="@+id/imageView4"
-        android:layout_width="330dp"
+        android:layout_width="0dp"
         android:layout_height="630dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginRight="0dp"
         android:layout_marginTop="8dp"
         android:background="#eeeeee"
-        app:layout_constraintHorizontal_bias="0.333"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
         android:id="@+id/textView4"
-        tools:text="     Box 1: Patient Details"
         android:layout_width="0dp"
         android:layout_height="31dp"
         android:layout_marginEnd="8dp"
@@ -30,13 +29,14 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:background="#aaaaaa"
-        android:text="     Box 4: Treatment Details"
-        android:textAlignment="viewStart"
+        android:text="Box 1: Patient Details"
+        android:textAlignment="center"
         android:textSize="24sp"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Box 1: Patient Details"/>
 
     <TextView
         android:id="@+id/textView5"
