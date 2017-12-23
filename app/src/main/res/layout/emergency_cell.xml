@@ -10,12 +10,12 @@
         android:id="@+id/timeTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="16sp"
         android:text="Time Stamp"
         android:textSize="18sp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toRightOf="@+id/imageView7"
-        android:layout_marginLeft="8dp"/>
+        android:layout_marginLeft="8sp"/>
 
     <TextView
         android:id="@+id/distanceTextView"
@@ -23,38 +23,38 @@
         android:layout_height="wrap_content"
         android:text="Distance"
         app:layout_constraintLeft_toRightOf="@+id/imageView8"
-        android:layout_marginLeft="11dp"
-        android:layout_marginTop="13dp"
+        android:layout_marginLeft="11sp"
+        android:layout_marginTop="13sp"
         app:layout_constraintTop_toBottomOf="@+id/imageView7"/>
 
     <TextView
         android:id="@+id/stateTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="8dp"
+        android:layout_marginRight="8sp"
         android:text="State"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="12sp"
         app:layout_constraintTop_toBottomOf="@+id/timeTextView"/>
 
     <ImageView
         android:id="@+id/imageView7"
-        android:layout_width="26dp"
-        android:layout_height="24dp"
+        android:layout_width="26sp"
+        android:layout_height="24sp"
         app:srcCompat="@drawable/time"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="16sp"/>
 
     <ImageView
         android:id="@+id/imageView8"
-        android:layout_width="15dp"
-        android:layout_height="15dp"
+        android:layout_width="15sp"
+        android:layout_height="15sp"
         app:srcCompat="@drawable/running_man"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="16sp"
         app:layout_constraintTop_toBottomOf="@+id/imageView7"/>
 
 </android.support.constraint.ConstraintLayout>

@@ -9,11 +9,11 @@
 
     <ImageView
         android:id="@+id/imageView2"
-        android:layout_width="400dp"
-        android:layout_height="297dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_width="400sp"
+        android:layout_height="297sp"
+        android:layout_marginLeft="8sp"
+        android:layout_marginRight="8sp"
+        android:layout_marginTop="8sp"
         android:background="#eeeeee"
         app:layout_constraintHorizontal_bias="0.428"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -24,20 +24,20 @@
         android:id="@+id/textView8"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8sp"
+        android:layout_marginStart="8sp"
         android:text="Gender:"
         android:textSize="14sp"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="8sp"
         app:layout_constraintTop_toBottomOf="@+id/patientNameText"/>
 
     <RadioGroup
         android:id="@+id/radioGroup3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginLeft="8sp"
+        android:layout_marginTop="8sp"
         android:orientation='horizontal'
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView8">
@@ -48,8 +48,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Male"
-            tools:layout_editor_absoluteX="16dp"
-            tools:layout_editor_absoluteY="334dp"/>
+            tools:layout_editor_absoluteX="16sp"
+            tools:layout_editor_absoluteY="334sp"/>
 
         <RadioButton
             android:id="@+id/radioButton9"
@@ -57,19 +57,19 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Female"
-            tools:layout_editor_absoluteX="68dp"
-            tools:layout_editor_absoluteY="418dp"/>
+            tools:layout_editor_absoluteX="68sp"
+            tools:layout_editor_absoluteY="418sp"/>
     </RadioGroup>
 
     <TextView
         android:id="@+id/TitleTextView"
-        android:layout_width="0dp"
-        android:layout_height="31dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_width="0sp"
+        android:layout_height="31sp"
+        android:layout_marginEnd="8sp"
+        android:layout_marginLeft="8sp"
+        android:layout_marginRight="8sp"
+        android:layout_marginStart="8sp"
+        android:layout_marginTop="16sp"
         android:background="#aaaaaa"
         android:text="Box 1: Patient Details"
         android:textAlignment="center"
@@ -84,9 +84,9 @@
         android:id="@+id/nameTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginLeft="8sp"
+        android:layout_marginStart="8sp"
+        android:layout_marginTop="8sp"
         android:text="Name:"
         android:textSize="14sp"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -96,8 +96,8 @@
         android:id="@+id/patientNameText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="0dp"
+        android:layout_marginLeft="8sp"
+        android:layout_marginTop="0sp"
         android:ems="10"
         android:inputType="textPersonName"
         android:textSize="14sp"
@@ -108,9 +108,9 @@
         android:id="@+id/ageTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginLeft="8sp"
+        android:layout_marginStart="8sp"
+        android:layout_marginTop="8sp"
         android:text="Age: (number or check a box)"
         android:textSize="14sp"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -118,10 +118,10 @@
 
     <EditText
         android:id="@+id/editText3"
-        android:layout_width="82dp"
+        android:layout_width="82sp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginLeft="16sp"
+        android:layout_marginTop="5sp"
         android:ems="10"
         android:inputType="number"
         android:textSize="14sp"
@@ -135,17 +135,17 @@
         android:text="Years Old"
         android:textSize="12sp"
         app:layout_constraintLeft_toRightOf="@+id/editText3"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginLeft="8sp"
+        android:layout_marginTop="16sp"
         app:layout_constraintTop_toBottomOf="@+id/ageTextView"/>
 
     <RadioGroup
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation='horizontal'
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="8sp"
         app:layout_constraintTop_toBottomOf="@+id/editText3">
 
         <RadioButton
@@ -154,8 +154,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Child"
-            tools:layout_editor_absoluteX="98dp"
-            tools:layout_editor_absoluteY="309dp"/>
+            tools:layout_editor_absoluteX="98sp"
+            tools:layout_editor_absoluteY="309sp"/>
 
         <RadioButton
             android:id="@+id/radioButton10"
@@ -163,8 +163,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Baby"
-            tools:layout_editor_absoluteX="16dp"
-            tools:layout_editor_absoluteY="309dp"/>
+            tools:layout_editor_absoluteX="16sp"
+            tools:layout_editor_absoluteY="309sp"/>
 
         <RadioButton
             android:id="@+id/radioButton13"
@@ -172,8 +172,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Teen"
-            tools:layout_editor_absoluteX="207dp"
-            tools:layout_editor_absoluteY="323dp"/>
+            tools:layout_editor_absoluteX="207sp"
+            tools:layout_editor_absoluteY="323sp"/>
 
         <RadioButton
             android:id="@+id/radioButton11"
@@ -181,8 +181,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Adult"
-            tools:layout_editor_absoluteX="81dp"
-            tools:layout_editor_absoluteY="355dp"/>
+            tools:layout_editor_absoluteX="81sp"
+            tools:layout_editor_absoluteY="355sp"/>
     </RadioGroup>
 
 </android.support.constraint.ConstraintLayout>

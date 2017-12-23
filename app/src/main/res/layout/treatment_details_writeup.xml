@@ -8,11 +8,11 @@
 
     <ImageView
         android:id="@+id/imageView4"
-        android:layout_width="0dp"
-        android:layout_height="630dp"
-        android:layout_marginLeft="0dp"
-        android:layout_marginRight="0dp"
-        android:layout_marginTop="8dp"
+        android:layout_width="0sp"
+        android:layout_height="630sp"
+        android:layout_marginLeft="0sp"
+        android:layout_marginRight="0sp"
+        android:layout_marginTop="8sp"
         android:background="#eeeeee"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -21,13 +21,13 @@
 
     <TextView
         android:id="@+id/textView4"
-        android:layout_width="0dp"
-        android:layout_height="31dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_width="0sp"
+        android:layout_height="31sp"
+        android:layout_marginEnd="8sp"
+        android:layout_marginLeft="8sp"
+        android:layout_marginRight="8sp"
+        android:layout_marginStart="8sp"
+        android:layout_marginTop="16sp"
         android:background="#aaaaaa"
         android:text="Box 1: Patient Details"
         android:textAlignment="center"
@@ -43,66 +43,66 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="What care did you provide?"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="8sp"
         app:layout_constraintTop_toBottomOf="@+id/textView4"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginStart="8dp"/>
+        android:layout_marginStart="8sp"/>
 
     <CheckBox
         android:id="@+id/checkBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="CPR"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="8sp"
         app:layout_constraintTop_toBottomOf="@+id/textView5"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginStart="8dp"/>
+        android:layout_marginStart="8sp"/>
 
     <CheckBox
         android:id="@+id/checkBox19"
-        android:layout_width="92dp"
-        android:layout_height="34dp"
+        android:layout_width="92sp"
+        android:layout_height="34sp"
         android:text="Recovery position"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="8sp"
         app:layout_constraintTop_toBottomOf="@+id/textView5"
         app:layout_constraintLeft_toRightOf="@+id/checkBox"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"/>
+        android:layout_marginLeft="8sp"
+        android:layout_marginStart="8sp"/>
 
     <CheckBox
         android:id="@+id/checkBox18"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Stop bleeding"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="8sp"
         app:layout_constraintTop_toBottomOf="@+id/textView5"
         app:layout_constraintLeft_toRightOf="@+id/checkBox19"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"/>
+        android:layout_marginLeft="8sp"
+        android:layout_marginStart="8sp"/>
 
     <CheckBox
         android:id="@+id/checkBox17"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Apply bandage"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="8sp"
         app:layout_constraintTop_toBottomOf="@+id/checkBox"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginStart="8dp"/>
+        android:layout_marginStart="8sp"/>
 
     <CheckBox
         android:id="@+id/checkBox9"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Assist patient in taking own medication"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="8sp"
         app:layout_constraintTop_toBottomOf="@+id/checkBox17"
-        android:layout_marginStart="8dp"/>
+        android:layout_marginStart="8sp"/>
 
     <CheckBox
         android:id="@+id/checkBox2"
@@ -110,16 +110,16 @@
         android:layout_height="wrap_content"
         android:text="Splinting"
         app:layout_constraintLeft_toRightOf="@+id/checkBox17"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="8sp"
         app:layout_constraintTop_toBottomOf="@+id/checkBox"/>
 
     <EditText
         android:id="@+id/editText7"
-        android:layout_width="223dp"
+        android:layout_width="223sp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginLeft="8sp"
+        android:layout_marginStart="8sp"
+        android:layout_marginTop="8sp"
         android:ems="10"
         android:inputType="textPersonName"
         android:text="Other..."
@@ -131,44 +131,44 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="What equipment did you use?"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="8sp"
         app:layout_constraintTop_toBottomOf="@+id/editText7"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginStart="8dp"/>
+        android:layout_marginStart="8sp"/>
 
     <CheckBox
         android:id="@+id/checkBox20"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Gloves"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="8sp"
         app:layout_constraintTop_toBottomOf="@+id/textView10"
-        android:layout_marginStart="8dp"/>
+        android:layout_marginStart="8sp"/>
 
     <CheckBox
         android:id="@+id/checkBox23"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="AED"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="8sp"
         app:layout_constraintTop_toBottomOf="@+id/checkBox20"
         app:layout_constraintLeft_toRightOf="@+id/checkBox22"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"/>
+        android:layout_marginLeft="8sp"
+        android:layout_marginStart="8sp"/>
 
     <CheckBox
         android:id="@+id/checkBox22"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Bandage"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="8sp"
         app:layout_constraintTop_toBottomOf="@+id/checkBox20"
-        android:layout_marginStart="8dp"/>
+        android:layout_marginStart="8sp"/>
 
     <CheckBox
         android:id="@+id/checkBox21"
@@ -176,7 +176,7 @@
         android:layout_height="wrap_content"
         android:text="3-Sided dressing"
         app:layout_constraintLeft_toRightOf="@+id/checkBox20"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="8sp"
         app:layout_constraintTop_toBottomOf="@+id/textView10"/>
 
     <EditText
@@ -186,31 +186,31 @@
         android:ems="10"
         android:inputType="textPersonName"
         android:text="Other..."
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="8sp"
         app:layout_constraintTop_toBottomOf="@+id/checkBox22"
-        android:layout_marginStart="8dp"/>
+        android:layout_marginStart="8sp"/>
 
     <TextView
         android:id="@+id/textView11"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Was patient taken to hospital?"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="8sp"
         app:layout_constraintTop_toBottomOf="@+id/editText8"
-        android:layout_marginStart="8dp"/>
+        android:layout_marginStart="8sp"/>
 
     <RadioGroup
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation='horizontal'
         android:id="@+id/radioGroup4"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="8sp"
         app:layout_constraintTop_toBottomOf="@+id/textView11">
 
         <RadioButton
@@ -219,8 +219,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Yes"
-            tools:layout_editor_absoluteX="8dp"
-            tools:layout_editor_absoluteY="429dp"/>
+            tools:layout_editor_absoluteX="8sp"
+            tools:layout_editor_absoluteY="429sp"/>
 
         <RadioButton
             android:id="@+id/radioButton6"
@@ -228,8 +228,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="No"
-            tools:layout_editor_absoluteX="71dp"
-            tools:layout_editor_absoluteY="429dp"/>
+            tools:layout_editor_absoluteX="71sp"
+            tools:layout_editor_absoluteY="429sp"/>
     </RadioGroup>
 
     <TextView
@@ -237,22 +237,22 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="How was patient transported?"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="8sp"
+        android:layout_marginTop="8sp"
         app:layout_constraintTop_toBottomOf="@+id/radioGroup4"/>
 
     <CheckBox
         android:id="@+id/checkBox24"
-        android:layout_width="76dp"
-        android:layout_height="39dp"
+        android:layout_width="76sp"
+        android:layout_height="39sp"
         android:text="Private car"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginTop="7dp"
+        android:layout_marginTop="7sp"
         app:layout_constraintTop_toBottomOf="@+id/textView12"
-        android:layout_marginStart="8dp"/>
+        android:layout_marginStart="8sp"/>
 
     <CheckBox
         android:id="@+id/checkBox25"
@@ -260,10 +260,10 @@
         android:layout_height="wrap_content"
         android:text="EFAR"
         app:layout_constraintLeft_toRightOf="@+id/checkBox26"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginLeft="8sp"
+        android:layout_marginTop="8sp"
         app:layout_constraintTop_toBottomOf="@+id/textView12"
-        android:layout_marginStart="8dp"/>
+        android:layout_marginStart="8sp"/>
 
     <CheckBox
         android:id="@+id/checkBox26"
@@ -271,21 +271,21 @@
         android:layout_height="wrap_content"
         android:text="Ambulance"
         app:layout_constraintLeft_toRightOf="@+id/checkBox24"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginLeft="8sp"
+        android:layout_marginTop="8sp"
         app:layout_constraintTop_toBottomOf="@+id/textView12"
-        android:layout_marginStart="8dp"/>
+        android:layout_marginStart="8sp"/>
 
     <TextView
         android:id="@+id/textView13"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="To which hospital did patient go?"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="8sp"
         app:layout_constraintTop_toBottomOf="@+id/checkBox24"
-        android:layout_marginStart="8dp"/>
+        android:layout_marginStart="8sp"/>
 
     <EditText
         android:id="@+id/editText9"
@@ -293,10 +293,10 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPersonName"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="8sp"
         app:layout_constraintTop_toBottomOf="@+id/textView13"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginStart="8dp"/>
+        android:layout_marginStart="8sp"/>
 
 </android.support.constraint.ConstraintLayout>

@@ -5,10 +5,10 @@
     android:id="@+id/activity_messages"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="0dp"
-    android:paddingLeft="0dp"
-    android:paddingRight="0dp"
-    android:paddingTop="0dp"
+    android:paddingBottom="0sp"
+    android:paddingLeft="0sp"
+    android:paddingRight="0sp"
+    android:paddingTop="0sp"
     android:background="#d3dee7"
     android:fillViewport="true"
     tools:context="com.southafricaproject.efar.EFARMainActivity">
@@ -17,15 +17,15 @@
         android:text="@string/back_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10sp"
+        android:layout_marginTop="10sp"
         android:textColor="#0060ba"
         android:id="@+id/back_button" />
 
     <ListView
         android:id="@+id/message_list"
         android:layout_width="match_parent"
-        android:layout_height="430dp"
+        android:layout_height="430sp"
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
@@ -37,7 +37,7 @@
         android:text="Send"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="10sp"
         android:layout_below="@id/message_list"
         android:textColor="#0060ba"
         android:id="@+id/send_message_button" />
@@ -46,11 +46,11 @@
         android:backgroundTint="#331a1a"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="100dp"
+        android:layout_marginTop="10sp"
+        android:layout_marginLeft="100sp"
         android:layout_below="@id/message_list"
         android:textColor="#0060ba"
-        android:width="230dp"
+        android:width="230sp"
         android:id="@+id/message_text_view" />
 
 </RelativeLayout>

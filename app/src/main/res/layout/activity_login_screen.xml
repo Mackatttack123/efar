@@ -13,35 +13,35 @@
         android:layout_height="wrap_content"
         android:id="@+id/login_submit_button"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="26dp"
+        android:layout_marginTop="26sp"
         app:layout_constraintTop_toBottomOf="@+id/login_id_field"
-        android:layout_marginRight="8dp"
+        android:layout_marginRight="8sp"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"/>
 
     <TextView
         android:text="@string/login_title"
-        android:textSize="50dp"
+        android:textSize="50sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:id="@+id/textView"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="20sp"
         app:layout_constraintTop_toBottomOf="@+id/login_back_button"
-        android:layout_marginRight="8dp"
+        android:layout_marginRight="8sp"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"/>
 
     <TextView
         android:text=""
-        android:textSize="15dp"
+        android:textSize="15sp"
         android:textColor="#ff0000"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="135dp"
+        android:layout_marginTop="135sp"
         android:id="@+id/errorLoginText" />
 
     <EditText
@@ -54,11 +54,11 @@
         android:layout_centerHorizontal="true"
         android:background="#FFFFFF"
         android:padding="10px"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="25sp"
         app:layout_constraintTop_toBottomOf="@+id/login_name_field"
-        android:layout_marginRight="8dp"
+        android:layout_marginRight="8sp"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"/>
 
     <EditText
@@ -71,11 +71,11 @@
         android:layout_centerHorizontal="true"
         android:background="#FFFFFF"
         android:padding="10px"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="20sp"
         app:layout_constraintTop_toBottomOf="@+id/textView"
-        android:layout_marginRight="8dp"
+        android:layout_marginRight="8sp"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"/>
 
     <Button
@@ -84,9 +84,9 @@
         android:layout_height="wrap_content"
         android:textColor="#0060ba"
         android:id="@+id/login_back_button"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="8dp"/>
+        android:layout_marginTop="8sp"/>
 
 </android.support.constraint.ConstraintLayout>

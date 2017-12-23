@@ -17,12 +17,12 @@
 
         <TextView
             android:text="updates will appear here"
-            android:textSize="20dp"
+            android:textSize="20sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#ff0000"
             android:id="@+id/user_update_info_screen"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="5sp"
             android:textAlignment="center"
             android:layout_centerHorizontal="true" />
 
@@ -34,10 +34,10 @@
             android:ems="10"
             android:id="@+id/patient_phone_number"
             android:hint="@string/Phone_Number"
-            android:layout_marginTop="100dp"
+            android:layout_marginTop="100sp"
             android:layout_centerHorizontal="true"
             android:background="#FFFFFF"
-            android:padding="10dp"
+            android:padding="10sp"
             android:maxLength="14"/>
 
         <EditText
@@ -45,11 +45,11 @@
             android:layout_height="wrap_content"
             android:inputType="textPersonName"
             android:ems="15"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="32sp"
             android:id="@+id/patient_other_info"
             android:hint="@string/Other_Information"
             android:background="#FFFFFF"
-            android:padding="10dp"
+            android:padding="10sp"
             android:layout_below="@+id/patient_phone_number"
             android:layout_centerHorizontal="true" />
 
@@ -57,7 +57,7 @@
             android:text="@string/submit_login_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="50sp"
             android:id="@+id/patient_info_sumbmit_button"
             android:layout_below="@+id/patient_other_info"
             android:layout_centerHorizontal="true"/>
