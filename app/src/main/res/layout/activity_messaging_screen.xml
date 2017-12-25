@@ -1,56 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_messages"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="0sp"
-    android:paddingLeft="0sp"
-    android:paddingRight="0sp"
-    android:paddingTop="0sp"
     android:background="#d3dee7"
-    android:fillViewport="true"
-    tools:context="com.southafricaproject.efar.EFARMainActivity">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <Button
-        android:text="@string/back_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10sp"
-        android:layout_marginTop="10sp"
-        android:textColor="#0060ba"
-        android:id="@+id/back_button" />
 
     <ListView
         android:id="@+id/message_list"
-        android:layout_width="match_parent"
-        android:layout_height="430sp"
-        android:layout_centerVertical="true"
+        android:layout_width="0sp"
+        android:layout_height="0dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:background="#d3dee7"
         android:stackFromBottom="true"
-        android:background="#d3dee7">
+        android:layout_marginLeft="8sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginRight="8sp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        android:layout_marginTop="8sp"
+        app:layout_constraintTop_toBottomOf="@+id/back_button"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/send_message_button">
     </ListView>
 
     <Button
         android:text="Send"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10sp"
         android:layout_below="@id/message_list"
         android:textColor="#0060ba"
-        android:id="@+id/send_message_button" />
+        android:id="@+id/send_message_button"
+        android:layout_marginLeft="8sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="8sp"/>
 
     <EditText
         android:backgroundTint="#331a1a"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10sp"
-        android:layout_marginLeft="100sp"
         android:layout_below="@id/message_list"
         android:textColor="#0060ba"
         android:width="230sp"
-        android:id="@+id/message_text_view" />
+        android:id="@+id/message_text_view"
+        app:layout_constraintLeft_toRightOf="@+id/send_message_button"
+        android:layout_marginLeft="8sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="8sp"/>
 
-</RelativeLayout>
+    <Button
+        android:id="@+id/back_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8sp"
+        android:layout_marginTop="8sp"
+        android:text="@string/back_button"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+</android.support.constraint.ConstraintLayout>
