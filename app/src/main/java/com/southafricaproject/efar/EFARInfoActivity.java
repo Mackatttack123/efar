@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -36,7 +37,6 @@ public class EFARInfoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_efarinfo);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-
 
         ListView writeUpListView = (ListView) findViewById(R.id.writeUpListView);
         Adapter writeUpAdapter = new WriteUpCustomAdapter();
@@ -85,9 +85,6 @@ public class EFARInfoActivity extends AppCompatActivity {
 
     private class WriteUpCustomAdapter extends BaseAdapter {
 
-
-        boolean[] checkStates;
-
         @Override //responsible for the number of rows in the list
         public int getCount() {
 
@@ -107,7 +104,44 @@ public class EFARInfoActivity extends AppCompatActivity {
         @Override //renders out each row
         public View getView(int position, View convertView, ViewGroup parent) {
             LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View cell = inflater.inflate(R.layout.writeup_full, parent, false);
+            final View cell = inflater.inflate(R.layout.writeup_full, parent, false);
+
+            //TODO: make it so you can either select a radio button or type other.
+
+            Button submitReportButton = (Button) cell.findViewById(R.id.comments_writeup).findViewById(R.id.submit_report_button);
+
+            submitReportButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                    String finished_emergency_key = sharedPreferences.getString("finished_emergency_key", "");
+                    String finished_emergency_date = sharedPreferences.getString("finished_emergency_date", "");
+                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    DatabaseReference emergency_ref = database.getReference("emergencies/" + finished_emergency_key);
+                    emergency_ref.child("/state").setValue("2");
+                    Date currentTime = Calendar.getInstance().getTime();
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                    String timestamp = simpleDateFormat.format(currentTime);
+                    emergency_ref.child("/ended_date").setValue(timestamp);
+                    Date e_creation_date = null;
+                    try {
+                        e_creation_date = simpleDateFormat.parse(finished_emergency_date);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    emergency_ref.child("/elapsed_time").setValue(currentTime.getTime() - e_creation_date.getTime());
+
+                    TextView commentTextView = (TextView) cell.findViewById(R.id.comments_writeup).findViewById(R.id.commentEditText);
+                    emergency_ref.child("/comments").setValue(commentTextView.getText().toString());
+
+                    moveFirebaseRecord(emergency_ref, database.getReference("completed/" + finished_emergency_key));
+                    emergency_ref.removeValue();
+                    finish();
+
+                    Toast.makeText(EFARInfoActivity.this,
+                            "Report Sent", Toast.LENGTH_LONG).show();
+                }
+            });
             /*if(position == 0){
                 cell = inflater.inflate(R.layout.title_writeup, parent, false);
             } else if(position == 1){
@@ -123,11 +157,6 @@ public class EFARInfoActivity extends AppCompatActivity {
             }*/
             return cell;
         }
-    }
-
-    public void hideKeyboard(View view) {
-        InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     public void moveFirebaseRecord(DatabaseReference fromPath, final DatabaseReference toPath)

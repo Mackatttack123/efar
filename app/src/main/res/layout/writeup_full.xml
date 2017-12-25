@@ -11,23 +11,29 @@
         layout="@layout/title_writeup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
-    <include layout="@layout/patient_detail_writeup"
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content"/>
 
     <include
+        android:id="@+id/patient_detail_writeup"
+        layout="@layout/patient_detail_writeup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <include
+        android:id="@+id/incident_details_writeup"
         layout="@layout/incident_details_writeup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0.12"/>
 
     <include
+        android:id="@+id/injury_details_writeup"
         layout="@layout/injury_details_writeup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0.37"/>
 
     <include
+        android:id="@+id/treatment_details_writeup"
         layout="@layout/treatment_details_writeup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -35,6 +41,7 @@
 
     <include
         layout="@layout/comments_writeup"
+        android:id="@+id/comments_writeup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0.12"/>
