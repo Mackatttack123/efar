@@ -85,10 +85,13 @@ public class EFARInfoActivity extends AppCompatActivity {
 
     private class WriteUpCustomAdapter extends BaseAdapter {
 
+
+        boolean[] checkStates;
+
         @Override //responsible for the number of rows in the list
         public int getCount() {
 
-            return 6;
+            return 1;
         }
 
         @Override
@@ -104,8 +107,8 @@ public class EFARInfoActivity extends AppCompatActivity {
         @Override //renders out each row
         public View getView(int position, View convertView, ViewGroup parent) {
             LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View cell = inflater.inflate(R.layout.patient_detail_writeup, parent, false);
-            if(position == 0){
+            View cell = inflater.inflate(R.layout.writeup_full, parent, false);
+            /*if(position == 0){
                 cell = inflater.inflate(R.layout.title_writeup, parent, false);
             } else if(position == 1){
                  cell = inflater.inflate(R.layout.patient_detail_writeup, parent, false);
@@ -117,12 +120,11 @@ public class EFARInfoActivity extends AppCompatActivity {
                 cell = inflater.inflate(R.layout.treatment_details_writeup, parent, false);
             } else if(position == 5){
                 cell = inflater.inflate(R.layout.comments_writeup, parent, false);
-            }
+            }*/
             return cell;
         }
     }
 
-    //TODO: I don't think this works... so check of fix it
     public void hideKeyboard(View view) {
         InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);

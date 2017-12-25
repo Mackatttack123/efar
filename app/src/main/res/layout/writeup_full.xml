@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:weightSum="1"
+              android:background="#d3dee7">
+
+    <include
+        android:id="@+id/title"
+        layout="@layout/title_writeup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <include layout="@layout/patient_detail_writeup"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"/>
+
+    <include
+        layout="@layout/incident_details_writeup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.12"/>
+
+    <include
+        layout="@layout/injury_details_writeup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.37"/>
+
+    <include
+        layout="@layout/treatment_details_writeup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.34"/>
+
+    <include
+        layout="@layout/comments_writeup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.12"/>
+
+</LinearLayout>

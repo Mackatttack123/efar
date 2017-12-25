@@ -4,15 +4,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#d3dee7">
 
     <ImageView
         android:id="@+id/imageView3"
-        android:layout_width="369sp"
+        android:layout_width="match_parent"
         android:layout_height="700sp"
-        android:layout_marginLeft="8sp"
-        android:layout_marginRight="8sp"
-        android:layout_marginTop="8sp"
+        android:layout_marginLeft="0sp"
+        android:layout_marginRight="0sp"
+        android:layout_marginTop="16sp"
         android:background="#eeeeee"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

@@ -215,8 +215,8 @@ public class PatientMainActivity extends AppCompatActivity {
     private void launchEfarScreen() {
 
         Intent toEfarScreen = new Intent(this, EFARMainActivity.class);
-
         startActivity(toEfarScreen);
+
     }
 
     // checks to see if  a user exists in the database for auto login

@@ -4,14 +4,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#d3dee7">
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="match_parent"
-        android:layout_height="270sp"
-        android:layout_marginLeft="0dp"
-        android:layout_marginRight="0dp"
+        android:layout_width="0dp"
+        android:layout_height="270dp"
         android:layout_marginTop="8dp"
         android:background="#eeeeee"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -21,13 +20,13 @@
 
     <TextView
         android:id="@+id/textView2"
-        android:layout_width="0sp"
-        android:layout_height="31sp"
-        android:layout_marginEnd="8sp"
-        android:layout_marginLeft="8sp"
-        android:layout_marginRight="8sp"
-        android:layout_marginStart="8sp"
-        android:layout_marginTop="16sp"
+        android:layout_width="0dp"
+        android:layout_height="31dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
         android:background="#aaaaaa"
         android:text="Box 2: Incident Details"
         android:textAlignment="center"
@@ -41,65 +40,68 @@
         android:id="@+id/timeTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8sp"
-        android:layout_marginTop="8sp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
         android:text="Time EMS or ambulance arrived on scene:"
         android:textSize="14sp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2"/>
+        app:layout_constraintTop_toBottomOf="@+id/textView2"
+        android:layout_marginStart="8dp"/>
 
     <EditText
         android:id="@+id/timeEditText"
-        android:layout_width="215sp"
+        android:layout_width="215dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8sp"
-        android:layout_marginTop="0sp"
+        android:layout_marginLeft="8dp"
         android:ems="10"
         android:inputType="time"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/timeTextView"/>
+        app:layout_constraintTop_toBottomOf="@+id/timeTextView"
+        android:layout_marginStart="8dp"/>
 
     <TextView
         android:id="@+id/locationTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8sp"
-        android:layout_marginTop="8sp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
         android:text="Location: (Street Name)"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/timeEditText"/>
+        app:layout_constraintTop_toBottomOf="@+id/timeEditText"
+        android:layout_marginStart="8dp"/>
 
     <EditText
         android:id="@+id/locationEditText"
-        android:layout_width="218sp"
-        android:layout_height="60sp"
-        android:layout_marginLeft="8sp"
-        android:layout_marginTop="0sp"
+        android:layout_width="218dp"
+        android:layout_height="60dp"
+        android:layout_marginLeft="8dp"
         android:background="#dddddd"
         android:ems="10"
         android:inputType="textMultiLine"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/locationTextView"/>
+        app:layout_constraintTop_toBottomOf="@+id/locationTextView"
+        android:layout_marginStart="8dp"/>
 
     <TextView
         android:id="@+id/communityAreaTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8sp"
-        android:layout_marginTop="8sp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
         android:text="Community Area:"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/locationEditText"/>
+        app:layout_constraintTop_toBottomOf="@+id/locationEditText"
+        android:layout_marginStart="8dp"/>
 
     <EditText
         android:id="@+id/editText4"
-        android:layout_width="215sp"
+        android:layout_width="215dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8sp"
-        android:layout_marginTop="0sp"
+        android:layout_marginLeft="8dp"
         android:ems="10"
         android:inputType="textPersonName"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/communityAreaTextView"/>
+        app:layout_constraintTop_toBottomOf="@+id/communityAreaTextView"
+        android:layout_marginStart="8dp"/>
 
 </android.support.constraint.ConstraintLayout>

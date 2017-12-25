@@ -118,6 +118,12 @@ public class PatientInfoActivity extends AppCompatActivity {
         Log.wtf("Patient Info", "Creating New Emergency!");
     }
 
+    @Override
+    public void onBackPressed() {
+
+        return;
+    }
+
 }
 
 
