@@ -51,7 +51,7 @@
         android:layout_marginStart="8sp"/>
 
     <CheckBox
-        android:id="@+id/checkBox"
+        android:id="@+id/checkBoxCPR"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="CPR"
@@ -62,60 +62,60 @@
         android:layout_marginStart="8sp"/>
 
     <CheckBox
-        android:id="@+id/checkBox19"
+        android:id="@+id/checkBoxRecoveryPosition"
         android:layout_width="92sp"
         android:layout_height="34sp"
         android:text="Recovery position"
         android:layout_marginTop="8sp"
         app:layout_constraintTop_toBottomOf="@+id/textView5"
-        app:layout_constraintLeft_toRightOf="@+id/checkBox"
+        app:layout_constraintLeft_toRightOf="@+id/checkBoxCPR"
         android:layout_marginLeft="8sp"
         android:layout_marginStart="8sp"/>
 
     <CheckBox
-        android:id="@+id/checkBox18"
+        android:id="@+id/checkBoxStopBleeding"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Stop bleeding"
-        android:layout_marginTop="8sp"
-        app:layout_constraintTop_toBottomOf="@+id/textView5"
-        app:layout_constraintLeft_toRightOf="@+id/checkBox19"
         android:layout_marginLeft="8sp"
-        android:layout_marginStart="8sp"/>
+        android:layout_marginStart="8sp"
+        android:layout_marginTop="8sp"
+        android:text="Stop bleeding"
+        app:layout_constraintLeft_toRightOf="@+id/checkBoxRecoveryPosition"
+        app:layout_constraintTop_toBottomOf="@+id/textView5"/>
 
     <CheckBox
-        android:id="@+id/checkBox17"
+        android:id="@+id/checkBoxApplyBandage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Apply bandage"
         android:layout_marginTop="8sp"
-        app:layout_constraintTop_toBottomOf="@+id/checkBox"
+        app:layout_constraintTop_toBottomOf="@+id/checkBoxCPR"
         android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginStart="8sp"/>
 
     <CheckBox
-        android:id="@+id/checkBox9"
+        android:id="@+id/checkBoxAssistInTakingMeds"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Assist patient in taking own medication"
         android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginTop="8sp"
-        app:layout_constraintTop_toBottomOf="@+id/checkBox17"
+        app:layout_constraintTop_toBottomOf="@+id/checkBoxApplyBandage"
         android:layout_marginStart="8sp"/>
 
     <CheckBox
-        android:id="@+id/checkBox2"
+        android:id="@+id/checkBoxSplinting"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Splinting"
-        app:layout_constraintLeft_toRightOf="@+id/checkBox17"
         android:layout_marginTop="8sp"
-        app:layout_constraintTop_toBottomOf="@+id/checkBox"/>
+        android:text="Splinting"
+        app:layout_constraintLeft_toRightOf="@+id/checkBoxApplyBandage"
+        app:layout_constraintTop_toBottomOf="@+id/checkBoxCPR"/>
 
     <EditText
-        android:id="@+id/editText7"
+        android:id="@+id/editTextCareProvidedOther"
         android:layout_width="223sp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8sp"
@@ -125,7 +125,7 @@
         android:inputType="textPersonName"
         android:text="Other..."
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/checkBox9"/>
+        app:layout_constraintTop_toBottomOf="@+id/checkBoxAssistInTakingMeds"/>
 
     <TextView
         android:id="@+id/textView10"
@@ -133,13 +133,13 @@
         android:layout_height="wrap_content"
         android:text="What equipment did you use?"
         android:layout_marginTop="8sp"
-        app:layout_constraintTop_toBottomOf="@+id/editText7"
+        app:layout_constraintTop_toBottomOf="@+id/editTextCareProvidedOther"
         android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginStart="8sp"/>
 
     <CheckBox
-        android:id="@+id/checkBox20"
+        android:id="@+id/checkBoxGloves"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Gloves"
@@ -150,38 +150,38 @@
         android:layout_marginStart="8sp"/>
 
     <CheckBox
-        android:id="@+id/checkBox23"
+        android:id="@+id/checkBoxAED"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="AED"
-        android:layout_marginTop="8sp"
-        app:layout_constraintTop_toBottomOf="@+id/checkBox20"
-        app:layout_constraintLeft_toRightOf="@+id/checkBox22"
         android:layout_marginLeft="8sp"
-        android:layout_marginStart="8sp"/>
+        android:layout_marginStart="8sp"
+        android:layout_marginTop="8sp"
+        android:text="AED"
+        app:layout_constraintLeft_toRightOf="@+id/checkBoxBandage"
+        app:layout_constraintTop_toBottomOf="@+id/checkBoxGloves"/>
 
     <CheckBox
-        android:id="@+id/checkBox22"
+        android:id="@+id/checkBoxBandage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Bandage"
         android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginTop="8sp"
-        app:layout_constraintTop_toBottomOf="@+id/checkBox20"
+        app:layout_constraintTop_toBottomOf="@+id/checkBoxGloves"
         android:layout_marginStart="8sp"/>
 
     <CheckBox
-        android:id="@+id/checkBox21"
+        android:id="@+id/checkBox3SidedDressing"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="3-Sided dressing"
-        app:layout_constraintLeft_toRightOf="@+id/checkBox20"
         android:layout_marginTop="8sp"
+        android:text="3-Sided dressing"
+        app:layout_constraintLeft_toRightOf="@+id/checkBoxGloves"
         app:layout_constraintTop_toBottomOf="@+id/textView10"/>
 
     <EditText
-        android:id="@+id/editText8"
+        android:id="@+id/editTextEquipmentOther"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
@@ -190,7 +190,7 @@
         android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginTop="8sp"
-        app:layout_constraintTop_toBottomOf="@+id/checkBox22"
+        app:layout_constraintTop_toBottomOf="@+id/checkBoxBandage"
         android:layout_marginStart="8sp"/>
 
     <TextView
@@ -201,21 +201,21 @@
         android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginTop="8sp"
-        app:layout_constraintTop_toBottomOf="@+id/editText8"
+        app:layout_constraintTop_toBottomOf="@+id/editTextEquipmentOther"
         android:layout_marginStart="8sp"/>
 
     <RadioGroup
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation='horizontal'
-        android:id="@+id/radioGroup4"
+        android:id="@+id/radioGroupHospital"
         android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginTop="8sp"
         app:layout_constraintTop_toBottomOf="@+id/textView11">
 
         <RadioButton
-            android:id="@+id/radioButton7"
+            android:id="@+id/radioButtonYes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -224,7 +224,7 @@
             tools:layout_editor_absoluteY="429sp"/>
 
         <RadioButton
-            android:id="@+id/radioButton6"
+            android:id="@+id/radioButtonNo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -242,10 +242,10 @@
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginStart="8sp"
         android:layout_marginTop="8sp"
-        app:layout_constraintTop_toBottomOf="@+id/radioGroup4"/>
+        app:layout_constraintTop_toBottomOf="@+id/radioGroupHospital"/>
 
     <CheckBox
-        android:id="@+id/checkBox24"
+        android:id="@+id/checkBoxPrivateCar"
         android:layout_width="76sp"
         android:layout_height="39sp"
         android:text="Private car"
@@ -256,22 +256,22 @@
         android:layout_marginStart="8sp"/>
 
     <CheckBox
-        android:id="@+id/checkBox25"
+        android:id="@+id/checkBoxEFAR"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="EFAR"
-        app:layout_constraintLeft_toRightOf="@+id/checkBox26"
         android:layout_marginLeft="8sp"
+        android:layout_marginStart="8sp"
         android:layout_marginTop="8sp"
-        app:layout_constraintTop_toBottomOf="@+id/textView12"
-        android:layout_marginStart="8sp"/>
+        android:text="EFAR"
+        app:layout_constraintLeft_toRightOf="@+id/checkBoxAmbulance"
+        app:layout_constraintTop_toBottomOf="@+id/textView12"/>
 
     <CheckBox
-        android:id="@+id/checkBox26"
+        android:id="@+id/checkBoxAmbulance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Ambulance"
-        app:layout_constraintLeft_toRightOf="@+id/checkBox24"
+        app:layout_constraintLeft_toRightOf="@+id/checkBoxPrivateCar"
         android:layout_marginLeft="8sp"
         android:layout_marginTop="8sp"
         app:layout_constraintTop_toBottomOf="@+id/textView12"
@@ -285,19 +285,19 @@
         android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginTop="8sp"
-        app:layout_constraintTop_toBottomOf="@+id/checkBox24"
+        app:layout_constraintTop_toBottomOf="@+id/checkBoxPrivateCar"
         android:layout_marginStart="8sp"/>
 
     <EditText
-        android:id="@+id/editText9"
+        android:id="@+id/editTextHospitalName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="8sp"
+        android:layout_marginStart="8sp"
+        android:layout_marginTop="8sp"
         android:ems="10"
         android:inputType="textPersonName"
-        android:layout_marginTop="8sp"
-        app:layout_constraintTop_toBottomOf="@+id/textView13"
-        android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginStart="8sp"/>
+        app:layout_constraintTop_toBottomOf="@+id/textView13"/>
 
 </android.support.constraint.ConstraintLayout>
