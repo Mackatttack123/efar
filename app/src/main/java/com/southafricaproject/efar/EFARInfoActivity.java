@@ -109,17 +109,20 @@ public class EFARInfoActivity extends AppCompatActivity {
                                     // get selected radio button from radioGroup
                                     int selectedId = genderRadioGroup.getCheckedRadioButtonId();
                                     // find the radiobutton by returned id
-                                    RadioButton radioButtonGender = (RadioButton) findViewById(selectedId);
-                                    emergency_ref.child("/patient_care_report_form/patient_details/gender").setValue(radioButtonGender.getText().toString());
-
+                                    if(selectedId != -1){
+                                        RadioButton radioButtonGender = (RadioButton) findViewById(selectedId);
+                                        emergency_ref.child("/patient_care_report_form/patient_details/gender").setValue(radioButtonGender.getText().toString());
+                                    }
                                     EditText ageTextView = (EditText) cell.findViewById(R.id.patient_detail_writeup).findViewById(R.id.editTextAge);
                                     if(ageTextView.getText().toString().equals("")){
                                         RadioGroup ageRadioGroup = (RadioGroup) cell.findViewById(R.id.patient_detail_writeup).findViewById(R.id.radioGroupAge);
                                         // get selected radio button from radioGroup
                                         selectedId = ageRadioGroup.getCheckedRadioButtonId();
                                         // find the radiobutton by returned id
-                                        RadioButton ageRadioButton = (RadioButton) findViewById(selectedId);
-                                        emergency_ref.child("/patient_care_report_form/patient_details/age").setValue(ageRadioButton.getText().toString());
+                                        if(selectedId != -1) {
+                                            RadioButton ageRadioButton = (RadioButton) findViewById(selectedId);
+                                            emergency_ref.child("/patient_care_report_form/patient_details/age").setValue(ageRadioButton.getText().toString());
+                                        }
                                     }else{
                                         emergency_ref.child("/patient_care_report_form/patient_details/age").setValue(ageTextView.getText().toString());
                                     }
@@ -139,8 +142,10 @@ public class EFARInfoActivity extends AppCompatActivity {
                                         // get selected radio button from radioGroup
                                         selectedId = weaponRadioGroup.getCheckedRadioButtonId();
                                         // find the radiobutton by returned id
-                                        RadioButton weaponRadioButton = (RadioButton) findViewById(selectedId);
-                                        emergency_ref.child("/patient_care_report_form/injury_details/Weapon_used").setValue(weaponRadioButton.getText().toString());
+                                        if(selectedId != -1) {
+                                            RadioButton weaponRadioButton = (RadioButton) findViewById(selectedId);
+                                            emergency_ref.child("/patient_care_report_form/injury_details/Weapon_used").setValue(weaponRadioButton.getText().toString());
+                                        }
                                     }else{
                                         if(!weaponTextView.getText().toString().equals("Other...")) {
                                             emergency_ref.child("/patient_care_report_form/injury_details/Weapon_used").setValue(weaponTextView.getText().toString());
@@ -152,8 +157,10 @@ public class EFARInfoActivity extends AppCompatActivity {
                                         // get selected radio button from radioGroup
                                         selectedId = motorVehicleRadioGroup.getCheckedRadioButtonId();
                                         // find the radiobutton by returned id
-                                        RadioButton motorVehicleRadioButton = (RadioButton) findViewById(selectedId);
-                                        emergency_ref.child("/patient_care_report_form/injury_details/motor_vehicle_accident").setValue(motorVehicleRadioButton.getText().toString());
+                                        if(selectedId != -1) {
+                                            RadioButton motorVehicleRadioButton = (RadioButton) findViewById(selectedId);
+                                            emergency_ref.child("/patient_care_report_form/injury_details/motor_vehicle_accident").setValue(motorVehicleRadioButton.getText().toString());
+                                        }
                                     }else{
                                         if(!motorVehicleTextView.getText().toString().equals("Other...")) {
                                             emergency_ref.child("/patient_care_report_form/injury_details/motor_vehicle_accident").setValue(motorVehicleTextView.getText().toString());
@@ -229,8 +236,10 @@ public class EFARInfoActivity extends AppCompatActivity {
                                     // get selected radio button from radioGroup
                                     selectedId = takenToHospitalRadioGroup.getCheckedRadioButtonId();
                                     // find the radiobutton by returned id
-                                    RadioButton takenToHospitalRadioButton = (RadioButton) findViewById(selectedId);
-                                    emergency_ref.child("/patient_care_report_form/treatment_details/hospital/patient_taken_to_hospital").setValue(takenToHospitalRadioButton.getText().toString());
+                                    if(selectedId != -1){
+                                        RadioButton takenToHospitalRadioButton = (RadioButton) findViewById(selectedId);
+                                        emergency_ref.child("/patient_care_report_form/treatment_details/hospital/patient_taken_to_hospital").setValue(takenToHospitalRadioButton.getText().toString());
+                                    }
                                     CheckBox efarCheckBox = (CheckBox) cell.findViewById(R.id.treatment_details_writeup).findViewById(R.id.checkBoxEFAR);
                                     emergency_ref.child("/patient_care_report_form/treatment_details/hospital/transport/EFAR").setValue(efarCheckBox.isChecked());
                                     CheckBox privateCarCheckBox = (CheckBox) cell.findViewById(R.id.treatment_details_writeup).findViewById(R.id.checkBoxPrivateCar);
@@ -293,9 +302,7 @@ public class EFARInfoActivity extends AppCompatActivity {
     }
 
     private void launchEfarMainScreen() {
-
         Intent toEfarMainScreen = new Intent(this, EFARMainActivity.class);
-
         startActivity(toEfarMainScreen);
     }
 
