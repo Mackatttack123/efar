@@ -1,6 +1,9 @@
 package com.southafricaproject.efar;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -43,45 +46,6 @@ public class EFARInfoActivity extends AppCompatActivity {
         Adapter writeUpAdapter = new WriteUpCustomAdapter();
         writeUpListView.setAdapter((ListAdapter) writeUpAdapter);
 
-        /*final EditText efar_writeUp_text = (EditText) findViewById(R.id.efar_writeup_editText);
-        efar_writeUp_text.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    hideKeyboard(v);
-                }
-            }
-        });
-
-        Button submitButton = (Button) findViewById(R.id.efar_info_submit_button);
-
-        //TODO: make is so they connot submit an empty report...have a minimum report length?
-        submitButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
-                String finished_emergency_key = sharedPreferences.getString("finished_emergency_key", "");
-                String finished_emergency_date = sharedPreferences.getString("finished_emergency_date", "");
-                FirebaseDatabase database = FirebaseDatabase.getInstance();
-                DatabaseReference emergency_ref = database.getReference("emergencies/" + finished_emergency_key);
-                emergency_ref.child("/state").setValue("2");
-                Date currentTime = Calendar.getInstance().getTime();
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-                String timestamp = simpleDateFormat.format(currentTime);
-                emergency_ref.child("/ended_date").setValue(timestamp);
-                Date e_creation_date = null;
-                try {
-                    e_creation_date = simpleDateFormat.parse(finished_emergency_date);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                emergency_ref.child("/elapsed_time").setValue(currentTime.getTime() - e_creation_date.getTime());
-                emergency_ref.child("/write_up").setValue(efar_writeUp_text.getText().toString());
-                moveFirebaseRecord(emergency_ref, database.getReference("completed/" + finished_emergency_key));
-                emergency_ref.removeValue();
-                finish();
-            }
-        });*/
     }
 
     private class WriteUpCustomAdapter extends BaseAdapter {
@@ -108,209 +72,189 @@ public class EFARInfoActivity extends AppCompatActivity {
             final View cell = inflater.inflate(R.layout.writeup_full, parent, false);
 
             //TODO: make it so you can either select a radio button or type other.
-
-            //Box 1 radio/ other box control
-            /*final EditText ageTextView = (EditText) cell.findViewById(R.id.patient_detail_writeup).findViewById(R.id.editTextAge);
-            final RadioGroup ageRadioGroup = (RadioGroup) cell.findViewById(R.id.patient_detail_writeup).findViewById(R.id.radioGroupAge);
-            ageRadioGroup.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    ageTextView.setText("");
-                }
-            });
-            ageTextView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    ageRadioGroup.clearCheck();
-                }
-            });*/
-
             Button submitReportButton = (Button) cell.findViewById(R.id.comments_writeup).findViewById(R.id.submit_report_button);
 
             submitReportButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
-                    String finished_emergency_key = sharedPreferences.getString("finished_emergency_key", "");
-                    String finished_emergency_date = sharedPreferences.getString("finished_emergency_date", "");
-                    FirebaseDatabase database = FirebaseDatabase.getInstance();
-                    DatabaseReference emergency_ref = database.getReference("emergencies/" + finished_emergency_key);
-                    emergency_ref.child("/state").setValue("2");
-                    Date currentTime = Calendar.getInstance().getTime();
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-                    String timestamp = simpleDateFormat.format(currentTime);
-                    emergency_ref.child("/ended_date").setValue(timestamp);
-                    Date e_creation_date = null;
-                    try {
-                        e_creation_date = simpleDateFormat.parse(finished_emergency_date);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                    emergency_ref.child("/elapsed_time").setValue(currentTime.getTime() - e_creation_date.getTime());
+                    new AlertDialog.Builder(EFARInfoActivity.this)
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .setTitle("Submit Report")
+                            .setMessage("Are you sure you want to submit this report?")
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                                    String finished_emergency_key = sharedPreferences.getString("finished_emergency_key", "");
+                                    String finished_emergency_date = sharedPreferences.getString("finished_emergency_date", "");
+                                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                    DatabaseReference emergency_ref = database.getReference("emergencies/" + finished_emergency_key);
+                                    emergency_ref.child("/state").setValue("2");
+                                    Date currentTime = Calendar.getInstance().getTime();
+                                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                                    String timestamp = simpleDateFormat.format(currentTime);
+                                    emergency_ref.child("/ended_date").setValue(timestamp);
+                                    Date e_creation_date = null;
+                                    try {
+                                        e_creation_date = simpleDateFormat.parse(finished_emergency_date);
+                                    } catch (ParseException e) {
+                                        e.printStackTrace();
+                                    }
+                                    emergency_ref.child("/elapsed_time").setValue(currentTime.getTime() - e_creation_date.getTime());
 
-                    //Box 1: Patient Details
-                    EditText nameTextView = (EditText) cell.findViewById(R.id.patient_detail_writeup).findViewById(R.id.patientNameText);
-                    emergency_ref.child("/patient_details/name").setValue(nameTextView.getText().toString());
-                    RadioGroup genderRadioGroup = (RadioGroup) cell.findViewById(R.id.patient_detail_writeup).findViewById(R.id.radioGroupGender);
-                    // get selected radio button from radioGroup
-                    int selectedId = genderRadioGroup.getCheckedRadioButtonId();
-                    // find the radiobutton by returned id
-                    RadioButton radioButtonGender = (RadioButton) findViewById(selectedId);
-                    emergency_ref.child("/patient_details/gender").setValue(radioButtonGender.getText().toString());
+                                    //Box 1: Patient Details
+                                    EditText nameTextView = (EditText) cell.findViewById(R.id.patient_detail_writeup).findViewById(R.id.patientNameText);
+                                    emergency_ref.child("/patient_care_report_form/patient_details/name").setValue(nameTextView.getText().toString());
+                                    RadioGroup genderRadioGroup = (RadioGroup) cell.findViewById(R.id.patient_detail_writeup).findViewById(R.id.radioGroupGender);
+                                    // get selected radio button from radioGroup
+                                    int selectedId = genderRadioGroup.getCheckedRadioButtonId();
+                                    // find the radiobutton by returned id
+                                    RadioButton radioButtonGender = (RadioButton) findViewById(selectedId);
+                                    emergency_ref.child("/patient_care_report_form/patient_details/gender").setValue(radioButtonGender.getText().toString());
 
-                    EditText ageTextView = (EditText) cell.findViewById(R.id.patient_detail_writeup).findViewById(R.id.editTextAge);
-                    if(ageTextView.getText().toString().equals("")){
-                        RadioGroup ageRadioGroup = (RadioGroup) cell.findViewById(R.id.patient_detail_writeup).findViewById(R.id.radioGroupAge);
-                        // get selected radio button from radioGroup
-                        selectedId = ageRadioGroup.getCheckedRadioButtonId();
-                        // find the radiobutton by returned id
-                        RadioButton ageRadioButton = (RadioButton) findViewById(selectedId);
-                        emergency_ref.child("/patient_details/age").setValue(ageRadioButton.getText().toString());
-                    }else{
-                        emergency_ref.child("/patient_details/age").setValue(ageTextView.getText().toString());
-                    }
+                                    EditText ageTextView = (EditText) cell.findViewById(R.id.patient_detail_writeup).findViewById(R.id.editTextAge);
+                                    if(ageTextView.getText().toString().equals("")){
+                                        RadioGroup ageRadioGroup = (RadioGroup) cell.findViewById(R.id.patient_detail_writeup).findViewById(R.id.radioGroupAge);
+                                        // get selected radio button from radioGroup
+                                        selectedId = ageRadioGroup.getCheckedRadioButtonId();
+                                        // find the radiobutton by returned id
+                                        RadioButton ageRadioButton = (RadioButton) findViewById(selectedId);
+                                        emergency_ref.child("/patient_care_report_form/patient_details/age").setValue(ageRadioButton.getText().toString());
+                                    }else{
+                                        emergency_ref.child("/patient_care_report_form/patient_details/age").setValue(ageTextView.getText().toString());
+                                    }
 
-                    //Box 2: Incident Details
-                    EditText emsTimeTextView = (EditText) cell.findViewById(R.id.incident_details_writeup).findViewById(R.id.editTextEMSTime);
-                    emergency_ref.child("/incident_details/ems_or_ambulance_time").setValue(emsTimeTextView.getText().toString());
-                    EditText locationTextView = (EditText) cell.findViewById(R.id.incident_details_writeup).findViewById(R.id.locationEditText);
-                    emergency_ref.child("/incident_details/incident_location").setValue(locationTextView.getText().toString());
-                    EditText communityTextView = (EditText) cell.findViewById(R.id.incident_details_writeup).findViewById(R.id.editTextCommunity);
-                    emergency_ref.child("/incident_details/community").setValue(communityTextView.getText().toString());
+                                    //Box 2: Incident Details
+                                    EditText emsTimeTextView = (EditText) cell.findViewById(R.id.incident_details_writeup).findViewById(R.id.editTextEMSTime);
+                                    emergency_ref.child("/patient_care_report_form/incident_details/ems_or_ambulance_time").setValue(emsTimeTextView.getText().toString());
+                                    EditText locationTextView = (EditText) cell.findViewById(R.id.incident_details_writeup).findViewById(R.id.locationEditText);
+                                    emergency_ref.child("/patient_care_report_form/incident_details/incident_location").setValue(locationTextView.getText().toString());
+                                    EditText communityTextView = (EditText) cell.findViewById(R.id.incident_details_writeup).findViewById(R.id.editTextCommunity);
+                                    emergency_ref.child("/patient_care_report_form/incident_details/community").setValue(communityTextView.getText().toString());
 
-                    //Box 3: Injury Details
-                    EditText weaponTextView = (EditText) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.editTextWeponOther);
-                    if(weaponTextView.getText().toString().equals("")){
-                        RadioGroup weaponRadioGroup = (RadioGroup) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.radioGroupWepons);
-                        // get selected radio button from radioGroup
-                        selectedId = weaponRadioGroup.getCheckedRadioButtonId();
-                        // find the radiobutton by returned id
-                        RadioButton weaponRadioButton = (RadioButton) findViewById(selectedId);
-                        emergency_ref.child("/injury_details/Weapon_used").setValue(weaponRadioButton.getText().toString());
-                    }else{
-                        if(!weaponTextView.getText().toString().equals("Other...")) {
-                            emergency_ref.child("/injury_details/Weapon_used").setValue(weaponTextView.getText().toString());
-                        }
-                    }
-                    EditText motorVehicleTextView = (EditText) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.editTextMotorVehicleOther);
-                    if(motorVehicleTextView.getText().toString().equals("")){
-                        RadioGroup motorVehicleRadioGroup = (RadioGroup) cell.findViewById(R.id.patient_detail_writeup).findViewById(R.id.radioGroupMotorVehicle);
-                        // get selected radio button from radioGroup
-                        selectedId = motorVehicleRadioGroup.getCheckedRadioButtonId();
-                        // find the radiobutton by returned id
-                        RadioButton motorVehicleRadioButton = (RadioButton) findViewById(selectedId);
-                        emergency_ref.child("/injury_details/motor_vehicle_accident").setValue(motorVehicleRadioButton.getText().toString());
-                    }else{
-                        if(!motorVehicleTextView.getText().toString().equals("Other...")) {
-                            emergency_ref.child("/injury_details/motor_vehicle_accident").setValue(motorVehicleTextView.getText().toString());
-                        }
-                    }
-                    CheckBox poisoningCheckBox = (CheckBox) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.checkBoxPoisoning);
-                    emergency_ref.child("/injury_details/medical_emergency/poisoning").setValue(poisoningCheckBox.isChecked());
-                    CheckBox chestPainCheckBox = (CheckBox) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.checkBoxChestPain);
-                    emergency_ref.child("/injury_details/medical_emergency/chest_pain").setValue(chestPainCheckBox.isChecked());
-                    CheckBox diabetesPainCheckBox = (CheckBox) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.checkBoxDiabetes);
-                    emergency_ref.child("/injury_details/medical_emergency/diabetes").setValue(diabetesPainCheckBox.isChecked());
-                    CheckBox strokePainCheckBox = (CheckBox) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.checkBoxStroke);
-                    emergency_ref.child("/injury_details/medical_emergency/stroke").setValue(strokePainCheckBox.isChecked());
-                    CheckBox epilepsyPainCheckBox = (CheckBox) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.checkBoxEpilepsy);
-                    emergency_ref.child("/injury_details/medical_emergency/epilepsy").setValue(epilepsyPainCheckBox.isChecked());
-                    CheckBox dehydratedPainCheckBox = (CheckBox) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.checkBoxDehydrated);
-                    emergency_ref.child("/injury_details/medical_emergency/dehydrated").setValue(dehydratedPainCheckBox.isChecked());
-                    CheckBox difficultyBreathingCheckBox = (CheckBox) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.checkBoxDifficultyBreathing);
-                    emergency_ref.child("/injury_details/medical_emergency/difficulty_breathing").setValue(difficultyBreathingCheckBox.isChecked());
-                    CheckBox abdominalPainCheckBox = (CheckBox) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.checkBoxAbdominalPain);
-                    emergency_ref.child("/injury_details/medical_emergency/abdominal_pain").setValue(abdominalPainCheckBox.isChecked());
-                    EditText medicalOtherTextView = (EditText) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.editTextMedicalOther);
-                    if(!medicalOtherTextView.getText().toString().equals("Other...")) {
-                        emergency_ref.child("/injury_details/medical_emergency/other").setValue(medicalOtherTextView.getText().toString());
-                    }
-                    CheckBox awakeCheckBox = (CheckBox) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.checkBoxAwake);
-                    emergency_ref.child("/injury_details/injuries_and_illness/awake").setValue(awakeCheckBox.isChecked());
-                    CheckBox unconsciousCheckBox = (CheckBox) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.checkBoxUnconscious);
-                    emergency_ref.child("/injury_details/injuries_and_illness/unconscious").setValue(unconsciousCheckBox.isChecked());
-                    CheckBox chokingCheckBox = (CheckBox) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.checkBoxChoking);
-                    emergency_ref.child("/injury_details/injuries_and_illness/choking").setValue(chokingCheckBox.isChecked());
-                    CheckBox bleedingCheckBox = (CheckBox) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.checkBoxBleeding);
-                    emergency_ref.child("/injury_details/injuries_and_illness/bleeding").setValue(bleedingCheckBox.isChecked());
-                    CheckBox fractureCheckBox = (CheckBox) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.checkBoxFracture);
-                    emergency_ref.child("/injury_details/injuries_and_illness/fracture").setValue(fractureCheckBox.isChecked());
-                    CheckBox burnsCheckBox = (CheckBox) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.checkBoxBurns);
-                    emergency_ref.child("/injury_details/injuries_and_illness/burns").setValue(burnsCheckBox.isChecked());
-                    EditText illnessOtherTextView = (EditText) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.editTextInjuriesOther);
-                    if(!illnessOtherTextView.getText().toString().equals("Other...")){
-                        emergency_ref.child("/injury_details/injuries_and_illness/other").setValue(illnessOtherTextView.getText().toString());
-                    }
+                                    //Box 3: Injury Details
+                                    EditText weaponTextView = (EditText) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.editTextWeponOther);
+                                    if(weaponTextView.getText().toString().equals("")){
+                                        RadioGroup weaponRadioGroup = (RadioGroup) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.radioGroupWepons);
+                                        // get selected radio button from radioGroup
+                                        selectedId = weaponRadioGroup.getCheckedRadioButtonId();
+                                        // find the radiobutton by returned id
+                                        RadioButton weaponRadioButton = (RadioButton) findViewById(selectedId);
+                                        emergency_ref.child("/patient_care_report_form/injury_details/Weapon_used").setValue(weaponRadioButton.getText().toString());
+                                    }else{
+                                        if(!weaponTextView.getText().toString().equals("Other...")) {
+                                            emergency_ref.child("/patient_care_report_form/injury_details/Weapon_used").setValue(weaponTextView.getText().toString());
+                                        }
+                                    }
+                                    EditText motorVehicleTextView = (EditText) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.editTextMotorVehicleOther);
+                                    if(motorVehicleTextView.getText().toString().equals("")){
+                                        RadioGroup motorVehicleRadioGroup = (RadioGroup) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.radioGroupMotorVehicle);
+                                        // get selected radio button from radioGroup
+                                        selectedId = motorVehicleRadioGroup.getCheckedRadioButtonId();
+                                        // find the radiobutton by returned id
+                                        RadioButton motorVehicleRadioButton = (RadioButton) findViewById(selectedId);
+                                        emergency_ref.child("/patient_care_report_form/injury_details/motor_vehicle_accident").setValue(motorVehicleRadioButton.getText().toString());
+                                    }else{
+                                        if(!motorVehicleTextView.getText().toString().equals("Other...")) {
+                                            emergency_ref.child("/patient_care_report_form/injury_details/motor_vehicle_accident").setValue(motorVehicleTextView.getText().toString());
+                                        }
+                                    }
+                                    CheckBox poisoningCheckBox = (CheckBox) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.checkBoxPoisoning);
+                                    emergency_ref.child("/patient_care_report_form/injury_details/medical_emergency/poisoning").setValue(poisoningCheckBox.isChecked());
+                                    CheckBox chestPainCheckBox = (CheckBox) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.checkBoxChestPain);
+                                    emergency_ref.child("/patient_care_report_form/injury_details/medical_emergency/chest_pain").setValue(chestPainCheckBox.isChecked());
+                                    CheckBox diabetesPainCheckBox = (CheckBox) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.checkBoxDiabetes);
+                                    emergency_ref.child("/patient_care_report_form/injury_details/medical_emergency/diabetes").setValue(diabetesPainCheckBox.isChecked());
+                                    CheckBox strokePainCheckBox = (CheckBox) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.checkBoxStroke);
+                                    emergency_ref.child("/patient_care_report_form/injury_details/medical_emergency/stroke").setValue(strokePainCheckBox.isChecked());
+                                    CheckBox epilepsyPainCheckBox = (CheckBox) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.checkBoxEpilepsy);
+                                    emergency_ref.child("/patient_care_report_form/injury_details/medical_emergency/epilepsy").setValue(epilepsyPainCheckBox.isChecked());
+                                    CheckBox dehydratedPainCheckBox = (CheckBox) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.checkBoxDehydrated);
+                                    emergency_ref.child("/patient_care_report_form/injury_details/medical_emergency/dehydrated").setValue(dehydratedPainCheckBox.isChecked());
+                                    CheckBox difficultyBreathingCheckBox = (CheckBox) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.checkBoxDifficultyBreathing);
+                                    emergency_ref.child("/patient_care_report_form/injury_details/medical_emergency/difficulty_breathing").setValue(difficultyBreathingCheckBox.isChecked());
+                                    CheckBox abdominalPainCheckBox = (CheckBox) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.checkBoxAbdominalPain);
+                                    emergency_ref.child("/patient_care_report_form/injury_details/medical_emergency/abdominal_pain").setValue(abdominalPainCheckBox.isChecked());
+                                    EditText medicalOtherTextView = (EditText) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.editTextMedicalOther);
+                                    if(!medicalOtherTextView.getText().toString().equals("Other...")) {
+                                        emergency_ref.child("/patient_care_report_form/injury_details/medical_emergency/other").setValue(medicalOtherTextView.getText().toString());
+                                    }
+                                    CheckBox awakeCheckBox = (CheckBox) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.checkBoxAwake);
+                                    emergency_ref.child("/patient_care_report_form/injury_details/injuries_and_illness/awake").setValue(awakeCheckBox.isChecked());
+                                    CheckBox unconsciousCheckBox = (CheckBox) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.checkBoxUnconscious);
+                                    emergency_ref.child("/patient_care_report_form/injury_details/injuries_and_illness/unconscious").setValue(unconsciousCheckBox.isChecked());
+                                    CheckBox chokingCheckBox = (CheckBox) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.checkBoxChoking);
+                                    emergency_ref.child("/patient_care_report_form/injury_details/injuries_and_illness/choking").setValue(chokingCheckBox.isChecked());
+                                    CheckBox bleedingCheckBox = (CheckBox) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.checkBoxBleeding);
+                                    emergency_ref.child("/patient_care_report_form/injury_details/injuries_and_illness/bleeding").setValue(bleedingCheckBox.isChecked());
+                                    CheckBox fractureCheckBox = (CheckBox) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.checkBoxFracture);
+                                    emergency_ref.child("/patient_care_report_form/injury_details/injuries_and_illness/fracture").setValue(fractureCheckBox.isChecked());
+                                    CheckBox burnsCheckBox = (CheckBox) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.checkBoxBurns);
+                                    emergency_ref.child("/patient_care_report_form/injury_details/injuries_and_illness/burns").setValue(burnsCheckBox.isChecked());
+                                    EditText illnessOtherTextView = (EditText) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.editTextInjuriesOther);
+                                    if(!illnessOtherTextView.getText().toString().equals("Other...")){
+                                        emergency_ref.child("/patient_care_report_form/injury_details/injuries_and_illness/other").setValue(illnessOtherTextView.getText().toString());
+                                    }
 
-                    //Box 4: Treatment Details
-                    CheckBox cprCheckBox = (CheckBox) cell.findViewById(R.id.treatment_details_writeup).findViewById(R.id.checkBoxCPR);
-                    emergency_ref.child("/treatment_details/care_provided/cpr").setValue(cprCheckBox.isChecked());
-                    CheckBox recoveryPositionCheckBox = (CheckBox) cell.findViewById(R.id.treatment_details_writeup).findViewById(R.id.checkBoxRecoveryPosition);
-                    emergency_ref.child("/treatment_details/care_provided/recovery_position").setValue(recoveryPositionCheckBox.isChecked());
-                    CheckBox stopBleedingCheckBox = (CheckBox) cell.findViewById(R.id.treatment_details_writeup).findViewById(R.id.checkBoxStopBleeding);
-                    emergency_ref.child("/treatment_details/care_provided/stop_bleeding").setValue(stopBleedingCheckBox.isChecked());
-                    CheckBox applyBandageCheckBox = (CheckBox) cell.findViewById(R.id.treatment_details_writeup).findViewById(R.id.checkBoxApplyBandage);
-                    emergency_ref.child("/treatment_details/care_provided/apply_bandage").setValue(applyBandageCheckBox.isChecked());
-                    CheckBox splintingCheckBox = (CheckBox) cell.findViewById(R.id.treatment_details_writeup).findViewById(R.id.checkBoxSplinting);
-                    emergency_ref.child("/treatment_details/care_provided/splinting").setValue(splintingCheckBox.isChecked());
-                    CheckBox assistInTakingMedsCheckBox = (CheckBox) cell.findViewById(R.id.treatment_details_writeup).findViewById(R.id.checkBoxAssistInTakingMeds);
-                    emergency_ref.child("/treatment_details/care_provided/assist_patient_in_taking_own_medication").setValue(assistInTakingMedsCheckBox.isChecked());
-                    EditText careOtherTextView = (EditText) cell.findViewById(R.id.treatment_details_writeup).findViewById(R.id.editTextCareProvidedOther);
-                    if(!careOtherTextView.getText().toString().equals("Other...")){
-                        emergency_ref.child("/treatment_details/care_provided/other").setValue(careOtherTextView.getText().toString());
-                    }
-                    CheckBox glovesCheckBox = (CheckBox) cell.findViewById(R.id.treatment_details_writeup).findViewById(R.id.checkBoxGloves);
-                    emergency_ref.child("/treatment_details/equipment_used/gloves").setValue(glovesCheckBox.isChecked());
-                    CheckBox threeSidedDressingCheckBox = (CheckBox) cell.findViewById(R.id.treatment_details_writeup).findViewById(R.id.checkBox3SidedDressing);
-                    emergency_ref.child("/treatment_details/equipment_used/three_sided_dressing").setValue(threeSidedDressingCheckBox.isChecked());
-                    CheckBox bandageCheckBox = (CheckBox) cell.findViewById(R.id.treatment_details_writeup).findViewById(R.id.checkBoxBandage);
-                    emergency_ref.child("/treatment_details/equipment_used/bandage").setValue(bandageCheckBox.isChecked());
-                    CheckBox aedCheckBox = (CheckBox) cell.findViewById(R.id.treatment_details_writeup).findViewById(R.id.checkBoxAED);
-                    emergency_ref.child("/treatment_details/equipment_used/aed").setValue(aedCheckBox.isChecked());
-                    EditText equipmentOtherTextView = (EditText) cell.findViewById(R.id.treatment_details_writeup).findViewById(R.id.editTextEquipmentOther);
-                    if(!careOtherTextView.getText().toString().equals("Other...")){
-                        emergency_ref.child("/treatment_details/equipment_used/other").setValue(equipmentOtherTextView.getText().toString());
-                    }
-                    RadioGroup takenToHospitalRadioGroup = (RadioGroup) cell.findViewById(R.id.treatment_details_writeup).findViewById(R.id.radioGroupHospital);
-                    // get selected radio button from radioGroup
-                    selectedId = takenToHospitalRadioGroup.getCheckedRadioButtonId();
-                    // find the radiobutton by returned id
-                    RadioButton takenToHospitalRadioButton = (RadioButton) findViewById(selectedId);
-                    emergency_ref.child("/treatment_details/hospital/patient_taken_to_hospital").setValue(takenToHospitalRadioButton.getText().toString());
-                    CheckBox efarCheckBox = (CheckBox) cell.findViewById(R.id.treatment_details_writeup).findViewById(R.id.checkBoxEFAR);
-                    emergency_ref.child("/treatment_details/hospital/transport/EFAR").setValue(efarCheckBox.isChecked());
-                    CheckBox privateCarCheckBox = (CheckBox) cell.findViewById(R.id.treatment_details_writeup).findViewById(R.id.checkBoxPrivateCar);
-                    emergency_ref.child("/treatment_details/hospital/transport/private_car").setValue(privateCarCheckBox.isChecked());
-                    CheckBox ambulaceCheckBox = (CheckBox) cell.findViewById(R.id.treatment_details_writeup).findViewById(R.id.checkBoxAmbulance);
-                    emergency_ref.child("/treatment_details/hospital/transport/ambulace").setValue(ambulaceCheckBox.isChecked());
-                    EditText hospitalTextView = (EditText) cell.findViewById(R.id.treatment_details_writeup).findViewById(R.id.editTextHospitalName);
-                    emergency_ref.child("/treatment_details/hospital/hospital_taken_to").setValue(hospitalTextView.getText().toString());
+                                    //Box 4: Treatment Details
+                                    CheckBox cprCheckBox = (CheckBox) cell.findViewById(R.id.treatment_details_writeup).findViewById(R.id.checkBoxCPR);
+                                    emergency_ref.child("/patient_care_report_form/treatment_details/care_provided/cpr").setValue(cprCheckBox.isChecked());
+                                    CheckBox recoveryPositionCheckBox = (CheckBox) cell.findViewById(R.id.treatment_details_writeup).findViewById(R.id.checkBoxRecoveryPosition);
+                                    emergency_ref.child("/patient_care_report_form/treatment_details/care_provided/recovery_position").setValue(recoveryPositionCheckBox.isChecked());
+                                    CheckBox stopBleedingCheckBox = (CheckBox) cell.findViewById(R.id.treatment_details_writeup).findViewById(R.id.checkBoxStopBleeding);
+                                    emergency_ref.child("/patient_care_report_form/treatment_details/care_provided/stop_bleeding").setValue(stopBleedingCheckBox.isChecked());
+                                    CheckBox applyBandageCheckBox = (CheckBox) cell.findViewById(R.id.treatment_details_writeup).findViewById(R.id.checkBoxApplyBandage);
+                                    emergency_ref.child("/patient_care_report_form/treatment_details/care_provided/apply_bandage").setValue(applyBandageCheckBox.isChecked());
+                                    CheckBox splintingCheckBox = (CheckBox) cell.findViewById(R.id.treatment_details_writeup).findViewById(R.id.checkBoxSplinting);
+                                    emergency_ref.child("/patient_care_report_form/treatment_details/care_provided/splinting").setValue(splintingCheckBox.isChecked());
+                                    CheckBox assistInTakingMedsCheckBox = (CheckBox) cell.findViewById(R.id.treatment_details_writeup).findViewById(R.id.checkBoxAssistInTakingMeds);
+                                    emergency_ref.child("/patient_care_report_form/treatment_details/care_provided/assist_patient_in_taking_own_medication").setValue(assistInTakingMedsCheckBox.isChecked());
+                                    EditText careOtherTextView = (EditText) cell.findViewById(R.id.treatment_details_writeup).findViewById(R.id.editTextCareProvidedOther);
+                                    if(!careOtherTextView.getText().toString().equals("Other...")){
+                                        emergency_ref.child("/patient_care_report_form/treatment_details/care_provided/other").setValue(careOtherTextView.getText().toString());
+                                    }
+                                    CheckBox glovesCheckBox = (CheckBox) cell.findViewById(R.id.treatment_details_writeup).findViewById(R.id.checkBoxGloves);
+                                    emergency_ref.child("/patient_care_report_form/treatment_details/equipment_used/gloves").setValue(glovesCheckBox.isChecked());
+                                    CheckBox threeSidedDressingCheckBox = (CheckBox) cell.findViewById(R.id.treatment_details_writeup).findViewById(R.id.checkBox3SidedDressing);
+                                    emergency_ref.child("/patient_care_report_form/treatment_details/equipment_used/three_sided_dressing").setValue(threeSidedDressingCheckBox.isChecked());
+                                    CheckBox bandageCheckBox = (CheckBox) cell.findViewById(R.id.treatment_details_writeup).findViewById(R.id.checkBoxBandage);
+                                    emergency_ref.child("/patient_care_report_form/treatment_details/equipment_used/bandage").setValue(bandageCheckBox.isChecked());
+                                    CheckBox aedCheckBox = (CheckBox) cell.findViewById(R.id.treatment_details_writeup).findViewById(R.id.checkBoxAED);
+                                    emergency_ref.child("/patient_care_report_form/treatment_details/equipment_used/aed").setValue(aedCheckBox.isChecked());
+                                    EditText equipmentOtherTextView = (EditText) cell.findViewById(R.id.treatment_details_writeup).findViewById(R.id.editTextEquipmentOther);
+                                    if(!careOtherTextView.getText().toString().equals("Other...")){
+                                        emergency_ref.child("/patient_care_report_form/treatment_details/equipment_used/other").setValue(equipmentOtherTextView.getText().toString());
+                                    }
+                                    RadioGroup takenToHospitalRadioGroup = (RadioGroup) cell.findViewById(R.id.treatment_details_writeup).findViewById(R.id.radioGroupHospital);
+                                    // get selected radio button from radioGroup
+                                    selectedId = takenToHospitalRadioGroup.getCheckedRadioButtonId();
+                                    // find the radiobutton by returned id
+                                    RadioButton takenToHospitalRadioButton = (RadioButton) findViewById(selectedId);
+                                    emergency_ref.child("/patient_care_report_form/treatment_details/hospital/patient_taken_to_hospital").setValue(takenToHospitalRadioButton.getText().toString());
+                                    CheckBox efarCheckBox = (CheckBox) cell.findViewById(R.id.treatment_details_writeup).findViewById(R.id.checkBoxEFAR);
+                                    emergency_ref.child("/patient_care_report_form/treatment_details/hospital/transport/EFAR").setValue(efarCheckBox.isChecked());
+                                    CheckBox privateCarCheckBox = (CheckBox) cell.findViewById(R.id.treatment_details_writeup).findViewById(R.id.checkBoxPrivateCar);
+                                    emergency_ref.child("/patient_care_report_form/treatment_details/hospital/transport/private_car").setValue(privateCarCheckBox.isChecked());
+                                    CheckBox ambulaceCheckBox = (CheckBox) cell.findViewById(R.id.treatment_details_writeup).findViewById(R.id.checkBoxAmbulance);
+                                    emergency_ref.child("/patient_care_report_form/treatment_details/hospital/transport/ambulace").setValue(ambulaceCheckBox.isChecked());
+                                    EditText hospitalTextView = (EditText) cell.findViewById(R.id.treatment_details_writeup).findViewById(R.id.editTextHospitalName);
+                                    emergency_ref.child("/patient_care_report_form/treatment_details/hospital/hospital_taken_to").setValue(hospitalTextView.getText().toString());
 
-                    //Box 5: Comments
-                    TextView commentTextView = (TextView) cell.findViewById(R.id.comments_writeup).findViewById(R.id.commentEditText);
-                    emergency_ref.child("/comments").setValue(commentTextView.getText().toString());
+                                    //Box 5: Comments
+                                    TextView commentTextView = (TextView) cell.findViewById(R.id.comments_writeup).findViewById(R.id.commentEditText);
+                                    emergency_ref.child("/patient_care_report_form/comments").setValue(commentTextView.getText().toString());
 
-                    moveFirebaseRecord(emergency_ref, database.getReference("completed/" + finished_emergency_key));
-                    emergency_ref.removeValue();
-                    finish();
+                                    moveFirebaseRecord(emergency_ref, database.getReference("completed/" + finished_emergency_key));
+                                    emergency_ref.removeValue();
+                                    finish();
+                                    launchEfarMainScreen();
+                                }
 
-                    Toast.makeText(EFARInfoActivity.this,
-                            "Report Sent", Toast.LENGTH_LONG).show();
+                            })
+                            .setNegativeButton("No", null)
+                            .show();
                 }
             });
-            /*if(position == 0){
-                cell = inflater.inflate(R.layout.title_writeup, parent, false);
-            } else if(position == 1){
-                 cell = inflater.inflate(R.layout.patient_detail_writeup, parent, false);
-            } else if(position == 2){
-                cell = inflater.inflate(R.layout.incident_details_writeup, parent, false);
-            } else if(position == 3){
-                cell = inflater.inflate(R.layout.injury_details_writeup, parent, false);
-            } else if(position == 4){
-                cell = inflater.inflate(R.layout.treatment_details_writeup, parent, false);
-            } else if(position == 5){
-                cell = inflater.inflate(R.layout.comments_writeup, parent, false);
-            }*/
             return cell;
         }
     }
@@ -345,6 +289,14 @@ public class EFARInfoActivity extends AppCompatActivity {
                 System.out.println("Copy failed");
             }
         });
+
+    }
+
+    private void launchEfarMainScreen() {
+
+        Intent toEfarMainScreen = new Intent(this, EFARMainActivity.class);
+
+        startActivity(toEfarMainScreen);
     }
 
 }
