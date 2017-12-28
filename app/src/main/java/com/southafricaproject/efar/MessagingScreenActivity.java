@@ -67,6 +67,7 @@ public class MessagingScreenActivity extends AppCompatActivity {
                 View itemView = super.getView(position, convertView, parent);
                 if (messageArray.get(position).toString().startsWith(name)){
                     itemView.setBackgroundColor(Color.argb(100, 0, 200, 0));
+                    //itemView.setBackgroundResource(R.drawable.efar_logo_white);
                 }else{
                     itemView.setBackgroundColor(Color.argb(100, 0, 80, 250));
                 }

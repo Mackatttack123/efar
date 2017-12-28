@@ -16,6 +16,115 @@ admin.initializeApp(functions.config().firebase);
 
 efarArray = [];
 
+exports.sendPushNotificationAdded = functions.database.ref('/emergencies/{id}').onCreate(event => {
+	return admin.database().ref('tokens').once("value").then(allToken => {
+		if (allToken.val()){
+			const token = Object.keys(allToken.val());
+			tokenSplit = String(token).split(",");
+			realtoken = tokenSplit[0];
+			admin.database().ref('tokens/' + realtoken).once('value').then(function(snapshot) {
+				var distance_to_efar = distance(parseFloat(snapshot.child('latitude').val()), parseFloat(snapshot.child('longitude').val()), event.data.child('latitude').val(), event.data.child('longitude').val());
+				var payload = {
+					notification: {
+						title: "NEW EMERGANCY!",
+						//body: "Info given: \"" + event.data.child('other_info').val() + "\"",
+						body: "Distace from you: " + distance_to_efar + "km",
+						//badge: '1',
+						sound: 'default',
+					}
+				};
+				return admin.messaging().sendToDevice(token, payload).then(response => {
+					
+				});
+			});
+		};
+	});
+});
+
+exports.sendPushNotificationCanceled = functions.database.ref('/canceled/{id}').onCreate(event => {
+	const payload = {
+		notification: {
+			title: "Emergency Canceled:",
+			body: 'An emergancy in your area has been canceled.',
+			//badge: '1',
+			sound: 'default',
+		}
+	};
+	return admin.database().ref('tokens').once("value").then(allToken => {
+		if (allToken.val()){
+			const token = Object.keys(allToken.val());
+			return admin.messaging().sendToDevice(token, payload).then(response => {
+
+			});
+		};
+	});
+});
+
+exports.sendPushNotificationCompleted = functions.database.ref('/completed/{id}').onCreate(event => {
+	const payload = {
+		notification: {
+			title: "Emergency Over:",
+			body: 'An emergancy in your area is now over.',
+			//badge: '1',
+			sound: 'default',
+		}
+	};
+	return admin.database().ref('tokens').once("value").then(allToken => {
+		if (allToken.val()){
+			const token = Object.keys(allToken.val());
+			return admin.messaging().sendToDevice(token, payload).then(response => {
+
+			});
+		};
+	});
+});
+
+function distance(lat1, lon1, lat2, lon2) {
+	var radlat1 = Math.PI * lat1/180.0;
+	var radlat2 = Math.PI * lat2/180.0;
+	var theta = lon1-lon2;
+	var radtheta = Math.PI * theta/180.0;
+	var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+	dist = Math.acos(dist);
+	dist = dist * 180.0/Math.PI;
+	dist = dist * 60.0 * 1.1515;
+	dist = dist * 1.609344;
+	return dist;
+}
+
+// TODO: For some odd reason the distance setter or caulator is returning null? or not working
+/* POSSIBLE WAY TO KEEP TRACK OF SORTED LISTS?
+	sorted
+	|
+	|
+	 -> KEY : JGYUKAHISLJDHJV
+	 	|
+	 	|
+	 	 -> mack
+	 	|
+	 	|
+	 	 -> jim
+	 	|
+	 	|
+	 	 -> etc....
+	|
+	|
+	 -> KEY : GUILKJFGKHLJHLJ
+	|
+	|
+	 -> KEY : LJKHGFJKL;JHJLKH
+*/
+
+sortEfars = function(e_lat, e_long) {
+	/*for (var i = 0; i < efarArray.length; i++) {
+	        efarArray[i].setDistance(distance(e_lat, e_long, efarArray[i].latitude, efarArray[i].longitute));
+	}*/
+
+	efarArray.sort(function(a, b) { 
+	    return a.distance - b.distance;
+	});
+}
+
 /*exports.sendPushNotification = functions.database.ref('/emergencies/{id}').onCreate(event => {
 	const payload = {
 		notification: {
@@ -73,109 +182,6 @@ efarArray = [];
 	});
 		
 });*/
-
-exports.sendPushNotificationAdded = functions.database.ref('/emergencies/{id}').onCreate(event => {
-	const payload = {
-		notification: {
-			title: "NEW EMERGANCY:",
-			body: "Info given: \"" + event.data.child('other_info').val() + "\"",
-			//badge: '1',
-			sound: 'default',
-		}
-	};
-	return admin.database().ref('tokens').once("value").then(allToken => {
-		if (allToken.val()){
-			const token = Object.keys(allToken.val());
-			return admin.messaging().sendToDevice(token, payload).then(response => {
-
-			});
-		};
-	});
-});
-
-exports.sendPushNotificationCanceled = functions.database.ref('/canceled/{id}').onCreate(event => {
-	const payload = {
-		notification: {
-			title: "Emergency Canceled:",
-			body: 'An emergancy in your area has been canceled.',
-			//badge: '1',
-			sound: 'default',
-		}
-	};
-	return admin.database().ref('tokens').once("value").then(allToken => {
-		if (allToken.val()){
-			const token = Object.keys(allToken.val());
-			return admin.messaging().sendToDevice(token, payload).then(response => {
-
-			});
-		};
-	});
-});
-
-exports.sendPushNotificationCompleted = functions.database.ref('/completed/{id}').onCreate(event => {
-	const payload = {
-		notification: {
-			title: "Emergency Over:",
-			body: 'An emergancy in your area is now over.',
-			//badge: '1',
-			sound: 'default',
-		}
-	};
-	return admin.database().ref('tokens').once("value").then(allToken => {
-		if (allToken.val()){
-			const token = Object.keys(allToken.val());
-			return admin.messaging().sendToDevice(token, payload).then(response => {
-
-			});
-		};
-	});
-});
-
-function distance(lat1, lon1, lat2, lon2) {
-	var radlat1 = Math.PI * lat1/180;
-	var radlat2 = Math.PI * lat2/180;
-	var theta = lon1-lon2;
-	var radtheta = Math.PI * theta/180;
-	var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
-	dist = Math.acos(dist);
-	dist = dist * 180/Math.PI;
-	dist = dist * 60 * 1.1515;
-	dist = dist * 1.609344;
-	return dist;
-}
-
-// TODO: For some odd reason the distance setter or caulator is returning null? or not working
-/* POSSIBLE WAY TO KEEP TRACK OF SORTED LISTS?
-	sorted
-	|
-	|
-	 -> KEY : JGYUKAHISLJDHJV
-	 	|
-	 	|
-	 	 -> mack
-	 	|
-	 	|
-	 	 -> jim
-	 	|
-	 	|
-	 	 -> etc....
-	|
-	|
-	 -> KEY : GUILKJFGKHLJHLJ
-	|
-	|
-	 -> KEY : LJKHGFJKL;JHJLKH
-*/
-
-sortEfars = function(e_lat, e_long) {
-	/*for (var i = 0; i < efarArray.length; i++) {
-	        efarArray[i].setDistance(distance(e_lat, e_long, efarArray[i].latitude, efarArray[i].longitute));
-	}*/
-
-	efarArray.sort(function(a, b) { 
-	    return a.distance - b.distance;
-	});
-}
 	
 
 

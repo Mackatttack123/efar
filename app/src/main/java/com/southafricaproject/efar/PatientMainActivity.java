@@ -213,7 +213,6 @@ public class PatientMainActivity extends AppCompatActivity {
 
     // Starts up launchEfarScreen screen
     private void launchEfarScreen() {
-
         Intent toEfarScreen = new Intent(this, EFARMainActivity.class);
         startActivity(toEfarScreen);
 

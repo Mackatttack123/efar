@@ -1,12 +1,12 @@
 var canvas;
-var key;
+var messaging_key;
 
 function setup() {
     canvas = createCanvas(windowWidth*0.54, windowHeight*0.64);
     // Move the canvas so it's inside our <div id="sketch-holder">.
     canvas.parent('sketch-holder');
     messaging_key = window.location.hash.substring(1);
-    console.log(key);
+    console.log(messaging_key);
 }
 
 var text_scroll_offset = 0;
@@ -82,8 +82,8 @@ ref.update(obj); // Updates only the specified attributes
 function send_message(){
 	var message_to_send = document.getElementById("message").value;
 	if(message_to_send != ""){
-		var package = {message: message_to_send, user: user_name}
-		firebase.database().ref("/emergencies/" + messaging_key + "/messages").update().push(package);
+		var package = {message: message_to_send, user: user_name};
+		firebase.database().ref("/emergencies/" + messaging_key + "/messages").push(package);
 		document.getElementById("message").value = "";
 	}
 }

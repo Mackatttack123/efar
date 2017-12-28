@@ -463,28 +463,29 @@ public class EFARMainActivity extends AppCompatActivity {
         startActivity(launchMessagingScreen);
     }
 
-    private double distance(double lat1, double lon1, double lat2, double lon2) {
+    //distance functions via: http://www.geodatasource.com/developers/java
+    private static double distance(double lat1, double lon1, double lat2, double lon2) {
         double theta = lon1 - lon2;
-        double dist = Math.sin(deg2rad(lat1))
-                * Math.sin(deg2rad(lat2))
-                + Math.cos(deg2rad(lat1))
-                * Math.cos(deg2rad(lat2))
-                * Math.cos(deg2rad(theta));
+        double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
         dist = Math.acos(dist);
         dist = rad2deg(dist);
         dist = dist * 60 * 1.1515;
-        Log.wtf("DISTANCE", Double.toString(dist));
+        dist = dist * 1.609344;
         return (dist);
-        //TODO: figure out why ths isn't working and take out hard coding
-        //return (0.1);
     }
 
-    private double deg2rad(double deg) {
+    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+	/*::	This function converts decimal degrees to radians						 :*/
+	/*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+    private static double deg2rad(double deg) {
         return (deg * Math.PI / 180.0);
     }
 
-    private double rad2deg(double rad) {
-        return (rad * 180.0 / Math.PI);
+    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+	/*::	This function converts radians to decimal degrees						 :*/
+	/*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+    private static double rad2deg(double rad) {
+        return (rad * 180 / Math.PI);
     }
 
     private String getCompleteAddressString(double LATITUDE, double LONGITUDE) {
