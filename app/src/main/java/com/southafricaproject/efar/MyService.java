@@ -2,6 +2,7 @@ package com.southafricaproject.efar;
 
 import android.app.Service;
 import android.content.*;
+import android.graphics.Color;
 import android.os.*;
 import android.widget.Toast;
 import android.app.IntentService;
@@ -16,6 +17,7 @@ import android.content.Intent;
 import android.widget.EditText;
 import android.preference.PreferenceManager;
 
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -50,19 +52,25 @@ public class MyService extends Service {
 
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference tokens_ref = database.getReference("tokens");
-                tokens_ref.child(token).child(token).setValue(token);
-                tokens_ref.child(token).child("latitude").setValue(my_lat);
-                tokens_ref.child(token).child("longitude").setValue(my_long);
-
                 SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
                 String id = sharedPreferences.getString("id", "");
-                if(!id.equals("")){
-                    DatabaseReference users_ref = database.getReference("users/" + id);
-                    users_ref.child("latitude").setValue(my_lat);
-                    users_ref.child("longitude").setValue(my_long);
-                }
+                Boolean logged_in = sharedPreferences.getBoolean("logged_in", false);
 
-                Log.wtf("location updated:", "(" + my_lat + ", " + my_long + ") ---> token: " + token);
+                if(logged_in){
+                    tokens_ref.child(token).child(token).setValue(token);
+                    tokens_ref.child(token).child("latitude").setValue(my_lat);
+                    tokens_ref.child(token).child("longitude").setValue(my_long);
+
+                    if(!id.equals("")){
+                        DatabaseReference users_ref = database.getReference("users/" + id);
+                        users_ref.child("latitude").setValue(my_lat);
+                        users_ref.child("longitude").setValue(my_long);
+                    }
+
+                    Log.wtf("location update:", "(" + my_lat + ", " + my_long + ") ---> token: " + token);
+                }else{
+                    Log.wtf("location update:", "no location update!");
+                }
                 //Toast.makeText(context, "Service is still running", Toast.LENGTH_LONG).show();
                 handler.postDelayed(runnable, 10000);
             }

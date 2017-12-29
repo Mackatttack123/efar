@@ -1,13 +1,14 @@
-function Efar (name, latitude, longitude, token) {
-
-    this.name = name;
-    this.latitude = latitude;
-    this.longitude = longitude;
-    this.distance = 0.0;
+function Efar (distance_away, token, message) {
+    this.distance_away = distance_away;
     this.token = token;
+    this.message = message;
 
-    // setter 
-    this.setDistance = function(dist) { this.distance = dist; }
+    function getToken() {
+        return token;
+    };
+    function getMessage() {
+        return message;
+    };
 }
 
 const functions = require('firebase-functions');
@@ -21,14 +22,17 @@ exports.sendPushNotificationAdded = functions.database.ref('/emergencies/{id}').
 		if (allToken.val()){
 			const token = Object.keys(allToken.val());
 			tokenSplit = String(token).split(",");
-			realtoken = tokenSplit[0];
+			buildEFARs(tokenSplit, event.data.child('latitude').val(), event.data.child('longitude').val());
+			sortEfars();
+			/*realtoken = tokenSplit[0];
 			admin.database().ref('tokens/' + realtoken).once('value').then(function(snapshot) {
 				var distance_to_efar = distance(parseFloat(snapshot.child('latitude').val()), parseFloat(snapshot.child('longitude').val()), event.data.child('latitude').val(), event.data.child('longitude').val());
+				efarArray.push(new Efar(distance_to_efar, realtoken));
 				var payload = {
 					notification: {
 						title: "NEW EMERGANCY!",
 						//body: "Info given: \"" + event.data.child('other_info').val() + "\"",
-						body: "Distace from you: " + distance_to_efar + "km",
+						body: "Distace from you: " + distance_to_efar + "km numEFAR: " + efarArray.length,
 						//badge: '1',
 						sound: 'default',
 					}
@@ -36,10 +40,31 @@ exports.sendPushNotificationAdded = functions.database.ref('/emergencies/{id}').
 				return admin.messaging().sendToDevice(token, payload).then(response => {
 					
 				});
+			});*/
+			return admin.messaging().sendToDevice(efarArray[0].getToken, efarArray[0].getMessage).then(response => {
+					
 			});
 		};
 	});
 });
+
+function buildEFARs(tokenlist, emergancy_lat, emergancy_long){
+	for (var i = tokenlist.length - 1; i >= 0; i--) {
+		admin.database().ref('tokens/' + tokenlist[i]).once('value').then(function(snapshot) {
+			var distance_to_efar = distance(parseFloat(snapshot.child('latitude').val()), parseFloat(snapshot.child('longitude').val()), emergancy_lat, emergancy_long);
+			var payload = {
+				notification: {
+					title: "NEW EMERGANCY!",
+					//body: "Info given: \"" + event.data.child('other_info').val() + "\"",
+					body: "Distace from you: " + distance_to_efar + "km",
+					//badge: '1',
+					sound: 'default',
+				}
+			};
+			efarArray.push(new Efar(distance_to_efar, tokenlist[i], payload));
+		});
+	}
+}
 
 exports.sendPushNotificationCanceled = functions.database.ref('/canceled/{id}').onCreate(event => {
 	const payload = {
@@ -115,13 +140,9 @@ function distance(lat1, lon1, lat2, lon2) {
 	 -> KEY : LJKHGFJKL;JHJLKH
 */
 
-sortEfars = function(e_lat, e_long) {
-	/*for (var i = 0; i < efarArray.length; i++) {
-	        efarArray[i].setDistance(distance(e_lat, e_long, efarArray[i].latitude, efarArray[i].longitute));
-	}*/
-
+function sortEfars() {
 	efarArray.sort(function(a, b) { 
-	    return a.distance - b.distance;
+	    return a.distance_away - b.distance_away;
 	});
 }
 
