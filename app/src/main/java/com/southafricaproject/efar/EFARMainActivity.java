@@ -99,7 +99,7 @@ class Emergency {
 public class EFARMainActivity extends AppCompatActivity {
 
     //TODO: sort emergencics by distance away
-    final ArrayList<String> disctanceArray = new ArrayList<String>();
+    final ArrayList<String> distanceArray = new ArrayList<String>();
     final ArrayList<Emergency> emergenecyArray = new ArrayList<Emergency>();
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -134,7 +134,7 @@ public class EFARMainActivity extends AppCompatActivity {
         userRef.child(id + "/token").setValue(refreshedToken);
 
 
-        adapter = new ArrayAdapter<String>(this, R.layout.activity_listview, disctanceArray){
+        adapter = new ArrayAdapter<String>(this, R.layout.activity_listview, distanceArray){
             @Override
             public View getView(int position, View convertView, ViewGroup parent)
             {
@@ -152,7 +152,7 @@ public class EFARMainActivity extends AppCompatActivity {
                 TextView timeText = (TextView) cell.findViewById(R.id.timeTextView);
                 timeText.setText(dipslayTime);
                 TextView distanceText =  (TextView) cell.findViewById(R.id.distanceTextView);
-                distanceText.setText(disctanceArray.get(position).toString());
+                distanceText.setText(distanceArray.get(position).toString());
 
                 TextView activeStateText =  (TextView) cell.findViewById(R.id.stateTextView);
                 if (emergenecyArray.get(position).getState().equals("0")){
@@ -206,7 +206,7 @@ public class EFARMainActivity extends AppCompatActivity {
                     }
                     String e_state = dataSnapshot.child("state").getValue().toString();
                     emergenecyArray.add(new Emergency(e_key, e_address, e_lat, e_long, e_phone_number, e_info, e_creationDate, e_respondingEfar, e_state));
-                    disctanceArray.add(String.format("%.2f", distance(e_lat, e_long, my_lat, my_long)) + " km");
+                    distanceArray.add(String.format("%.2f", distance(e_lat, e_long, my_lat, my_long)) + " km");
                     adapter.notifyDataSetChanged();
                 }catch (NullPointerException e){
                     Log.wtf("added", "not yet");
@@ -225,7 +225,7 @@ public class EFARMainActivity extends AppCompatActivity {
                         if(e.getKey().equals(key)){
                             //found, delete.
                             emergenecyArray.remove(j);
-                            disctanceArray.remove(j);
+                            distanceArray.remove(j);
                             adapter.notifyDataSetChanged();
                             break;
                         }
@@ -241,7 +241,7 @@ public class EFARMainActivity extends AppCompatActivity {
                         String e_respondingEfar = dataSnapshot.child("responding_efar").getValue().toString();
                         String e_state = dataSnapshot.child("state").getValue().toString();
                         emergenecyArray.add(new Emergency(e_key, e_address, e_lat, e_long, e_phone_number, e_info, e_creationDate, e_respondingEfar, e_state));
-                        disctanceArray.add(String.format("%.2f", distance(e_lat, e_long, my_lat, my_long)) + " km");
+                        distanceArray.add(String.format("%.2f", distance(e_lat, e_long, my_lat, my_long)) + " km");
                         adapter.notifyDataSetChanged();
                     }catch (NullPointerException e){
                         Log.wtf("added", "not yet");
@@ -256,7 +256,7 @@ public class EFARMainActivity extends AppCompatActivity {
                         if(e.getKey().equals(key)){
                             //found, delete.
                             emergenecyArray.remove(j);
-                            disctanceArray.remove(j);
+                            distanceArray.remove(j);
                             adapter.notifyDataSetChanged();
                             break;
                         }
@@ -448,6 +448,17 @@ public class EFARMainActivity extends AppCompatActivity {
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client2 = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+
+        final Handler handler = new Handler();
+        handler.postDelayed( new Runnable() {
+
+            @Override
+            public void run() {
+                updateDistances();
+                adapter.notifyDataSetChanged();
+                handler.postDelayed( this, 30 * 1000 );
+            }
+        }, 30 * 1000 );
     }
 
     // Goes to patient info tab to send more to EFARs
@@ -520,6 +531,16 @@ public class EFARMainActivity extends AppCompatActivity {
         Intent toLaunchEfarWriteUPScreen = new Intent(this, EFARInfoActivity.class);
 
         startActivity(toLaunchEfarWriteUPScreen);
+    }
+
+    private void updateDistances(){
+        GPSTracker gps = new GPSTracker(this);
+        my_lat = gps.getLatitude(); // latitude
+        my_long = gps.getLongitude(); // longitude
+        distanceArray.clear();
+        for (int i = 0; i < emergenecyArray.size(); i++) {
+            distanceArray.add(String.format("%.2f", distance(emergenecyArray.get(i).getLatitude(), emergenecyArray.get(i).getLongitude(), my_lat, my_long)) + " km");
+        }
     }
 
 }

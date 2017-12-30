@@ -24,7 +24,7 @@ exports.sendPushNotificationAdded = functions.database.ref('/emergencies/{id}').
 	    var payload = {
 			notification: {
 				title: "NEW EMERGANCY!",
-				body: "Info given:" + event.data.child('other_info').val(),
+				body: "Info given: " + event.data.child('other_info').val(),
 				//badge: '1',
 				sound: 'default',
 			}
