@@ -29,13 +29,25 @@ exports.sendPushNotificationAdded = functions.database.ref('/emergencies/{id}').
 				sound: 'default',
 			}
 		};
-	    return admin.messaging().sendToDevice(efarArray[0].token, payload).then(response => {
+		tokens_to_send_to = [];
+		if(efarArray.length >= 5){
+			//only send to the 5 closest efars
+			for (var i = 4; i >= 0; i--) {
+				tokens_to_send_to.push(efarArray[i].token);
+			}
+		}else{
+			for (var i = efarArray.length - 1; i >= 0; i--) {
+				tokens_to_send_to.push(efarArray[i].token);
+			}
+		}
+		//TODO: send a messaged back to patient if no efars respond or are found?
+	    return admin.messaging().sendToDevice(tokens_to_send_to, payload).then(response => {
 					
 		});
 	});
 });
 
-
+//code for function below from https://ilikekillnerds.com/2017/05/convert-firebase-database-snapshotcollection-array-javascript/
 function snapshotToArray(snapshot, incoming_latitude, incoming_longitude) {
     var returnArr = [];
 
