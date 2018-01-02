@@ -42,7 +42,7 @@ exports.sendPushNotificationAdded = functions.database.ref('/emergencies/{id}').
 		}
 		//TODO: send a messaged back to patient if no efars respond or are found?
 	    return admin.messaging().sendToDevice(tokens_to_send_to, payload).then(response => {
-					
+				
 		});
 	});
 });

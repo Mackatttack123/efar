@@ -3,27 +3,40 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="#d3dee7"
+    android:background="#80000000"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
 
-<TextView
-    android:text="updates will appear here"
-    android:textSize="20sp"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:textColor="#ff0000"
-    android:id="@+id/user_update_info_screen"
-    android:layout_marginTop="20sp"
-    android:textAlignment="center"
-    android:layout_centerHorizontal="true"
-    app:layout_constraintTop_toTopOf="parent"
-    android:layout_marginRight="8sp"
-    app:layout_constraintRight_toRightOf="parent"
-    android:layout_marginLeft="8sp"
-    app:layout_constraintLeft_toLeftOf="parent"
-    app:layout_constraintHorizontal_bias="0.503"/>
+    <ImageView
+        android:id="@+id/imageView10"
+        android:layout_width="350sp"
+        android:layout_height="312sp"
+        android:layout_marginLeft="8sp"
+        android:layout_marginRight="8sp"
+        android:layout_marginTop="8sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="#eeeeee"/>
+
+    <TextView
+        android:id="@+id/user_update_info_screen"
+        android:layout_width="294sp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="20sp"
+        android:layout_marginRight="20sp"
+        android:layout_marginTop="16sp"
+        android:text="Please fill out the following information before an efar can be contacted:"
+        android:textAlignment="center"
+        android:textColor="#000000"
+        android:textSize="20sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="20sp"
+        android:layout_marginEnd="20sp"/>
 
 
 <EditText
@@ -37,32 +50,36 @@
     android:background="#FFFFFF"
     android:padding="10sp"
     android:maxLength="14"
-    android:layout_marginRight="8sp"
-    app:layout_constraintRight_toRightOf="parent"
-    android:layout_marginLeft="8sp"
+    android:layout_marginLeft="16sp"
     app:layout_constraintLeft_toLeftOf="parent"
-    app:layout_constraintHorizontal_bias="0.503"
-    android:layout_marginTop="50sp"
-    app:layout_constraintTop_toBottomOf="@+id/user_update_info_screen"/>
+    android:layout_marginTop="20sp"
+    app:layout_constraintTop_toBottomOf="@+id/user_update_info_screen"
+    android:layout_marginRight="16sp"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintHorizontal_bias="0.0"
+    android:layout_marginStart="16sp"
+    android:layout_marginEnd="8sp"/>
 
-<EditText
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:inputType="textPersonName"
-    android:ems="15"
-    android:id="@+id/patient_other_info"
-    android:hint="@string/Other_Information"
-    android:background="#FFFFFF"
-    android:padding="10sp"
-    android:layout_below="@+id/patient_phone_number"
-    android:layout_centerHorizontal="true"
-    android:layout_marginTop="19dp"
-    app:layout_constraintTop_toBottomOf="@+id/patient_phone_number"
-    android:layout_marginRight="8sp"
-    app:layout_constraintRight_toRightOf="parent"
-    android:layout_marginLeft="8sp"
-    app:layout_constraintLeft_toLeftOf="parent"
-    app:layout_constraintHorizontal_bias="0.5"/>
+    <EditText
+        android:id="@+id/patient_other_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/patient_phone_number"
+        android:layout_centerHorizontal="true"
+        android:layout_marginEnd="8sp"
+        android:layout_marginLeft="16sp"
+        android:layout_marginRight="16sp"
+        android:layout_marginStart="16sp"
+        android:layout_marginTop="18sp"
+        android:background="#FFFFFF"
+        android:ems="15"
+        android:hint="Short Message to EFARs"
+        android:inputType="textPersonName"
+        android:padding="10sp"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/patient_phone_number"/>
 
 <Button
     android:text="@string/submit_login_button"
@@ -76,7 +93,9 @@
     android:layout_marginRight="8sp"
     app:layout_constraintRight_toRightOf="parent"
     android:layout_marginLeft="8sp"
-    app:layout_constraintLeft_toLeftOf="parent"/>
+    app:layout_constraintLeft_toLeftOf="parent"
+    android:layout_marginStart="8sp"
+    android:layout_marginEnd="8sp"/>
 
 
 </android.support.constraint.ConstraintLayout>

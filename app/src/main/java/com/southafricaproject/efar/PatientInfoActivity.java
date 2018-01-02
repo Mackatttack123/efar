@@ -51,8 +51,8 @@ public class PatientInfoActivity extends AppCompatActivity {
             gps.showSettingsAlert();
         }
 
-        TextView userInfoScreenUpdate = (TextView) findViewById(R.id.user_update_info_screen);
-        userInfoScreenUpdate.setText("An EFAR will be contacted once you fill in this information:");
+        //TextView userInfoScreenUpdate = (TextView) findViewById(R.id.user_update_info_screen);
+        //userInfoScreenUpdate.setText("An EFAR will be contacted once you fill in this information:");
 
         Button infoSumbitButton = (Button)findViewById(R.id.patient_info_sumbmit_button);
         final EditText patient_phone_number = (EditText) findViewById(R.id.patient_phone_number);

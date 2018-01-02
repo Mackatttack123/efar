@@ -445,6 +445,15 @@ public class EFARMainActivity extends AppCompatActivity {
             }
         });
 
+        Button backButton = (Button) findViewById(R.id.back_button);
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                launchPatientMainScreen();
+            }
+        });
+
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client2 = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();

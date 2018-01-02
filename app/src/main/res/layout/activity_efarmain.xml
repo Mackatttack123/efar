@@ -14,11 +14,10 @@
         android:layout_height="wrap_content"
         android:textColor="#0060ba"
         android:id="@+id/logout_button"
-        android:layout_marginLeft="8sp"
-        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="8sp"
-        android:layout_marginStart="8sp"/>
+        android:layout_marginRight="8sp"
+        app:layout_constraintRight_toRightOf="parent"/>
 
     <TextView
         android:text="There are no emergencies at this time.\n\n¯\\_(ツ)_/¯"
@@ -55,6 +54,18 @@
         app:layout_constraintVertical_bias="0.514"
         app:layout_constraintHorizontal_bias="0.0">
     </ListView>
+
+    <Button
+        android:id="@+id/back_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8sp"
+        android:layout_marginTop="8sp"
+        android:text="Back"
+        android:textColor="#0060ba"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Back"/>
 
     <!--<Button
         android:text="@string/help_button"

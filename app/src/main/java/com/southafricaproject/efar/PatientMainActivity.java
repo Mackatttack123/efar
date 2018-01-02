@@ -25,6 +25,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.android.gms.location.LocationServices;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 public class PatientMainActivity extends AppCompatActivity {
 
@@ -45,9 +46,12 @@ public class PatientMainActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
         String id = sharedPreferences.getString("id", "");
         String name = sharedPreferences.getString("name", "");
-        if(id != ""){
+
+        //TODO: took this out so that you could switch back to the call for efar screen....but need to add back
+        // and still allow for switching back to call screen
+        /*if(id != ""){
             checkUser(name, id);
-        }
+        }*/
 
         final Button helpMeButton = (Button)findViewById(R.id.help_me_button);
 
@@ -173,15 +177,62 @@ public class PatientMainActivity extends AppCompatActivity {
         );
 
         Button toLoginButton = (Button)findViewById(R.id.to_login_button);
+        Button toEmergencyListButton = (Button)findViewById(R.id.to_emergencies_button);
 
-        toLoginButton.setOnClickListener(
-                new Button.OnClickListener() {
-                    public void onClick(View v) {
-                        // go to login screen
-                        launchLoginScreen();
+        Boolean logged_in = sharedPreferences.getBoolean("logged_in", false);
+
+        if(logged_in){
+            //change to logout button
+            toLoginButton.setText("logout");
+            toLoginButton.setOnClickListener(
+                    new Button.OnClickListener() {
+                        public void onClick(View v) {
+                            //to get rid of stored password and username
+                            SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+
+                            // say that user has logged off
+                            FirebaseDatabase database = FirebaseDatabase.getInstance();
+                            DatabaseReference userRef = database.getReference("users");
+                            userRef.child(sharedPreferences.getString("id", "") + "/logged_in").setValue(false);
+                            editor.putString("id", "");
+                            editor.putString("name", "");
+                            editor.putBoolean("logged_in", false);
+                            stopService(new Intent(PatientMainActivity.this, MyService.class));
+                            editor.commit();
+
+                            //clear the phones token for the database
+                            String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+                            DatabaseReference token_ref = database.getReference("tokens/" + refreshedToken);
+                            token_ref.removeValue();
+
+                            finish();
+                            startActivity(getIntent());
+                        }
                     }
-                }
-        );
+            );
+
+            //add in button to take EFAR back to emergenecy screen
+            toEmergencyListButton.setVisibility(View.VISIBLE);
+            toEmergencyListButton.setOnClickListener(
+                    new Button.OnClickListener() {
+                        public void onClick(View v) {
+                            // go to login screen
+                            launchEfarScreen();
+                        }
+                    }
+            );
+        }else{
+            toLoginButton.setOnClickListener(
+                    new Button.OnClickListener() {
+                        public void onClick(View v) {
+                            // go to login screen
+                            launchLoginScreen();
+                        }
+                    }
+            );
+            toEmergencyListButton.setVisibility(View.GONE);
+        }
 
     }
 
