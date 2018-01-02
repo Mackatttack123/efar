@@ -7,17 +7,58 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <ImageView
+        android:id="@+id/imageView11"
+        android:layout_width="match_parent"
+        android:layout_height="47sp"
+        android:layout_marginTop="0sp"
+        android:background="#ffffff"
+        app:layout_constraintHorizontal_bias="0.6"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <ImageView
+        android:id="@+id/imageView12"
+        android:layout_width="45sp"
+        android:layout_height="39sp"
+        android:layout_marginLeft="8sp"
+        android:layout_marginRight="8sp"
+        android:layout_marginTop="4sp"
+        app:layout_constraintHorizontal_bias="0.501"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/efar_logo_white"/>
+
     <Button
-        android:text="@string/login_button"
+        android:id="@+id/to_login_button"
+        style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8sp"
+        android:layout_marginRight="0sp"
+        android:layout_marginTop="0sp"
+        android:text="@string/login_button"
         android:textColor="#0060ba"
-        android:id="@+id/to_login_button"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="8sp"
-        android:layout_marginRight="8sp"
-        app:layout_constraintRight_toRightOf="parent"/>
+        android:textSize="12sp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
+
+    <Button
+        android:id="@+id/to_emergencies_button"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="0sp"
+        android:layout_marginStart="8sp"
+        android:layout_marginTop="0sp"
+        android:text="Emergecies"
+        android:textColor="#0060ba"
+        android:textSize="12sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
         android:text=""
@@ -33,21 +74,9 @@
         android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginTop="30sp"
-        app:layout_constraintTop_toBottomOf="@+id/to_login_button"/>
-
-    <!--
-    <Button
-        android:text="@string/help_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/circle"
-        android:textSize="70sp"
-        android:padding="40sp"
-        android:textColor="#ffe3e3"
-        android:id="@+id/help_me_button"
-        android:layout_marginTop="145sp"
-        android:layout_centerHorizontal="true" />
-        -->
+        app:layout_constraintTop_toBottomOf="@+id/to_login_button"
+        android:layout_marginStart="8sp"
+        android:layout_marginEnd="8sp"/>
 
     <Button
         android:id="@+id/help_me_button"
@@ -61,22 +90,15 @@
         android:layout_marginTop="75sp"
         android:padding="40sp"
         android:text="@string/help_button"
-        android:textColor="#e20505"
+        android:textColor="#d3dee7"
         android:textSize="30sp"
+        android:background="#ee0000"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/user_update"
-        app:layout_constraintVertical_bias="0.3"/>
+        app:layout_constraintVertical_bias="0.3"
+        android:layout_marginStart="8sp"
+        android:layout_marginEnd="8sp"/>
 
-    <Button
-        android:id="@+id/to_emergencies_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8sp"
-        android:layout_marginTop="8sp"
-        android:text="Emergecies"
-        android:textColor="#0060ba"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
 </android.support.constraint.ConstraintLayout>

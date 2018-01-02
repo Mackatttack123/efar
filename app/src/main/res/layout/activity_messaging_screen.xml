@@ -8,6 +8,31 @@
     android:layout_height="match_parent">
 
 
+    <ImageView
+        android:id="@+id/imageView17"
+        android:layout_width="0sp"
+        android:layout_height="47sp"
+        android:background="#ffffff"
+        app:layout_constraintHorizontal_bias="0.6"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <ImageView
+        android:id="@+id/imageView18"
+        android:layout_width="45sp"
+        android:layout_height="39sp"
+        android:layout_marginEnd="8sp"
+        android:layout_marginLeft="8sp"
+        android:layout_marginRight="8sp"
+        android:layout_marginStart="8sp"
+        android:layout_marginTop="4sp"
+        app:layout_constraintHorizontal_bias="0.501"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/efar_logo_white"/>
+
     <ListView
         android:id="@+id/message_list"
         android:layout_width="0sp"
@@ -15,30 +40,41 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
+        android:layout_marginBottom="47sp"
+        android:layout_marginTop="47sp"
         android:background="#d3dee7"
         android:stackFromBottom="true"
-        android:layout_marginLeft="8sp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginRight="8sp"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        android:layout_marginTop="8sp"
-        app:layout_constraintTop_toBottomOf="@+id/back_button"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/send_message_button">
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.6">
     </ListView>
 
+    <ImageView
+        android:id="@+id/imageView19"
+        android:layout_width="0sp"
+        android:layout_height="47sp"
+        android:background="#ffffff"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+
     <Button
-        android:text="Send"
+        android:id="@+id/send_message_button"
+        style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/message_list"
-        android:textColor="#0060ba"
-        android:id="@+id/send_message_button"
+        android:layout_marginBottom="4sp"
         android:layout_marginLeft="8sp"
-        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginStart="8sp"
+        android:text="Send"
+        android:textColor="#0060ba"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="8sp"/>
+        app:layout_constraintLeft_toLeftOf="parent"/>
 
     <EditText
         android:backgroundTint="#331a1a"
@@ -51,15 +87,17 @@
         app:layout_constraintLeft_toRightOf="@+id/send_message_button"
         android:layout_marginLeft="8sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="8sp"/>
+        android:layout_marginBottom="8sp"
+        android:layout_marginStart="8sp"/>
 
     <Button
         android:id="@+id/back_button"
+        style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8sp"
-        android:layout_marginTop="8sp"
         android:text="@string/back_button"
+        android:textSize="12sp"
+        android:textColor="#0060ba"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 

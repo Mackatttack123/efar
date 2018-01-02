@@ -79,8 +79,6 @@ public class MessagingScreenActivity extends AppCompatActivity {
         listView.setAdapter(adapter);
         listView.setClickable(true);
 
-        listView.setBackgroundColor(Color.TRANSPARENT);
-
         FirebaseDatabase.getInstance().getReference("emergencies/" + key).child("messages").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -91,7 +89,6 @@ public class MessagingScreenActivity extends AppCompatActivity {
                 }
 
                 listView.setVisibility(View.VISIBLE);
-                listView.setBackgroundColor(Color.WHITE);
                 listView.setSelection(adapter.getCount() - 1);
 
             }
@@ -155,9 +152,9 @@ public class MessagingScreenActivity extends AppCompatActivity {
 
     // Goes to patient info tab to send more to EFARs
     private void launchEfarMain() {
-
         Intent tolaunchEfarMain = new Intent(this, EFARMainActivity.class);
         startActivity(tolaunchEfarMain);
+        finish();
     }
 
     private void add_message(String name, String message) throws JSONException {
@@ -199,5 +196,12 @@ public class MessagingScreenActivity extends AppCompatActivity {
 
         messageArray.add(display_message);
         adapter.notifyDataSetChanged();
+    }
+
+    //disables the werid transition beteen activities
+    @Override
+    public void onPause() {
+        super.onPause();
+        overridePendingTransition(0, 0);
     }
 }

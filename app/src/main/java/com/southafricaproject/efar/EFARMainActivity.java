@@ -170,7 +170,7 @@ public class EFARMainActivity extends AppCompatActivity {
                 }
 
                 if(position % 2 == 0){
-                    cell.setBackgroundColor(Color.argb(200, 255, 255, 255));
+                    cell.setBackgroundColor(Color.argb(150, 255, 255, 255));
                 }else{
                     cell.setBackgroundColor(Color.argb(150, 224, 224, 224));
                 }
@@ -440,8 +440,8 @@ public class EFARMainActivity extends AppCompatActivity {
                 DatabaseReference token_ref = database.getReference("tokens/" + refreshedToken);
                 token_ref.removeValue();
 
-                finish();
                 launchPatientMainScreen();
+                finish();
             }
         });
 
@@ -472,9 +472,9 @@ public class EFARMainActivity extends AppCompatActivity {
 
     // Goes to patient info tab to send more to EFARs
     private void launchPatientMainScreen() {
-
         Intent toPatientMainScreen = new Intent(this, PatientMainActivity.class);
         startActivity(toPatientMainScreen);
+        finish();
     }
 
     // Goes to patient info tab to send more to EFARs
@@ -536,9 +536,7 @@ public class EFARMainActivity extends AppCompatActivity {
 
     // Starts up launchEfarWriteUpScreen screen
     private void launchEfarWriteUpScreen() {
-
         Intent toLaunchEfarWriteUPScreen = new Intent(this, EFARInfoActivity.class);
-
         startActivity(toLaunchEfarWriteUPScreen);
     }
 
@@ -550,6 +548,13 @@ public class EFARMainActivity extends AppCompatActivity {
         for (int i = 0; i < emergenecyArray.size(); i++) {
             distanceArray.add(String.format("%.2f", distance(emergenecyArray.get(i).getLatitude(), emergenecyArray.get(i).getLongitude(), my_lat, my_long)) + " km");
         }
+    }
+
+    //disables the werid transition beteen activities
+    @Override
+    public void onPause() {
+        super.onPause();
+        overridePendingTransition(0, 0);
     }
 
 }

@@ -124,6 +124,12 @@ public class PatientInfoActivity extends AppCompatActivity {
         return;
     }
 
+    //disables the werid transition beteen activities
+    @Override
+    public void onPause() {
+        super.onPause();
+        overridePendingTransition(0, 0);
+    }
 }
 
 

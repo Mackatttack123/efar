@@ -7,6 +7,31 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <ImageView
+        android:id="@+id/imageView13"
+        android:layout_width="0sp"
+        android:layout_height="47sp"
+        android:background="#ffffff"
+        app:layout_constraintHorizontal_bias="0.6"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <ImageView
+        android:id="@+id/imageView14"
+        android:layout_width="45sp"
+        android:layout_height="39sp"
+        android:layout_marginLeft="8sp"
+        android:layout_marginRight="8sp"
+        android:layout_marginTop="4sp"
+        app:layout_constraintHorizontal_bias="0.501"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/efar_logo_white"
+        android:layout_marginStart="8sp"
+        android:layout_marginEnd="8sp"/>
+
     <Button
         android:text="@string/submit_login_button"
         android:layout_width="wrap_content"
@@ -18,7 +43,9 @@
         android:layout_marginRight="8sp"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginLeft="8sp"
-        app:layout_constraintLeft_toLeftOf="parent"/>
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginStart="8sp"
+        android:layout_marginEnd="8sp"/>
 
     <TextView
         android:text="@string/login_title"
@@ -27,12 +54,15 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:id="@+id/textView"
-        android:layout_marginTop="20sp"
+        android:layout_marginTop="50sp"
         app:layout_constraintTop_toBottomOf="@+id/login_back_button"
         android:layout_marginRight="8sp"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginLeft="8sp"
-        app:layout_constraintLeft_toLeftOf="parent"/>
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginStart="8sp"
+        android:layout_marginEnd="8sp"
+        app:layout_constraintHorizontal_bias="0.502"/>
 
     <TextView
         android:text=""
@@ -41,8 +71,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="135sp"
-        android:id="@+id/errorLoginText" />
+        android:id="@+id/errorLoginText"
+        tools:layout_editor_absoluteY="0sp"
+        tools:layout_editor_absoluteX="0sp"/>
 
     <EditText
         android:layout_width="wrap_content"
@@ -59,7 +90,9 @@
         android:layout_marginRight="8sp"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginLeft="8sp"
-        app:layout_constraintLeft_toLeftOf="parent"/>
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginStart="8sp"
+        android:layout_marginEnd="8sp"/>
 
     <EditText
         android:layout_width="wrap_content"
@@ -76,17 +109,22 @@
         android:layout_marginRight="8sp"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginLeft="8sp"
-        app:layout_constraintLeft_toLeftOf="parent"/>
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginStart="8sp"
+        android:layout_marginEnd="8sp"/>
 
     <Button
-        android:text="@string/back_button"
+        android:id="@+id/login_back_button"
+        style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="0sp"
+        android:layout_marginStart="8sp"
+        android:layout_marginTop="0sp"
+        android:text="@string/back_button"
         android:textColor="#0060ba"
-        android:id="@+id/login_back_button"
-        android:layout_marginLeft="8sp"
+        android:textSize="12sp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="8sp"/>
+        app:layout_constraintTop_toTopOf="parent"/>
 
 </android.support.constraint.ConstraintLayout>

@@ -35,6 +35,7 @@ public class loginScreen extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                launchPatientScreen();
                 finish();
             }
         });
@@ -80,8 +81,15 @@ public class loginScreen extends AppCompatActivity {
     private void launchEfarScreen() {
 
         Intent toEfarScreen = new Intent(this, EFARMainActivity.class);
-
+        finish();
         startActivity(toEfarScreen);
+    }
+
+    // Starts up launchEfarScreen screen
+    private void launchPatientScreen() {
+        Intent toPatientScreen = new Intent(this, PatientMainActivity.class);
+        startActivity(toPatientScreen);
+        finish();
     }
 
     // checks to see if  a user exists in the database
@@ -150,61 +158,11 @@ public class loginScreen extends AppCompatActivity {
         );
     }
 
-}
-
-/*public class DeleteTokenService extends IntentService {
-    public static final String TAG = DeleteTokenService.class.getSimpleName();
-
-    public DeleteTokenService()
-    {
-        super(TAG);
-    }
-
+    //disables the werid transition beteen activities
     @Override
-    protected void onHandleIntent(Intent intent)
-    {
-        try
-        {
-            // Check for current token
-            String originalToken = getTokenFromPrefs();
-            Log.d(TAG, "Token before deletion: " + originalToken);
-
-            // Resets Instance ID and revokes all tokens.
-            FirebaseInstanceId.getInstance().deleteInstanceId();
-
-            // Clear current saved token
-            saveTokenToPrefs("");
-
-            // Check for success of empty token
-            String tokenCheck = getTokenFromPrefs();
-            Log.d(TAG, "Token deleted. Proof: " + tokenCheck);
-
-            // Now manually call onTokenRefresh()
-            Log.d(TAG, "Getting new token");
-            FirebaseInstanceId.getInstance().getToken();
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+    public void onPause() {
+        super.onPause();
+        overridePendingTransition(0, 0);
     }
 
-    private void saveTokenToPrefs(String _token)
-    {
-        // Access Shared Preferences
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = preferences.edit();
-
-        // Save to SharedPreferences
-        editor.putString("registration_id", _token);
-        editor.apply();
-    }
-
-    private String getTokenFromPrefs()
-    {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        return preferences.getString("registration_id", null);
-    }
-}*/
-
-
+}

@@ -46,12 +46,7 @@ public class PatientMainActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
         String id = sharedPreferences.getString("id", "");
         String name = sharedPreferences.getString("name", "");
-
-        //TODO: took this out so that you could switch back to the call for efar screen....but need to add back
-        // and still allow for switching back to call screen
-        /*if(id != ""){
-            checkUser(name, id);
-        }*/
+        String last_screen = sharedPreferences.getString("last_screen", "");
 
         final Button helpMeButton = (Button)findViewById(R.id.help_me_button);
 
@@ -87,6 +82,7 @@ public class PatientMainActivity extends AppCompatActivity {
                     }else if(e_state.equals("2")){
                         userUpdate.setTextColor(Color.GREEN);
                         helpMeButton.setText("CALL FOR EFAR");
+                        helpMeButton.setBackgroundColor(Color.RED);
                         userUpdate.setText("An EFAR has ended your emergency.");
                         // fade out text
                         userUpdate.animate().alpha(0.0f).setDuration(10000);
@@ -131,6 +127,7 @@ public class PatientMainActivity extends AppCompatActivity {
                                             userUpdate.setText("EFARs in your area are being contacted...");
                                             userUpdate.setTextColor(Color.RED);
                                             helpMeButton.setText("CANCEL EFAR");
+                                            helpMeButton.setBackgroundColor(0x55000000);
                                             calling_efar = true;
                                             blinkText();
                                             launchPatientInfoScreen();
@@ -166,6 +163,7 @@ public class PatientMainActivity extends AppCompatActivity {
                                             // take away cancel button
                                             calling_efar = false;
                                             helpMeButton.setText("CALL FOR EFAR");
+                                            helpMeButton.setBackgroundColor(Color.RED);
                                         }
 
                                     })
@@ -238,14 +236,13 @@ public class PatientMainActivity extends AppCompatActivity {
 
     // Starts up login screen
     private void launchLoginScreen() {
-
         Intent toLogin = new Intent(this, loginScreen.class);
         startActivity(toLogin);
+        finish();
     }
 
     // Goes to patient info tab to send more to EFARs
     private void launchPatientInfoScreen() {
-
         Intent toPatientInfoScreen = new Intent(this, PatientInfoActivity.class);
         startActivity(toPatientInfoScreen);
     }
@@ -266,7 +263,7 @@ public class PatientMainActivity extends AppCompatActivity {
     private void launchEfarScreen() {
         Intent toEfarScreen = new Intent(this, EFARMainActivity.class);
         startActivity(toEfarScreen);
-
+        finish();
     }
 
     // checks to see if  a user exists in the database for auto login
@@ -337,6 +334,13 @@ public class PatientMainActivity extends AppCompatActivity {
                 System.out.println("Copy failed");
             }
         });
+    }
+
+    //disables the werid transition beteen activities
+    @Override
+    public void onPause() {
+        super.onPause();
+        overridePendingTransition(0, 0);
     }
 
 }
