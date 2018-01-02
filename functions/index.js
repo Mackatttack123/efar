@@ -24,10 +24,14 @@ exports.sendPushNotificationAdded = functions.database.ref('/emergencies/{id}').
 	    var payload = {
 			notification: {
 				title: "NEW EMERGANCY!",
-				body: "Info given: " + event.data.child('other_info').val(),
+				body: "Message from Patient: " + event.data.child('other_info').val(),
 				//badge: '1',
 				sound: 'default',
 			}
+		};
+		var options = {
+		  priority: "high",
+		  timeToLive: 5
 		};
 		tokens_to_send_to = [];
 		if(efarArray.length >= 5){
@@ -41,8 +45,8 @@ exports.sendPushNotificationAdded = functions.database.ref('/emergencies/{id}').
 			}
 		}
 		//TODO: send a messaged back to patient if no efars respond or are found?
-	    return admin.messaging().sendToDevice(tokens_to_send_to, payload).then(response => {
-				
+	    return admin.messaging().sendToDevice(tokens_to_send_to, payload, options).then(response => {
+					
 		});
 	});
 });

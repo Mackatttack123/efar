@@ -179,6 +179,9 @@ public class PatientMainActivity extends AppCompatActivity {
         Boolean logged_in = sharedPreferences.getBoolean("logged_in", false);
 
         if(logged_in){
+            // start tracking efar
+            startService(new Intent(this, MyService.class));
+
             //change to logout button
             toLoginButton.setText("logout");
             toLoginButton.setOnClickListener(
@@ -192,6 +195,7 @@ public class PatientMainActivity extends AppCompatActivity {
                             FirebaseDatabase database = FirebaseDatabase.getInstance();
                             DatabaseReference userRef = database.getReference("users");
                             userRef.child(sharedPreferences.getString("id", "") + "/logged_in").setValue(false);
+                            userRef.child(sharedPreferences.getString("id", "") + "/token").setValue("null");
                             editor.putString("id", "");
                             editor.putString("name", "");
                             editor.putBoolean("logged_in", false);

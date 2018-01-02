@@ -429,6 +429,7 @@ public class EFARMainActivity extends AppCompatActivity {
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference userRef = database.getReference("users");
                 userRef.child(sharedPreferences.getString("id", "") + "/logged_in").setValue(false);
+                userRef.child(sharedPreferences.getString("id", "") + "/token").setValue("null");
                 editor.putString("id", "");
                 editor.putString("name", "");
                 editor.putBoolean("logged_in", false);
