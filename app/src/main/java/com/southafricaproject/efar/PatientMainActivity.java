@@ -41,7 +41,6 @@ public class PatientMainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions( this, new String[] {  android.Manifest.permission.ACCESS_COARSE_LOCATION  }, 1 );
         }
 
-
         // to auto login if possible
         SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
         String id = sharedPreferences.getString("id", "");
