@@ -71,6 +71,7 @@ public class MyService extends Service {
                 }else{
                     Log.wtf("location update:", "no location update!");
                 }
+
                 //Toast.makeText(context, "Service is still running", Toast.LENGTH_LONG).show();
                 handler.postDelayed(runnable, 10000);
             }

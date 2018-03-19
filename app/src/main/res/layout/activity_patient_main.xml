@@ -9,9 +9,8 @@
 
     <ImageView
         android:id="@+id/imageView11"
-        android:layout_width="match_parent"
+        android:layout_width="0sp"
         android:layout_height="47sp"
-        android:layout_marginTop="0sp"
         android:background="#ffffff"
         app:layout_constraintHorizontal_bias="0.6"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -29,7 +28,9 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/efar_logo_white"/>
+        app:srcCompat="@drawable/efar_logo_white"
+        android:layout_marginStart="8sp"
+        android:layout_marginEnd="8sp"/>
 
     <Button
         android:id="@+id/to_login_button"
@@ -37,8 +38,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8sp"
-        android:layout_marginRight="0sp"
-        android:layout_marginTop="0sp"
+        android:layout_marginRight="8sp"
         android:text="@string/login_button"
         android:textColor="#0060ba"
         android:textSize="12sp"
@@ -51,9 +51,8 @@
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="0sp"
+        android:layout_marginLeft="8sp"
         android:layout_marginStart="8sp"
-        android:layout_marginTop="0sp"
         android:text="Emergecies"
         android:textColor="#0060ba"
         android:textSize="12sp"

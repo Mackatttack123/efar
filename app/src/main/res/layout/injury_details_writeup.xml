@@ -9,9 +9,9 @@
 
     <ImageView
         android:id="@+id/imageView3"
-        android:layout_width="0dp"
-        android:layout_height="700dp"
-        android:layout_marginTop="16dp"
+        android:layout_width="0sp"
+        android:layout_height="700sp"
+        android:layout_marginTop="8sp"
         android:background="#eeeeee"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -19,13 +19,13 @@
 
     <TextView
         android:id="@+id/textView3"
-        android:layout_width="0dp"
-        android:layout_height="31dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_width="0sp"
+        android:layout_height="31sp"
+        android:layout_marginEnd="8sp"
+        android:layout_marginLeft="8sp"
+        android:layout_marginRight="8sp"
+        android:layout_marginStart="8sp"
+        android:layout_marginTop="16sp"
         android:background="#aaaaaa"
         android:text="Box 3: Injury Details"
         android:textAlignment="center"
@@ -38,13 +38,13 @@
 
     <TextView
         android:id="@+id/subTitleTextView1"
-        android:layout_width="301dp"
-        android:layout_height="23dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_width="301sp"
+        android:layout_height="23sp"
+        android:layout_marginEnd="8sp"
+        android:layout_marginLeft="8sp"
+        android:layout_marginRight="8sp"
+        android:layout_marginStart="8sp"
+        android:layout_marginTop="8sp"
         android:background="#ddddff"
         android:text="Violent Injury"
         android:textAlignment="center"
@@ -56,13 +56,13 @@
 
     <TextView
         android:id="@+id/textView6"
-        android:layout_width="301dp"
-        android:layout_height="23dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_width="301sp"
+        android:layout_height="23sp"
+        android:layout_marginEnd="8sp"
+        android:layout_marginLeft="8sp"
+        android:layout_marginRight="8sp"
+        android:layout_marginStart="8sp"
+        android:layout_marginTop="8sp"
         android:background="#ddddff"
         android:text="Motor Vehicle Accident"
         android:textAlignment="center"
@@ -74,13 +74,13 @@
 
     <TextView
         android:id="@+id/textView7"
-        android:layout_width="301dp"
-        android:layout_height="23dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="7dp"
+        android:layout_width="301sp"
+        android:layout_height="23sp"
+        android:layout_marginEnd="8sp"
+        android:layout_marginLeft="8sp"
+        android:layout_marginRight="8sp"
+        android:layout_marginStart="8sp"
+        android:layout_marginTop="7sp"
         android:background="#ddddff"
         android:text="Medical Emergency"
         android:textAlignment="center"
@@ -92,13 +92,13 @@
 
     <TextView
         android:id="@+id/textView9"
-        android:layout_width="301dp"
-        android:layout_height="23dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_width="301sp"
+        android:layout_height="23sp"
+        android:layout_marginEnd="8sp"
+        android:layout_marginLeft="8sp"
+        android:layout_marginRight="8sp"
+        android:layout_marginStart="8sp"
+        android:layout_marginTop="8sp"
         android:background="#ddddff"
         android:text="Injuries And Illness"
         android:textAlignment="center"
@@ -112,23 +112,23 @@
         android:id="@+id/weaponUsedTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginLeft="8sp"
+        android:layout_marginTop="8sp"
         android:text="Weapon Used:"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/subTitleTextView1"
-        android:layout_marginStart="8dp"/>
+        android:layout_marginStart="8sp"/>
 
     <RadioGroup
         android:id="@+id/radioGroupWepons"
         android:orientation='horizontal'
-        android:layout_width="302dp"
-        android:layout_height="28dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_width="302sp"
+        android:layout_height="28sp"
+        android:layout_marginLeft="8sp"
+        android:layout_marginTop="8sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/weaponUsedTextView"
-        android:layout_marginStart="8dp">
+        android:layout_marginStart="8sp">
 
         <RadioButton
             android:id="@+id/radioButtonNoWepon"
@@ -160,11 +160,11 @@
 
     <EditText
         android:id="@+id/editTextWeponOther"
-        android:layout_width="215dp"
+        android:layout_width="215sp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginLeft="8sp"
+        android:layout_marginStart="8sp"
+        android:layout_marginTop="8sp"
         android:ems="10"
         android:inputType="textPersonName"
         android:text="Other..."
@@ -175,12 +175,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation='horizontal'
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="8sp"
         app:layout_constraintTop_toBottomOf="@+id/textView6"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"
         android:id="@+id/radioGroupMotorVehicle"
-        android:layout_marginStart="8dp">
+        android:layout_marginStart="8sp">
 
         <RadioButton
             android:id="@+id/radioButtonPedestrian"
@@ -208,162 +208,162 @@
         android:ems="10"
         android:inputType="textPersonName"
         android:text="Other..."
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="8sp"
+        android:layout_marginTop="8sp"
         app:layout_constraintTop_toBottomOf="@+id/radioGroupMotorVehicle"/>
 
     <CheckBox
         android:id="@+id/checkBoxPoisoning"
-        android:layout_width="96dp"
-        android:layout_height="31dp"
-        android:layout_marginTop="8dp"
+        android:layout_width="96sp"
+        android:layout_height="31sp"
+        android:layout_marginTop="8sp"
         android:text="Poisoning"
         app:layout_constraintTop_toBottomOf="@+id/textView7"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginStart="8dp"/>
+        android:layout_marginStart="8sp"/>
 
     <CheckBox
         android:id="@+id/checkBoxEpilepsy"
-        android:layout_width="96dp"
-        android:layout_height="0dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_width="96sp"
+        android:layout_height="0sp"
+        android:layout_marginLeft="8sp"
+        android:layout_marginStart="8sp"
+        android:layout_marginTop="8sp"
         android:text="Epilepsy"
         app:layout_constraintLeft_toRightOf="@+id/checkBoxDifficultyBreathing"
         app:layout_constraintTop_toBottomOf="@+id/checkBoxDiabetes"/>
 
     <CheckBox
         android:id="@+id/checkBoxAbdominalPain"
-        android:layout_width="107dp"
-        android:layout_height="42dp"
+        android:layout_width="107sp"
+        android:layout_height="42sp"
         android:text="Abdominal Pain"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="8sp"
         app:layout_constraintTop_toBottomOf="@+id/checkBoxStroke"
-        android:layout_marginStart="8dp"/>
+        android:layout_marginStart="8sp"/>
 
     <CheckBox
         android:id="@+id/checkBoxStroke"
-        android:layout_width="96dp"
-        android:layout_height="0dp"
+        android:layout_width="96sp"
+        android:layout_height="0sp"
         android:text="Stroke"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="8sp"
         app:layout_constraintTop_toBottomOf="@+id/checkBoxPoisoning"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginStart="8dp"/>
+        android:layout_marginStart="8sp"/>
 
     <CheckBox
         android:id="@+id/checkBoxUnconscious"
-        android:layout_width="119dp"
-        android:layout_height="31dp"
+        android:layout_width="119sp"
+        android:layout_height="31sp"
         android:text="Unconscious"
         app:layout_constraintLeft_toRightOf="@+id/checkBoxAwake"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginLeft="8sp"
+        android:layout_marginTop="8sp"
         app:layout_constraintTop_toBottomOf="@+id/textView9"
-        android:layout_marginStart="8dp"/>
+        android:layout_marginStart="8sp"/>
 
     <CheckBox
         android:id="@+id/checkBoxChoking"
-        android:layout_width="96dp"
-        android:layout_height="0dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_width="96sp"
+        android:layout_height="0sp"
+        android:layout_marginLeft="8sp"
+        android:layout_marginStart="8sp"
+        android:layout_marginTop="8sp"
         android:text="Choking"
         app:layout_constraintLeft_toRightOf="@+id/checkBoxUnconscious"
         app:layout_constraintTop_toBottomOf="@+id/textView9"/>
 
     <CheckBox
         android:id="@+id/checkBoxFracture"
-        android:layout_width="96dp"
-        android:layout_height="0dp"
+        android:layout_width="96sp"
+        android:layout_height="0sp"
         android:text="Fracture"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="8sp"
         app:layout_constraintTop_toBottomOf="@+id/checkBoxAwake"
         app:layout_constraintLeft_toRightOf="@+id/checkBoxBleeding"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"/>
+        android:layout_marginLeft="8sp"
+        android:layout_marginStart="8sp"/>
 
     <CheckBox
         android:id="@+id/checkBoxBleeding"
-        android:layout_width="96dp"
-        android:layout_height="0dp"
+        android:layout_width="96sp"
+        android:layout_height="0sp"
         android:text="Bleeding"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="8sp"
         app:layout_constraintTop_toBottomOf="@+id/checkBoxAwake"
-        android:layout_marginStart="8dp"/>
+        android:layout_marginStart="8sp"/>
 
     <CheckBox
         android:id="@+id/checkBoxBurns"
-        android:layout_width="96dp"
-        android:layout_height="0dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_width="96sp"
+        android:layout_height="0sp"
+        android:layout_marginLeft="8sp"
+        android:layout_marginStart="8sp"
+        android:layout_marginTop="8sp"
         android:text="Burns"
         app:layout_constraintLeft_toRightOf="@+id/checkBoxFracture"
         app:layout_constraintTop_toBottomOf="@+id/checkBoxAwake"/>
 
     <CheckBox
         android:id="@+id/checkBoxAwake"
-        android:layout_width="80dp"
-        android:layout_height="31dp"
+        android:layout_width="80sp"
+        android:layout_height="31sp"
         android:text="Awake"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="8sp"
         app:layout_constraintTop_toBottomOf="@+id/textView9"
-        android:layout_marginStart="8dp"/>
+        android:layout_marginStart="8sp"/>
 
     <CheckBox
         android:id="@+id/checkBoxDifficultyBreathing"
-        android:layout_width="96dp"
-        android:layout_height="0dp"
+        android:layout_width="96sp"
+        android:layout_height="0sp"
         android:text="Difficulty Breathing"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="8sp"
         app:layout_constraintTop_toBottomOf="@+id/checkBoxChestPain"
         app:layout_constraintLeft_toRightOf="@+id/checkBoxStroke"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"/>
+        android:layout_marginLeft="8sp"
+        android:layout_marginStart="8sp"/>
 
     <CheckBox
         android:id="@+id/checkBoxDiabetes"
-        android:layout_width="96dp"
-        android:layout_height="33dp"
-        android:layout_marginTop="8dp"
+        android:layout_width="96sp"
+        android:layout_height="33sp"
+        android:layout_marginTop="8sp"
         android:text="Diabetes"
         app:layout_constraintTop_toBottomOf="@+id/textView7"
         app:layout_constraintLeft_toRightOf="@+id/checkBoxChestPain"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"/>
+        android:layout_marginLeft="8sp"
+        android:layout_marginStart="8sp"/>
 
     <CheckBox
         android:id="@+id/checkBoxChestPain"
-        android:layout_width="96dp"
-        android:layout_height="33dp"
-        android:layout_marginTop="8dp"
+        android:layout_width="96sp"
+        android:layout_height="33sp"
+        android:layout_marginTop="8sp"
         android:text="Chest Pain"
         app:layout_constraintTop_toBottomOf="@+id/textView7"
         app:layout_constraintLeft_toRightOf="@+id/checkBoxPoisoning"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"/>
+        android:layout_marginLeft="8sp"
+        android:layout_marginStart="8sp"/>
 
     <EditText
         android:id="@+id/editTextInjuriesOther"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginLeft="8sp"
+        android:layout_marginStart="8sp"
+        android:layout_marginTop="8sp"
         android:ems="10"
         android:inputType="textPersonName"
         android:text="Other..."
@@ -377,18 +377,18 @@
         android:ems="10"
         android:inputType="textPersonName"
         android:text="Other..."
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="8sp"
         app:layout_constraintTop_toBottomOf="@+id/checkBoxAbdominalPain"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="8sp"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginStart="8dp"/>
+        android:layout_marginStart="8sp"/>
 
     <CheckBox
         android:id="@+id/checkBoxDehydrated"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginLeft="8sp"
+        android:layout_marginTop="8sp"
         android:text="Dehydrated"
         app:layout_constraintLeft_toRightOf="@+id/checkBoxAbdominalPain"
         app:layout_constraintTop_toBottomOf="@+id/checkBoxDifficultyBreathing"/>

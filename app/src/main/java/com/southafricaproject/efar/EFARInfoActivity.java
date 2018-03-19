@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -46,6 +47,27 @@ public class EFARInfoActivity extends AppCompatActivity {
         Adapter writeUpAdapter = new WriteUpCustomAdapter();
         writeUpListView.setAdapter((ListAdapter) writeUpAdapter);
 
+        //check database connection
+        /*DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
+        connectedRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                boolean connected = snapshot.getValue(Boolean.class);
+                if (!connected) {
+                    new AlertDialog.Builder(EFARInfoActivity.this)
+                            .setTitle("Connection Error:")
+                            .setMessage("Your device is currently unable connect to our services. " +
+                                    "Please check your connection or try again later.")
+                            .show();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                System.err.println("Listener was cancelled");
+            }
+        });*/
+
     }
 
     private class WriteUpCustomAdapter extends BaseAdapter {
@@ -80,7 +102,7 @@ public class EFARInfoActivity extends AppCompatActivity {
                     new AlertDialog.Builder(EFARInfoActivity.this)
                             .setIcon(android.R.drawable.ic_dialog_alert)
                             .setTitle("Submit Report")
-                            .setMessage("Are you sure you want to submit this report?")
+                            .setMessage("Are you sure you want to submit this report? Sending all the information to database may take a few minutes.")
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -90,6 +112,8 @@ public class EFARInfoActivity extends AppCompatActivity {
                                     FirebaseDatabase database = FirebaseDatabase.getInstance();
                                     DatabaseReference emergency_ref = database.getReference("emergencies/" + finished_emergency_key);
                                     emergency_ref.child("/state").setValue("2");
+                                    //give slight delay so patients phone can be updated before the data is moved
+                                    SystemClock.sleep(100); //ms
                                     Date currentTime = Calendar.getInstance().getTime();
                                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
                                     String timestamp = simpleDateFormat.format(currentTime);

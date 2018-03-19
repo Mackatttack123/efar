@@ -15,14 +15,15 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
 
+//pretty sure we fixed the multiple notifiction problem...fingers crossed
 exports.sendPushNotificationAdded = functions.database.ref('/emergencies/{id}').onCreate(event => {
-	return admin.database().ref('/tokens').on('value', function(snapshot) {
+	return admin.database().ref('/tokens').once('value', function(snapshot) {
 	    var efarArray = snapshotToArray(snapshot, event.data.child('latitude').val(), event.data.child('longitude').val());
 	    efarArray.sort(function(a, b) {
 		    return a.distance - b.distance;
 		});
 	    var payload = {
-			notification: {
+			data: {
 				title: "NEW EMERGANCY!",
 				body: "Message from Patient: " + event.data.child('other_info').val(),
 				//badge: '1',
@@ -31,7 +32,7 @@ exports.sendPushNotificationAdded = functions.database.ref('/emergencies/{id}').
 		};
 		var options = {
 		  priority: "high",
-		  timeToLive: 5
+		  timeToLive: 0
 		};
 		tokens_to_send_to = [];
 		if(efarArray.length >= 5){
@@ -70,9 +71,32 @@ function snapshotToArray(snapshot, incoming_latitude, incoming_longitude) {
     return returnArr;
 };
 
-exports.sendPushNotificationCanceled = functions.database.ref('/canceled/{id}').onCreate(event => {
+/*
+// this works, but sends one notification to every efar :(
+exports.sendPushNotificationAdded = functions.database.ref('/emergencies/{id}').onCreate(event => {
 	const payload = {
 		notification: {
+			title: "New Emergency!",
+			body: "Message from Patient: " + event.data.child('other_info').val(),
+			//badge: '1',
+			sound: 'default',
+		}
+	};
+	return admin.database().ref('tokens').once("value").then(allToken => {
+		if (allToken.val()){
+			const token = Object.keys(allToken.val());
+			return admin.messaging().sendToDevice(token, payload).then(response => {
+
+			});
+		};
+	});
+});*/
+
+
+//proably don't need to two push notification senders below?
+exports.sendPushNotificationCanceled = functions.database.ref('/canceled/{id}').onCreate(event => {
+	const payload = {
+		data: {
 			title: "Emergency Canceled:",
 			body: 'An emergancy in your area has been canceled.',
 			//badge: '1',
@@ -91,7 +115,7 @@ exports.sendPushNotificationCanceled = functions.database.ref('/canceled/{id}').
 
 exports.sendPushNotificationCompleted = functions.database.ref('/completed/{id}').onCreate(event => {
 	const payload = {
-		notification: {
+		data: {
 			title: "Emergency Over:",
 			body: 'An emergancy in your area is now over.',
 			//badge: '1',

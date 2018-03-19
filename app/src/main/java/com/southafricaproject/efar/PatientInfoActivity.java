@@ -1,5 +1,6 @@
 package com.southafricaproject.efar;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
@@ -44,6 +45,27 @@ public class PatientInfoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_patient_info);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+
+        //check database connection
+        /*DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
+        connectedRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                boolean connected = snapshot.getValue(Boolean.class);
+                if (!connected) {
+                    new AlertDialog.Builder(PatientInfoActivity.this)
+                            .setTitle("Connection Error:")
+                            .setMessage("Your device is currently unable connect to our services. " +
+                                    "Please check your connection or try again later.")
+                            .show();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                System.err.println("Listener was cancelled");
+            }
+        });*/
 
         GPSTracker gps = new GPSTracker(this);
         // check if GPS is avalible
@@ -114,6 +136,7 @@ public class PatientInfoActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         String key = emergency_key.getKey().toString();
         editor.putString("emergency_key", key);
+        editor.putString("user_emergency_state", "0");
         editor.commit();
         Log.wtf("Patient Info", "Creating New Emergency!");
     }

@@ -3,6 +3,9 @@ package com.southafricaproject.efar;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.Build;
+import android.os.Vibrator;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +14,8 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.content.Intent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.view.animation.AlphaAnimation;
@@ -27,10 +32,13 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.iid.FirebaseInstanceId;
 
+import java.util.Random;
+
 public class PatientMainActivity extends AppCompatActivity {
 
     boolean calling_efar = false;
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +48,28 @@ public class PatientMainActivity extends AppCompatActivity {
 
             ActivityCompat.requestPermissions( this, new String[] {  android.Manifest.permission.ACCESS_COARSE_LOCATION  }, 1 );
         }
+
+        //check database connection
+        /*DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
+        connectedRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                boolean connected = snapshot.getValue(Boolean.class);
+                if (!connected) {
+                    new AlertDialog.Builder(PatientMainActivity.this)
+                            .setTitle("Connection Error:")
+                            .setMessage("Your device is currently unable connect to our services. " +
+                                    "Please check your connection or try again later.")
+                            .show();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                System.err.println("Listener was cancelled");
+            }
+        });*/
+
 
         // to auto login if possible
         SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
@@ -67,26 +97,54 @@ public class PatientMainActivity extends AppCompatActivity {
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 
-                SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                String userEmergencyKey = sharedPreferences.getString("emergency_key", "");
+                if(dataSnapshot.child("state").exists()){
 
-                String e_key = dataSnapshot.getKey();
-                if(e_key.equals(userEmergencyKey)){
-                    TextView userUpdate = (TextView) findViewById(R.id.user_update );
-                    String e_state = dataSnapshot.child("state").getValue().toString();
-                    if(e_state.equals("1")){
-                        userUpdate.setText("An EFAR has been contacted and is responding...");
-                        userUpdate.setTextColor(Color.BLUE);
-                    }else if(e_state.equals("2")){
-                        userUpdate.setTextColor(Color.GREEN);
-                        helpMeButton.setText("CALL FOR EFAR");
-                        helpMeButton.setBackgroundColor(Color.RED);
-                        userUpdate.setText("An EFAR has ended your emergency.");
-                        // fade out text
-                        userUpdate.animate().alpha(0.0f).setDuration(10000);
-                        calling_efar = false;
+                    SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    String userEmergencyKey = sharedPreferences.getString("emergency_key", "");
+                    editor.putString("user_emergency_state", dataSnapshot.child("state").getValue().toString());
+                    editor.apply();
+
+                    String e_key = dataSnapshot.getKey();
+                    if(e_key.equals(userEmergencyKey)){
+                        TextView userUpdate = (TextView) findViewById(R.id.user_update );
+                        String e_state = dataSnapshot.child("state").getValue().toString();
+                        if(e_state.equals("1")){
+                            helpMeButton.setText("CANCEL EFAR");
+                            helpMeButton.setBackgroundColor(0x55000000);
+                            calling_efar = true;
+                            blinkText();
+                            userUpdate.setText("An EFAR has been contacted and is responding...");
+                            userUpdate.setTextColor(Color.BLUE);
+                        }else if(e_state.equals("2")){
+                            userUpdate.setTextColor(Color.GREEN);
+                            helpMeButton.setText("CALL FOR EFAR");
+                            helpMeButton.setBackgroundColor(Color.RED);
+                            userUpdate.setText("An EFAR has ended your emergency.");
+                            // fade out text
+                            userUpdate.animate().alpha(0.0f).setDuration(10000);
+                            editor.putString("emergency_key", "");
+                            editor.apply();
+                            calling_efar = false;
+                        }else if(e_state.equals("0")){
+                            userUpdate.animate().alpha(1.0f).setDuration(1);
+                            userUpdate.setText("EFARs in your area are being contacted...");
+                            userUpdate.setTextColor(Color.RED);
+                            helpMeButton.setText("CANCEL EFAR");
+                            helpMeButton.setBackgroundColor(0x55000000);
+                            calling_efar = true;
+                            blinkText();
+                        }
                     }
+                }else{
+                    SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.remove("emergency_key");
+                    editor.putString("user_emergency_state", "100");
+                    editor.apply();
+                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    DatabaseReference emergency_ref = database.getReference("emergencies/" + dataSnapshot.getKey());
+                    emergency_ref.removeValue();
                 }
             }
 
@@ -159,6 +217,11 @@ public class PatientMainActivity extends AppCompatActivity {
                                             emergency_state_ref.setValue("-1");
                                             moveFirebaseRecord(emergency_ref, database.getReference("canceled/" + emergency_key_to_delete));
                                             emergency_ref.removeValue();
+                                            //clear the emergency key and state
+                                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                                            editor.remove("emergency_key");
+                                            editor.putString("user_emergency_state", "100");
+                                            editor.apply();
                                             // take away cancel button
                                             calling_efar = false;
                                             helpMeButton.setText("CALL FOR EFAR");
@@ -234,6 +297,21 @@ public class PatientMainActivity extends AppCompatActivity {
             );
             toEmergencyListButton.setVisibility(View.GONE);
         }
+
+        // check for a pre-existing emergency on this phone by pinging the database and activating the listener above
+        String userEmergencyKey = sharedPreferences.getString("emergency_key", "");
+        if(!userEmergencyKey.equals("")){
+            String userEmergencyState = sharedPreferences.getString("user_emergency_state", "");
+            Log.wtf("KEY ------------->", userEmergencyKey + " STATE -------->: " + userEmergencyState);
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference emergency_ping_ref = database.getReference("emergencies/" + userEmergencyKey + "/ping");
+            final int min = 0;
+            final int max = 10000;
+            Random r = new Random();
+            int random = r.nextInt((max - min) + 1) + min;
+            emergency_ping_ref.setValue(random);
+        }
+
 
     }
 

@@ -1,5 +1,6 @@
 package com.southafricaproject.efar;
 
+import android.app.AlertDialog;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -39,6 +40,27 @@ public class loginScreen extends AppCompatActivity {
                 finish();
             }
         });
+
+        //check database connection
+        /*DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
+        connectedRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                boolean connected = snapshot.getValue(Boolean.class);
+                if (!connected) {
+                    new AlertDialog.Builder(loginScreen.this)
+                            .setTitle("Connection Error:")
+                            .setMessage("Your device is currently unable connect to our services. " +
+                                    "Please check your connection or try again later.")
+                            .show();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                System.err.println("Listener was cancelled");
+            }
+        });*/
 
         Button submitButton = (Button) findViewById(R.id.login_submit_button);
 

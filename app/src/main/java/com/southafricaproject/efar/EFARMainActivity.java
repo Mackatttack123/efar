@@ -58,47 +58,9 @@ import java.util.Locale;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-class Emergency {
-    private String key;
-    private String address;
-    private Double latitude;
-    private Double longitude;
-    private String phone_number;
-    private String info;
-    private String creationDate;
-    private String respondingEfar;
-    private String state;
-
-    // constructor
-    public Emergency(String key, String address, Double latitude, Double longitude,
-                     String phone_number, String info, String creationDate, String respondingEfar, String state) {
-        this.key = key;
-        this.address = address;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.phone_number = phone_number;
-        this.info = info;
-        this.creationDate = creationDate;
-        this.respondingEfar = respondingEfar;
-        this.state = state;
-    }
-
-    // getter
-    public String getKey() { return key; }
-    public String getAddress() { return address; }
-    public Double getLatitude() { return latitude; }
-    public Double getLongitude() { return longitude; }
-    public String getPhone() { return phone_number; }
-    public String getInfo() { return info; }
-    public String getCreationDate() { return creationDate; }
-    public String getRespondingEfar() { return respondingEfar; }
-    public String getState() { return state; }
-}
-
 
 public class EFARMainActivity extends AppCompatActivity {
 
-    //TODO: sort emergencics by distance away
     final ArrayList<String> distanceArray = new ArrayList<String>();
     final ArrayList<Emergency> emergenecyArray = new ArrayList<Emergency>();
     /**
@@ -121,6 +83,27 @@ public class EFARMainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_efarmain);
+
+        //check database connection
+        /*DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
+        connectedRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                boolean connected = snapshot.getValue(Boolean.class);
+                if (!connected) {
+                    new AlertDialog.Builder(EFARMainActivity.this)
+                            .setTitle("Connection Error:")
+                            .setMessage("Your device is currently unable connect to our services. " +
+                                    "Please check your connection or try again later.")
+                            .show();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                System.err.println("Listener was cancelled");
+            }
+        });*/
 
         // start tracking efar
         startService(new Intent(this, MyService.class));
@@ -288,7 +271,26 @@ public class EFARMainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
 
-                final int pos = position;
+                String mapLink = "http://maps.google.com/?q=" + emergenecyArray.get(position).getLatitude() + ","  + emergenecyArray.get(position).getLongitude();
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                Date timeCreated = null;
+                try {
+                    timeCreated = simpleDateFormat.parse(emergenecyArray.get(position).getCreationDate());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                SimpleDateFormat displayTimeFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");
+                String dipslayTime = displayTimeFormat.format(timeCreated);
+                launchEmergencyInfoScreen(emergenecyArray.get(position).getCreationDate(),
+                                            emergenecyArray.get(position).getLatitude().toString(),
+                                            emergenecyArray.get(position).getLongitude().toString(),
+                                            emergenecyArray.get(position).getAddress(),
+                                            emergenecyArray.get(position).getPhone(),
+                                            emergenecyArray.get(position).getInfo(),
+                                            emergenecyArray.get(position).getRespondingEfar(),
+                                            emergenecyArray.get(position).getKey(),
+                                            emergenecyArray.get(position).getState());
+                /*final int pos = position;
                 Object o = listView.getItemAtPosition(position);
                 String phoneLink = "tel:" + emergenecyArray.get(position).getPhone().replaceAll("[^\\d.]", "");
                 String mapLink = "http://maps.google.com/?q=" + emergenecyArray.get(position).getLatitude() + ","  + emergenecyArray.get(position).getLongitude();
@@ -409,7 +411,7 @@ public class EFARMainActivity extends AppCompatActivity {
                     d.setTitle(Html.fromHtml("<h3><u>Emergency Information</u></h3>")); // or for older api
                 }
                 d.show();
-                ((TextView)d.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
+                ((TextView)d.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());*/
             }
 
 
@@ -475,6 +477,22 @@ public class EFARMainActivity extends AppCompatActivity {
     private void launchPatientMainScreen() {
         Intent toPatientMainScreen = new Intent(this, PatientMainActivity.class);
         startActivity(toPatientMainScreen);
+        finish();
+    }
+
+    // Goes to emergency info tab to send more to EFARs
+    private void launchEmergencyInfoScreen(String time, String latitude, String longitude, String address, String phoneNumber, String info, String id, String key, String state) {
+        Intent toEmergnecyInfoScreen = new Intent(this, EmergencyInfoActivity.class);
+        toEmergnecyInfoScreen.putExtra("time", time);
+        toEmergnecyInfoScreen.putExtra("lat", latitude);
+        toEmergnecyInfoScreen.putExtra("long", longitude);
+        toEmergnecyInfoScreen.putExtra("address", address);
+        toEmergnecyInfoScreen.putExtra("phoneNumber", phoneNumber);
+        toEmergnecyInfoScreen.putExtra("info", info);
+        toEmergnecyInfoScreen.putExtra("id", id);
+        toEmergnecyInfoScreen.putExtra("key", key);
+        toEmergnecyInfoScreen.putExtra("state", state);
+        startActivity(toEmergnecyInfoScreen);
         finish();
     }
 
