@@ -123,6 +123,9 @@ public class MessagingScreenActivity extends AppCompatActivity {
                 }catch (NullPointerException e){
                     Log.wtf("added", "not yet");
                 }
+
+                listView.setVisibility(View.VISIBLE);
+                listView.setSelection(adapter.getCount() - 1);
             }
 
             @Override
@@ -148,7 +151,6 @@ public class MessagingScreenActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 finish();
-                launchEfarMain();
             }
         });
 
@@ -219,6 +221,7 @@ public class MessagingScreenActivity extends AppCompatActivity {
 
         messageArray.add(display_message);
         adapter.notifyDataSetChanged();
+
     }
 
     //disables the werid transition beteen activities

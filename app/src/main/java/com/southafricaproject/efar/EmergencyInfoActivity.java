@@ -117,8 +117,12 @@ public class EmergencyInfoActivity extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         final String time = bundle.getString("time");
         final String key = bundle.getString("key");
-        final String state = bundle.getString("state");
+        final String state  = bundle.getString("state");
 
+        setUpButtons(key, time, state);
+    }
+
+    private void setUpButtons(final String key, final String time, final String state) {
         //button to get back to patient screen
         Button backButton = (Button) findViewById(R.id.back_button);
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -152,7 +156,8 @@ public class EmergencyInfoActivity extends AppCompatActivity {
                                     SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
                                     DatabaseReference efar_ref = database.getReference("emergencies/" + keyToUpdate + "/responding_efar");
                                     efar_ref.setValue(sharedPreferences.getString("id", ""));
-                                    launchEfarMain();
+
+                                    setUpButtons(key, time, "1");
                                 }
 
                             })
@@ -193,7 +198,6 @@ public class EmergencyInfoActivity extends AppCompatActivity {
                 }
             });
         }
-
     }
 
     private class EmergnecyInfoCustomAdapter extends BaseAdapter {
@@ -275,7 +279,11 @@ public class EmergencyInfoActivity extends AppCompatActivity {
             phoneNumberText.setText(phoneTextSpan);
             phoneNumberText.setMovementMethod(LinkMovementMethod.getInstance());
             infoText.setText("Info Given: \n" + info);
-            idText.setText("Responder ID: " + id);
+            if(!id.equals("") && !id.equals("N/A")) {
+                idText.setText("Responder ID: " + id);
+            }else{
+                idText.setText("");
+            }
 
             return cell;
         }
@@ -292,14 +300,11 @@ public class EmergencyInfoActivity extends AppCompatActivity {
     private void launchEfarWriteUpScreen() {
         Intent toLaunchEfarWriteUPScreen = new Intent(this, EFARInfoActivity.class);
         startActivity(toLaunchEfarWriteUPScreen);
-        finish();
     }
 
     // Goes to patient info tab to send more to EFARs
     private void launchMessagingScreen() {
-        finish();
         Intent launchMessagingScreen = new Intent(this, MessagingScreenActivity.class);
         startActivity(launchMessagingScreen);
-        finish();
     }
 }

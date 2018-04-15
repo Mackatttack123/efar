@@ -76,6 +76,18 @@ public class PatientMainActivity extends AppCompatActivity {
         String id = sharedPreferences.getString("id", "");
         String name = sharedPreferences.getString("name", "");
         String last_screen = sharedPreferences.getString("last_screen", "");
+        boolean efar_logged_in = sharedPreferences.getBoolean("logged_in", false);
+        //to skip past the patient screen if efar opens the app and is loggd in
+        boolean screen_bypass = sharedPreferences.getBoolean("screen_bypass", true);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        if(efar_logged_in && screen_bypass){
+            editor.putBoolean("screen_bypass", false);
+            editor.apply();
+            launchEfarScreen();
+        }else {
+            editor.putBoolean("screen_bypass", true);
+            editor.apply();
+        }
 
         final Button helpMeButton = (Button)findViewById(R.id.help_me_button);
 
@@ -116,16 +128,6 @@ public class PatientMainActivity extends AppCompatActivity {
                             blinkText();
                             userUpdate.setText("An EFAR has been contacted and is responding...");
                             userUpdate.setTextColor(Color.BLUE);
-                        }else if(e_state.equals("2")){
-                            userUpdate.setTextColor(Color.GREEN);
-                            helpMeButton.setText("CALL FOR EFAR");
-                            helpMeButton.setBackgroundColor(Color.RED);
-                            userUpdate.setText("An EFAR has ended your emergency.");
-                            // fade out text
-                            userUpdate.animate().alpha(0.0f).setDuration(10000);
-                            editor.putString("emergency_key", "");
-                            editor.apply();
-                            calling_efar = false;
                         }else if(e_state.equals("0")){
                             userUpdate.animate().alpha(1.0f).setDuration(1);
                             userUpdate.setText("EFARs in your area are being contacted...");
@@ -150,7 +152,18 @@ public class PatientMainActivity extends AppCompatActivity {
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-
+                TextView userUpdate = (TextView) findViewById(R.id.user_update );
+                SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                userUpdate.setTextColor(Color.GREEN);
+                helpMeButton.setText("CALL FOR EFAR");
+                helpMeButton.setBackgroundColor(Color.RED);
+                userUpdate.setText("Emergency has been ended.");
+                // fade out text
+                userUpdate.animate().alpha(0.0f).setDuration(10000);
+                editor.putString("emergency_key", "");
+                editor.apply();
+                calling_efar = false;
             }
 
             @Override

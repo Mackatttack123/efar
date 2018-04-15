@@ -4,6 +4,18 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
+    <Button
+        android:id="@+id/back_button"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:text="@string/back_button"
+        android:textColor="#0060ba"
+        android:textSize="12dp"/>
+
+
     <ListView
         android:id="@+id/writeUpListView"
         android:layout_width="match_parent"

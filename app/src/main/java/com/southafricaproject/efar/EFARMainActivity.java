@@ -290,128 +290,6 @@ public class EFARMainActivity extends AppCompatActivity {
                                             emergenecyArray.get(position).getRespondingEfar(),
                                             emergenecyArray.get(position).getKey(),
                                             emergenecyArray.get(position).getState());
-                /*final int pos = position;
-                Object o = listView.getItemAtPosition(position);
-                String phoneLink = "tel:" + emergenecyArray.get(position).getPhone().replaceAll("[^\\d.]", "");
-                String mapLink = "http://maps.google.com/?q=" + emergenecyArray.get(position).getLatitude() + ","  + emergenecyArray.get(position).getLongitude();
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-                Date timeCreated = null;
-                try {
-                    timeCreated = simpleDateFormat.parse(emergenecyArray.get(position).getCreationDate());
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                SimpleDateFormat displayTimeFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");
-                String dipslayTime = displayTimeFormat.format(timeCreated);
-
-                SpannableString message;
-                if(emergenecyArray.get(position).getState().equals("1")){
-                    message = new SpannableString("<p><b>Created: </b>" + dipslayTime + "</p><p><b>Location:</b> <a href=" + mapLink + ">(" + String.format("%.2f", emergenecyArray.get(position).getLatitude())
-                            + ", " + String.format("%.2f", emergenecyArray.get(position).getLongitude()) + ")</a></p><p><b>Address:</b> <a href=" + mapLink + ">" + emergenecyArray.get(position).getAddress()
-                            + "</a></p><p><b>Senders #:</b> <a href=" + phoneLink + ">" + emergenecyArray.get(position).getPhone() + "</a></p><p><b>Other Info:</b> " + emergenecyArray.get(position).getInfo()
-                            + "</p><p><b>Responder ID:</b> " + emergenecyArray.get(position).getRespondingEfar());
-                }else{
-                    message = new SpannableString("<p><b>Created: </b>" + dipslayTime + "</p><p><b>Location:</b> <a href=" + mapLink + ">(" + String.format("%.2f", emergenecyArray.get(position).getLatitude())
-                            + ", " + String.format("%.2f", emergenecyArray.get(position).getLongitude()) + ")</a></p><p><b>Address:</b> <a href=" + mapLink + ">" + emergenecyArray.get(position).getAddress()
-                            + "</a></p><p><b>Senders #:</b> <a href=" + phoneLink + ">" + emergenecyArray.get(position).getPhone() + "</a></p><p><b>Other Info:</b> " + emergenecyArray.get(position).getInfo());
-                }
-
-                if (Build.VERSION.SDK_INT >= 24) {
-                    message = SpannableString.valueOf(Html.fromHtml(String.valueOf(message), 0)); // for 24 api and more
-                } else {
-                    message = SpannableString.valueOf(Html.fromHtml(String.valueOf(message))); // or for older api
-                }
-
-                if(emergenecyArray.get(position).getState().equals("0")){
-                    alertButton_respond_end_option = "Respond";
-                }else{
-                    alertButton_respond_end_option = "End";
-                }
-
-                if(emergenecyArray.get(position).getState().equals("0")){
-                    alertButton_message_option = "";
-                }else{
-                    alertButton_message_option = "messages";
-                }
-
-                final AlertDialog d = new AlertDialog.Builder(EFARMainActivity.this)
-                        .setIcon(0)
-                        .setMessage(message)
-                        .setPositiveButton("Exit", null)
-                        .setNegativeButton(alertButton_message_option, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                if(alertButton_message_option.equals("messages")) {
-                                    // store emergency key to be passed to messages
-                                    SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
-                                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                                    editor.putString("messaging_key", emergenecyArray.get(pos).getKey());
-                                    editor.commit();
-                                    launchMessagingScreen();
-                                }
-                            }
-                        })
-                        .setNeutralButton(alertButton_respond_end_option, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                if(alertButton_respond_end_option.equals("Respond")){
-                                    new AlertDialog.Builder(EFARMainActivity.this)
-                                            .setIcon(android.R.drawable.ic_dialog_alert)
-                                            .setTitle("Respond to Emergency:")
-                                            .setMessage("Are you able to respond to this emergency?")
-                                            .setPositiveButton("Yes", new DialogInterface.OnClickListener()
-                                            {
-                                                final String keyToUpdate = emergenecyArray.get(pos).getKey();
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                                    DatabaseReference emergency_ref = database.getReference("emergencies/" + keyToUpdate + "/state");
-                                                    emergency_ref.setValue("1");
-                                                    SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
-                                                    DatabaseReference efar_ref = database.getReference("emergencies/" + keyToUpdate + "/responding_efar");
-                                                    efar_ref.setValue(sharedPreferences.getString("id", ""));
-                                                }
-
-                                            })
-                                            .setNegativeButton("No", null)
-                                            .show();
-                                }else if(alertButton_respond_end_option.equals("End")) {
-                                    new AlertDialog.Builder(EFARMainActivity.this)
-                                            .setIcon(android.R.drawable.ic_dialog_alert)
-                                            .setTitle("End Emergency")
-                                            .setMessage("Are you sure you want to end this emergency?\n\n" +
-                                                    "Ending it will remove it from the emergency stream for good, and you will need to fill out and Emergency Write-Up.")
-                                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                                // to delete the emergency
-                                                final String keyToMove = emergenecyArray.get(pos).getKey();
-
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
-                                                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                                                    editor.putString("finished_emergency_key", keyToMove);
-                                                    editor.putString("finished_emergency_date", emergenecyArray.get(pos).getCreationDate());
-                                                    editor.commit();
-                                                    launchEfarWriteUpScreen();
-                                                }
-
-                                            })
-                                            .setNegativeButton("No", null)
-                                            .show();
-                                }
-
-                            }
-                        })
-                        .setCancelable(false)
-                        .create();
-
-                if (Build.VERSION.SDK_INT >= 24) {
-                    d.setTitle(Html.fromHtml("<h3><u>Emergency Information</u></h3>", 0)); // for 24 api and more
-                } else {
-                    d.setTitle(Html.fromHtml("<h3><u>Emergency Information</u></h3>")); // or for older api
-                }
-                d.show();
-                ((TextView)d.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());*/
             }
 
 
@@ -436,7 +314,7 @@ public class EFARMainActivity extends AppCompatActivity {
                 editor.putString("name", "");
                 editor.putBoolean("logged_in", false);
                 stopService(new Intent(EFARMainActivity.this, MyService.class));
-                editor.commit();
+                editor.apply();
 
                 //clear the phones token for the database
                 String refreshedToken = FirebaseInstanceId.getInstance().getToken();
