@@ -142,7 +142,7 @@ public class EFARMainActivity extends AppCompatActivity {
                     //cell.setBackgroundColor(Color.argb(150, 255, 0, 0));
                     activeStateText.setText("Awaiting Response!");
                     activeStateText.setTextColor(Color.argb(255, 200, 0, 0));
-                }else if(emergenecyArray.get(position).getRespondingEfar().equals(id)){
+                }else if(emergenecyArray.get(position).getRespondingEfar().contains(id)){
                     //cell.setBackgroundColor(Color.argb(150, 0, 255, 0));
                     activeStateText.setText("Responded To (Me)");
                     activeStateText.setTextColor(Color.argb(255, 0, 153, 0));

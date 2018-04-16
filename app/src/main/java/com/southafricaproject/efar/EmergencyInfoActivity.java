@@ -136,6 +136,8 @@ public class EmergencyInfoActivity extends AppCompatActivity {
 
         Button endButton = (Button) findViewById(R.id.endButton);
 
+        final Button respondButton = (Button) findViewById(R.id.respondButton);
+
         if(state.equals("0")){
             messageButton.setText("Respond");
             messageButton.setOnClickListener(new View.OnClickListener() {
@@ -150,12 +152,30 @@ public class EmergencyInfoActivity extends AppCompatActivity {
                                 final String keyToUpdate = key;
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                    final FirebaseDatabase database = FirebaseDatabase.getInstance();
                                     DatabaseReference emergency_ref = database.getReference("emergencies/" + keyToUpdate + "/state");
                                     emergency_ref.setValue("1");
-                                    SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
-                                    DatabaseReference efar_ref = database.getReference("emergencies/" + keyToUpdate + "/responding_efar");
-                                    efar_ref.setValue(sharedPreferences.getString("id", ""));
+                                    DatabaseReference ref = database.getReference("emergencies/" + keyToUpdate);
+                                    ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                                            DatabaseReference efar_ref = database.getReference("emergencies/" + keyToUpdate + "/responding_efar");
+                                            if(dataSnapshot.hasChild("responding_efar")){
+                                                String other_efars = dataSnapshot.child("responding_efar").getValue().toString();
+                                                String new_id_set = other_efars + ", " + sharedPreferences.getString("id", "");
+                                                efar_ref.setValue(new_id_set);
+                                                respondButton.setVisibility(View.GONE);
+                                            }else{
+                                                efar_ref.setValue(sharedPreferences.getString("id", ""));
+                                                respondButton.setVisibility(View.GONE);
+                                            }
+                                        }
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+                                            // None
+                                        }
+                                    });
 
                                     setUpButtons(key, time, "1");
                                 }
@@ -165,6 +185,7 @@ public class EmergencyInfoActivity extends AppCompatActivity {
                             .show();
                 }
             });
+            respondButton.setVisibility(View.GONE);
         }else{
             messageButton.setText("Message");
             messageButton.setOnClickListener(new View.OnClickListener() {
@@ -178,6 +199,57 @@ public class EmergencyInfoActivity extends AppCompatActivity {
                     launchMessagingScreen();
                 }
             });
+            //check to see if efar is already responding
+            SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+            String efar_id = sharedPreferences.getString("id", "");
+            Bundle bundle = getIntent().getExtras();
+            final String responding_ids = bundle.getString("id");
+            if(!responding_ids.contains(efar_id)){
+                respondButton.setVisibility(View.VISIBLE);
+                respondButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        new AlertDialog.Builder(EmergencyInfoActivity.this)
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .setTitle("Respond to Emergency:")
+                                .setMessage("Are you able to respond to this emergency?")
+                                .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                                {
+                                    final String keyToUpdate = key;
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                        DatabaseReference emergency_ref = database.getReference("emergencies/" + keyToUpdate + "/state");
+                                        emergency_ref.setValue("1");
+
+                                        DatabaseReference ref = database.getReference("emergencies/" + keyToUpdate);
+                                        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                                SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                                                DatabaseReference efar_ref = database.getReference("emergencies/" + keyToUpdate + "/responding_efar");
+                                                String other_efars = dataSnapshot.child("responding_efar").getValue().toString();
+                                                String new_id_set = other_efars + ", " + sharedPreferences.getString("id", "");
+                                                efar_ref.setValue(new_id_set);
+                                                respondButton.setVisibility(View.GONE);
+                                            }
+                                            @Override
+                                            public void onCancelled(DatabaseError databaseError) {
+                                                // None
+                                            }
+                                        });
+
+                                        setUpButtons(key, time, "1");
+                                    }
+
+                                })
+                                .setNegativeButton("No", null)
+                                .show();
+                    }
+                });
+            }else{
+                respondButton.setVisibility(View.GONE);
+            }
         }
 
         if(state.equals("0")){
@@ -280,7 +352,7 @@ public class EmergencyInfoActivity extends AppCompatActivity {
             phoneNumberText.setMovementMethod(LinkMovementMethod.getInstance());
             infoText.setText("Info Given: \n" + info);
             if(!id.equals("") && !id.equals("N/A")) {
-                idText.setText("Responder ID: " + id);
+                idText.setText("Responder ID(s): " + id);
             }else{
                 idText.setText("");
             }

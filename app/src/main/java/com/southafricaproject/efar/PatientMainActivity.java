@@ -136,6 +136,42 @@ public class PatientMainActivity extends AppCompatActivity {
                             helpMeButton.setBackgroundColor(0x55000000);
                             calling_efar = true;
                             blinkText();
+                        }else if(e_state.equals("-2")){
+                            userUpdate.setTextColor(Color.RED);
+                            helpMeButton.setText("CALL FOR EFAR");
+                            helpMeButton.setBackgroundColor(Color.RED);
+                            userUpdate.setText("There are no EFARs in or near your area!");
+                            // when canceled, delete the emergancy and move to canceled
+                            String emergency_key_to_delete = sharedPreferences.getString("emergency_key", "");
+                            FirebaseDatabase database = FirebaseDatabase.getInstance();
+                            DatabaseReference emergency_ref = database.getReference("emergencies/" + emergency_key_to_delete );
+                            moveFirebaseRecord(emergency_ref, database.getReference("canceled/" + emergency_key_to_delete));
+                            emergency_ref.removeValue();
+                            //clear the emergency key and state
+                            editor.remove("emergency_key");
+                            editor.putString("user_emergency_state", "100");
+                            editor.apply();
+                            // fade out text
+                            userUpdate.animate().alpha(0.0f).setDuration(10000);
+                            calling_efar = false;
+                        }else if(e_state.equals("-3")){
+                            userUpdate.setTextColor(Color.RED);
+                            helpMeButton.setText("CALL FOR EFAR");
+                            helpMeButton.setBackgroundColor(Color.RED);
+                            userUpdate.setText("There are no EFARs available in your area!");
+                            // when canceled, delete the emergancy and move to canceled
+                            String emergency_key_to_delete = sharedPreferences.getString("emergency_key", "");
+                            FirebaseDatabase database = FirebaseDatabase.getInstance();
+                            DatabaseReference emergency_ref = database.getReference("emergencies/" + emergency_key_to_delete );
+                            moveFirebaseRecord(emergency_ref, database.getReference("canceled/" + emergency_key_to_delete));
+                            emergency_ref.removeValue();
+                            //clear the emergency key and state
+                            editor.remove("emergency_key");
+                            editor.putString("user_emergency_state", "100");
+                            editor.apply();
+                            // fade out text
+                            userUpdate.animate().alpha(0.0f).setDuration(10000);
+                            calling_efar = false;
                         }
                     }
                 }else{
@@ -152,18 +188,22 @@ public class PatientMainActivity extends AppCompatActivity {
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                TextView userUpdate = (TextView) findViewById(R.id.user_update );
                 SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                userUpdate.setTextColor(Color.GREEN);
-                helpMeButton.setText("CALL FOR EFAR");
-                helpMeButton.setBackgroundColor(Color.RED);
-                userUpdate.setText("Emergency has been ended.");
-                // fade out text
-                userUpdate.animate().alpha(0.0f).setDuration(10000);
-                editor.putString("emergency_key", "");
-                editor.apply();
-                calling_efar = false;
+                String userEmergencyKey = sharedPreferences.getString("emergency_key", "");
+                String e_key = dataSnapshot.getKey();
+                if(e_key.equals(userEmergencyKey)) {
+                    TextView userUpdate = (TextView) findViewById(R.id.user_update );
+                    userUpdate.setTextColor(Color.GREEN);
+                    helpMeButton.setText("CALL FOR EFAR");
+                    helpMeButton.setBackgroundColor(Color.RED);
+                    userUpdate.setText("Emergency has been ended.");
+                    // fade out text
+                    userUpdate.animate().alpha(0.0f).setDuration(10000);
+                    editor.putString("emergency_key", "");
+                    editor.apply();
+                    calling_efar = false;
+                }
             }
 
             @Override

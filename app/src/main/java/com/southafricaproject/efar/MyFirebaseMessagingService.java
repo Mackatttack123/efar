@@ -69,6 +69,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             Notification note = notificationBuilder.build();
             note.flags = Notification.FLAG_INSISTENT;
+            // clear the notification after its selected
+            note.flags |= Notification.FLAG_AUTO_CANCEL;
             notificationManager.notify(0, note);
         }
     }

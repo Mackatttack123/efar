@@ -15,40 +15,38 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
 
-//pretty sure we fixed the multiple notifiction problem...fingers crossed
-exports.sendPushNotificationAdded = functions.database.ref('/emergencies/{id}').onCreate(event => {
+
+const MAX_EFAR_TRAVEL_RADIUS = 50.0; //in kilometers
+const MAX_NUMBER_OF_EFARS_TO_NOTIFY = 5;
+
+exports.sendPushAdded = functions.database.ref('/emergencies/{id}').onCreate(event => {
 	return admin.database().ref('/tokens').once('value', function(snapshot) {
 	    var efarArray = snapshotToArray(snapshot, event.data.child('latitude').val(), event.data.child('longitude').val());
 	    efarArray.sort(function(a, b) {
 		    return a.distance - b.distance;
 		});
-	    var payload = {
-			data: {
-				title: "NEW EMERGANCY!",
-				body: "Message from Patient: " + event.data.child('other_info').val(),
-				//badge: '1',
-				sound: 'default',
-			}
-		};
-		var options = {
-		  priority: "high",
-		  timeToLive: 0
-		};
-		tokens_to_send_to = [];
-		if(efarArray.length >= 5){
-			//only send to the 5 closest efars
-			for (var i = 4; i >= 0; i--) {
-				tokens_to_send_to.push(efarArray[i].token);
+
+		//TODO: use the MAX_EFAR_TRAVEL_RADIUS to check and see if the patient is out of range.
+		//      If they are out of range then we: 
+		//      return admin.database().ref("/emergencies/"+event.data.ref.key+"/state").set(-2);
+
+		//check if any efars are online
+		if(efarArray.length > 0){
+			tokens_to_send_to = [];
+			if(efarArray.length >= MAX_NUMBER_OF_EFARS_TO_NOTIFY){
+				//only send to the 5 closest efars
+				for (var i = MAX_NUMBER_OF_EFARS_TO_NOTIFY-1; i >= 0; i--) {
+					tokens_to_send_to.push(efarArray[i].token);
+				}
+			}else{
+				for (var i = efarArray.length - 1; i >= 0; i--) {
+					tokens_to_send_to.push(efarArray[i].token);
+				}
 			}
 		}else{
-			for (var i = efarArray.length - 1; i >= 0; i--) {
-				tokens_to_send_to.push(efarArray[i].token);
-			}
+			//no efars avalible
+			return admin.database().ref("/emergencies/"+event.data.ref.key+"/state").set(-3);
 		}
-		//TODO: send a messaged back to patient if no efars respond or are found?
-	    return admin.messaging().sendToDevice(tokens_to_send_to, payload, options).then(response => {
-					
-		});
 	});
 });
 
@@ -71,65 +69,96 @@ function snapshotToArray(snapshot, incoming_latitude, incoming_longitude) {
     return returnArr;
 };
 
-/*
-// this works, but sends one notification to every efar :(
-exports.sendPushNotificationAdded = functions.database.ref('/emergencies/{id}').onCreate(event => {
+//send notifications to efars when they get messages 
+exports.sendPushMessage = functions.database.ref('/emergencies/{id}/messages/{uid}').onCreate(event => {
+	var user = event.data.child("user").val()
 	const payload = {
-		notification: {
-			title: "New Emergency!",
-			body: "Message from Patient: " + event.data.child('other_info').val(),
+		data: {
+			title: "Message (" + user + "):",
+			body: event.data.child("message").val(),
 			//badge: '1',
 			sound: 'default',
 		}
 	};
-	return admin.database().ref('tokens').once("value").then(allToken => {
-		if (allToken.val()){
-			const token = Object.keys(allToken.val());
-			return admin.messaging().sendToDevice(token, payload).then(response => {
+	//send notifications to all responding efars
+	return event.data.adminRef.parent.parent.once("value").then(parentSnap => {
+		var responding_efars = parentSnap.child("responding_efar").val();
+		var id_array = responding_efars.split(", ");
+		return admin.database().ref("/users/").once('value').then((snapshot) => {
+			var tokens_to_send_to = [];
+			for (var i = id_array.length - 1; i >= 0; i--) {
+				var token = snapshot.child(id_array[i]).child("token").val();
+				//make sure we don't send notifications to the efar who is sending the message
+				if(!(user === snapshot.child(id_array[i]).child("name").val())){
+				   tokens_to_send_to.push(token);
+				}
+				console.log(id_array[i]);
+			} 
+			return admin.messaging().sendToDevice(tokens_to_send_to, payload).then(response => {
 
 			});
-		};
-	});
-});*/
+		});
+    });	
+});
 
-
+//TODO: Modify these so they only send notifications teh efars involved with them
 //proably don't need to two push notification senders below?
-exports.sendPushNotificationCanceled = functions.database.ref('/canceled/{id}').onCreate(event => {
+exports.sendPushCanceled = functions.database.ref('/canceled/{id}').onCreate(event => {
 	const payload = {
 		data: {
 			title: "Emergency Canceled:",
-			body: 'An emergancy in your area has been canceled.',
+			body: 'Your responding emergancy was canceled.',
 			//badge: '1',
 			sound: 'default',
 		}
 	};
-	return admin.database().ref('tokens').once("value").then(allToken => {
-		if (allToken.val()){
-			const token = Object.keys(allToken.val());
-			return admin.messaging().sendToDevice(token, payload).then(response => {
+	//send notifications to all responding efars
+	if(event.data.hasChild("responding_efar")){
+		var responding_efars = event.data.child("responding_efar").val();
+		var id_array = responding_efars.split(", ");
+		return admin.database().ref("/users/").once('value').then((snapshot) => {
+			var tokens_to_send_to = [];
+			for (var i = id_array.length - 1; i >= 0; i--) {
+				var token = snapshot.child(id_array[i]).child("token").val();
+				tokens_to_send_to.push(token);
+				console.log(id_array[i]);
+			} 
+			return admin.messaging().sendToDevice(tokens_to_send_to, payload).then(response => {
 
 			});
-		};
-	});
+		});
+	}else{
+		return;
+	}
 });
 
-exports.sendPushNotificationCompleted = functions.database.ref('/completed/{id}').onCreate(event => {
+exports.sendPushCompleted = functions.database.ref('/completed/{id}').onCreate(event => {
 	const payload = {
 		data: {
 			title: "Emergency Over:",
-			body: 'An emergancy in your area is now over.',
+			body: 'Your responding emergancy was ended.',
 			//badge: '1',
 			sound: 'default',
 		}
 	};
-	return admin.database().ref('tokens').once("value").then(allToken => {
-		if (allToken.val()){
-			const token = Object.keys(allToken.val());
-			return admin.messaging().sendToDevice(token, payload).then(response => {
+	//send notifications to all responding efars
+	if(event.data.hasChild("responding_efar")){
+		var responding_efars = event.data.child("responding_efar").val();
+		var id_array = responding_efars.split(", ");
+		return admin.database().ref("/users/").once('value').then((snapshot) => {
+			var tokens_to_send_to = [];
+			for (var i = id_array.length - 1; i >= 0; i--) {
+				var token = snapshot.child(id_array[i]).child("token").val();
+				tokens_to_send_to.push(token);
+				console.log(id_array[i]);
+			} 
+			return admin.messaging().sendToDevice(tokens_to_send_to, payload).then(response => {
 
 			});
-		};
-	});
+		});
+	}else{
+		return;
+	}
 });
 
 function distance(lat1, lon1, lat2, lon2) {

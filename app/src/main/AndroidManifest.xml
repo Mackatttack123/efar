@@ -68,9 +68,13 @@
             android:name=".EFARInfoActivity"
             android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".MessagingScreenActivity">
+        <activity
+            android:name=".MessagingScreenActivity"
+            android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".EmergencyInfoActivity">
+        <activity
+            android:name=".EmergencyInfoActivity"
+            android:screenOrientation="portrait">
         </activity>
 
     </application>
