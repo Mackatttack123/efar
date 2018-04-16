@@ -141,6 +141,11 @@ public class PatientMainActivity extends AppCompatActivity {
                             helpMeButton.setText("CALL FOR EFAR");
                             helpMeButton.setBackgroundColor(Color.RED);
                             userUpdate.setText("There are no EFARs in or near your area!");
+                            try {
+                                Thread.sleep(5000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
                             // when canceled, delete the emergancy and move to canceled
                             String emergency_key_to_delete = sharedPreferences.getString("emergency_key", "");
                             FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -159,6 +164,11 @@ public class PatientMainActivity extends AppCompatActivity {
                             helpMeButton.setText("CALL FOR EFAR");
                             helpMeButton.setBackgroundColor(Color.RED);
                             userUpdate.setText("There are no EFARs available in your area!");
+                            try {
+                                Thread.sleep(5000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
                             // when canceled, delete the emergancy and move to canceled
                             String emergency_key_to_delete = sharedPreferences.getString("emergency_key", "");
                             FirebaseDatabase database = FirebaseDatabase.getInstance();
