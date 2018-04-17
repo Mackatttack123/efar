@@ -10,4 +10,7 @@
     <string name="logout_button">Logout</string>
     <string name="Other_Information">Other Information</string>
     <string name="Phone_Number">Phone Number</string>
+    <string name="title_activity_efarmain_tabbed">EFARMainActivityTabbed</string>
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
 </resources>

@@ -335,7 +335,7 @@ public class EFARInfoActivity extends AppCompatActivity {
     }
 
     private void launchEfarMainScreen() {
-        Intent toEfarMainScreen = new Intent(this, EFARMainActivity.class);
+        Intent toEfarMainScreen = new Intent(this, EFARMainActivityTabbed.class);
         startActivity(toEfarMainScreen);
         finish();
     }

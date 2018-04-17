@@ -76,14 +76,14 @@
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="0dp"
         android:layout_marginLeft="0dp"
         android:layout_marginRight="0dp"
         android:text="Respond"
-        android:textColor="@android:color/holo_green_light"
-        app:layout_constraintLeft_toRightOf="@+id/messagesButton"
-        app:layout_constraintRight_toLeftOf="@+id/endButton"
+        android:textColor="#009900"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="0dp"/>
+        app:layout_constraintLeft_toRightOf="@+id/messagesButton"
+        app:layout_constraintRight_toLeftOf="@+id/endButton"/>
 
     <Button
         android:id="@+id/endButton"

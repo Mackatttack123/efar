@@ -25,7 +25,14 @@ exports.sendPushAdded = functions.database.ref('/emergencies/{id}').onCreate(eve
 	    efarArray.sort(function(a, b) {
 		    return a.distance - b.distance;
 		});
-
+	    var payload = {
+ 			data: {
+ 				title: "NEW EMERGANCY!",
+				body: "Patient Message: " + event.data.child('other_info').val(),
+ 				//badge: '1',
+ 				sound: 'default',
+ 			}
+ 		};
 		//TODO: use the MAX_EFAR_TRAVEL_RADIUS to check and see if the patient is out of range.
 		//      If they are out of range then we: 
 		//      return admin.database().ref("/emergencies/"+event.data.ref.key+"/state").set(-2);
@@ -37,12 +44,17 @@ exports.sendPushAdded = functions.database.ref('/emergencies/{id}').onCreate(eve
 				//only send to the 5 closest efars
 				for (var i = MAX_NUMBER_OF_EFARS_TO_NOTIFY-1; i >= 0; i--) {
 					tokens_to_send_to.push(efarArray[i].token);
+					console.log(efarArray[i].token);
 				}
 			}else{
 				for (var i = efarArray.length - 1; i >= 0; i--) {
 					tokens_to_send_to.push(efarArray[i].token);
+					console.log(efarArray[i].token);
 				}
 			}
+			return admin.messaging().sendToDevice(tokens_to_send_to, payload).then(response => {
+
+			});
 		}else{
 			//no efars avalible
 			return admin.database().ref("/emergencies/"+event.data.ref.key+"/state").set(-3);

@@ -102,7 +102,7 @@ public class loginScreen extends AppCompatActivity {
     // Starts up launchEfarScreen screen
     private void launchEfarScreen() {
 
-        Intent toEfarScreen = new Intent(this, EFARMainActivity.class);
+        Intent toEfarScreen = new Intent(this, EFARMainActivityTabbed.class);
         finish();
         startActivity(toEfarScreen);
     }

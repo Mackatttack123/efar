@@ -323,12 +323,12 @@ public class EmergencyInfoActivity extends AppCompatActivity {
 
             String phoneLink = "tel:" + phoneNumber.replaceAll("[^\\d.]", "");
 
-            SpannableString locationTextSpan = new SpannableString("Location: <br><a href=" + "http://maps.google.com/?q=" + latitude + "," + longitude + ">("
+            SpannableString locationTextSpan = new SpannableString("Incident Geo Location: <br><a href=" + "http://maps.google.com/?q=" + latitude + "," + longitude + ">("
                     + String.format("%.2f", Float.parseFloat(latitude)) + ", " + String.format("%.2f", Float.parseFloat(longitude)) + ")</a>");
 
-            SpannableString addressTextSpan = new SpannableString("Address: <br><a href=" + "http://maps.google.com/?q=" + latitude + "," + longitude + ">" + address + "</a>");
+            SpannableString addressTextSpan = new SpannableString("Incident Address: <br><a href=" + "http://maps.google.com/?q=" + latitude + "," + longitude + ">" + address + "</a>");
 
-            SpannableString phoneTextSpan = new SpannableString("Patient's #: <br><a href=" + phoneLink + ">" + phoneNumber + "</a>");
+            SpannableString phoneTextSpan = new SpannableString("Patient's Phone: <br><a href=" + phoneLink + ">" + phoneNumber + "</a>");
 
             if (Build.VERSION.SDK_INT >= 24) {
                 // for 24 api and more
@@ -350,7 +350,7 @@ public class EmergencyInfoActivity extends AppCompatActivity {
             addressText.setMovementMethod(LinkMovementMethod.getInstance());
             phoneNumberText.setText(phoneTextSpan);
             phoneNumberText.setMovementMethod(LinkMovementMethod.getInstance());
-            infoText.setText("Info Given: \n" + info);
+            infoText.setText("Message Given by Patient: \n" + info);
             if(!id.equals("") && !id.equals("N/A")) {
                 idText.setText("Responder ID(s): " + id);
             }else{
@@ -363,7 +363,7 @@ public class EmergencyInfoActivity extends AppCompatActivity {
 
     // Goes to patient info tab to send more to EFARs
     private void launchEfarMain() {
-        Intent tolaunchEfarMain = new Intent(this, EFARMainActivity.class);
+        Intent tolaunchEfarMain = new Intent(this, EFARMainActivityTabbed.class);
         startActivity(tolaunchEfarMain);
         finish();
     }

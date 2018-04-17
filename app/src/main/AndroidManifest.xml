@@ -33,9 +33,6 @@
             android:name=".loginScreen"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".EFARMainActivity"
-            android:screenOrientation="portrait"/>
-        <activity
             android:name=".PatientInfoActivity"
             android:screenOrientation="portrait"/>
         <!--
@@ -76,7 +73,11 @@
             android:name=".EmergencyInfoActivity"
             android:screenOrientation="portrait">
         </activity>
-
+        <activity
+            android:name=".EFARMainActivityTabbed"
+            android:label="@string/title_activity_efarmain_tabbed"
+            android:theme="@style/AppTheme">
+        </activity>
     </application>
 
 </manifest>

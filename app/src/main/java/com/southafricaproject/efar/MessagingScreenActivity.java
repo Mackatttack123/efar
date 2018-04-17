@@ -175,13 +175,6 @@ public class MessagingScreenActivity extends AppCompatActivity {
         });
     }
 
-    // Goes to patient info tab to send more to EFARs
-    private void launchEfarMain() {
-        Intent tolaunchEfarMain = new Intent(this, EFARMainActivity.class);
-        startActivity(tolaunchEfarMain);
-        finish();
-    }
-
     private void add_message(String name, String message) throws JSONException {
         // Create new emergency in the database
         FirebaseDatabase database = FirebaseDatabase.getInstance();
