@@ -136,7 +136,9 @@ public class PatientMainActivity extends AppCompatActivity {
                             helpMeButton.setBackgroundColor(0x55000000);
                             calling_efar = true;
                             blinkText();
-                        }else if(e_state.equals("-2")){
+                        }
+                        /*
+                        else if(e_state.equals("-2")){
                             userUpdate.setTextColor(Color.RED);
                             helpMeButton.setText("CALL FOR EFAR");
                             helpMeButton.setBackgroundColor(Color.RED);
@@ -182,7 +184,7 @@ public class PatientMainActivity extends AppCompatActivity {
                             // fade out text
                             userUpdate.animate().alpha(0.0f).setDuration(10000);
                             calling_efar = false;
-                        }
+                        }*/
                     }
                 }else{
                     SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);

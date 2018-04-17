@@ -52,12 +52,23 @@ exports.sendPushAdded = functions.database.ref('/emergencies/{id}').onCreate(eve
 					console.log(efarArray[i].token);
 				}
 			}
-			return admin.messaging().sendToDevice(tokens_to_send_to, payload).then(response => {
-
-			});
+			// check if an efar created the emergency and if so don't send them a notification
+			for (var i = tokens_to_send_to.length - 1; i >= 0; i--) {
+				if(tokens_to_send_to[i] === event.data.child('emergency_made_by_efar_token').val()){
+					tokens_to_send_to.splice(i, 1);
+				}
+			}
+			if(tokens_to_send_to.length < 1){
+				//no efars avalible
+				return; //admin.database().ref("/emergencies/"+event.data.ref.key+"/state").set(-3);
+			}else{
+				return admin.messaging().sendToDevice(tokens_to_send_to, payload).then(response => {
+				
+				});
+			}
 		}else{
 			//no efars avalible
-			return admin.database().ref("/emergencies/"+event.data.ref.key+"/state").set(-3);
+			return; //admin.database().ref("/emergencies/"+event.data.ref.key+"/state").set(-3);
 		}
 	});
 });

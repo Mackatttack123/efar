@@ -30,6 +30,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.Calendar;
 
@@ -121,6 +122,12 @@ public class PatientInfoActivity extends AppCompatActivity {
         String timestamp = simpleDateFormat.format(currentTime);
         data.put("creation_date",timestamp);
         data.put("state","0");
+        String token = FirebaseInstanceId.getInstance().getToken();
+        SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+        boolean efar_logged_in = sharedPreferences.getBoolean("logged_in", false);
+        if(efar_logged_in){
+            data.put("emergency_made_by_efar_token",token);
+        }
         emergency_ref.child(emergency_key.getKey()).setValue(data);
 
         /*
@@ -132,7 +139,6 @@ public class PatientInfoActivity extends AppCompatActivity {
         */
 
         // put emergency key into the users phone to store for later if needed
-        SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         String key = emergency_key.getKey().toString();
         editor.putString("emergency_key", key);
