@@ -42,7 +42,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             // message, here is where that should be initiated.
             Log.d(TAG, "From: " + remoteMessage.getFrom());
             Log.d(TAG, "Notification Message Body: " + remoteMessage.getData().get("body"));
-            Intent intent = new Intent(this, PatientMainActivity.class);
+            Intent intent = new Intent(this, EFARMainActivityTabbed.class);
+            //intent.putExtra("NotiClick",true);
+            //intent.putExtra("NotiMesssage",remoteMessage.getData().get("body").replace("Patient Message: ", ""));
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this);

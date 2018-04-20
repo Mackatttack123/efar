@@ -1,6 +1,7 @@
 package com.southafricaproject.efar;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
@@ -73,6 +74,17 @@ public class PatientInfoActivity extends AppCompatActivity {
         if(!gps.canGetLocation()){
             gps.showSettingsAlert();
         }
+
+        //button to get back to patient screen
+        Button backButton = (Button) findViewById(R.id.info_back_button);
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                launchPatientScreen();
+                finish();
+            }
+        });
 
         //TextView userInfoScreenUpdate = (TextView) findViewById(R.id.user_update_info_screen);
         //userInfoScreenUpdate.setText("An EFAR will be contacted once you fill in this information:");
@@ -158,6 +170,13 @@ public class PatientInfoActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         overridePendingTransition(0, 0);
+    }
+
+    // Starts up launchEfarScreen screen
+    private void launchPatientScreen() {
+        Intent toPatientScreen = new Intent(this, PatientMainActivity.class);
+        startActivity(toPatientScreen);
+        finish();
     }
 }
 

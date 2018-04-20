@@ -279,6 +279,36 @@ public class EFARMainTabAll extends Fragment{
             }
         }, 30 * 1000 );
 
+        /*if (savedInstanceState == null) {
+            Bundle extras = getActivity().getIntent().getExtras();
+            if(extras == null)
+            {
+                //Cry about not being clicked on
+            }
+            //notification sent them here
+            else if (extras.getBoolean("NotiClick"))
+            {
+                String notificationMessage = extras.getString("NotiMesssage");
+                Log.wtf("NOTIFICATION MESSAGE", notificationMessage);
+                for(int i = 0; i < emergenecyArray.size(); i++){
+                    Emergency emergency = emergenecyArray.get(i);
+                    Log.wtf("E MESSAGE", emergency.getInfo().toString());
+                    if(notificationMessage.equals(emergency.getInfo().toString())){
+                        launchEmergencyInfoScreen(emergency.getCreationDate(),
+                                emergency.getLatitude().toString(),
+                                emergency.getLongitude().toString(),
+                                emergency.getAddress(),
+                                emergency.getPhone(),
+                                emergency.getInfo(),
+                                emergency.getRespondingEfar(),
+                                emergency.getKey(),
+                                emergency.getState());
+                    }
+                }
+            }
+
+        }*/
+
         return rootView;
     }
 
