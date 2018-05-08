@@ -2,8 +2,10 @@ package com.southafricaproject.efar;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.Handler;
 import android.os.Vibrator;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
@@ -17,6 +19,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -70,6 +73,40 @@ public class PatientMainActivity extends AppCompatActivity {
             }
         });*/
 
+        /*GPSTracker gps = new GPSTracker(this);
+        double my_lat = gps.getLatitude(); // latitude
+        double my_long = gps.getLongitude(); // longitude
+
+        double efar_lat = 0.0;
+        double efar_long = 0.0;
+
+        ProgressBar distance_progress = (ProgressBar) findViewById(R.id.patient_progress_bar);
+        distance_progress.setMax(100);
+        int Total_progress = (int) Math.round((distance(efar_lat, efar_long, my_lat, my_long) / 2.0) * 100);
+        if(Total_progress >= 100){
+            distance_progress.setProgress(0);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                distance_progress.setProgressTintList(ColorStateList.valueOf(Color.RED));
+            }
+        }else {
+            distance_progress.setProgress(100 - Total_progress);
+            if(100 - Total_progress >= 75){
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    distance_progress.setProgressTintList(ColorStateList.valueOf(Color.GREEN));
+                }
+            }else if(100 - Total_progress >= 50){
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    distance_progress.setProgressTintList(ColorStateList.valueOf(Color.YELLOW));
+                }
+            }else{
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    distance_progress.setProgressTintList(ColorStateList.valueOf(Color.RED));
+                }
+            }
+        }*/
+        //TODO: show the patient approximatly how far away the efar is via the progress bar
+        ProgressBar distance_progress = (ProgressBar) findViewById(R.id.patient_progress_bar);
+        distance_progress.setVisibility(View.INVISIBLE);
 
         // to auto login if possible
         final SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
@@ -91,8 +128,8 @@ public class PatientMainActivity extends AppCompatActivity {
 
         final Button helpMeButton = (Button)findViewById(R.id.help_me_button);
 
-        GPSTracker gps = new GPSTracker(this);
         // check if GPS is avalible
+        GPSTracker gps = new GPSTracker(this);
         if(!gps.canGetLocation()){
             gps.showSettingsAlert();
         }else{
@@ -191,7 +228,8 @@ public class PatientMainActivity extends AppCompatActivity {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 String userEmergencyKey = sharedPreferences.getString("emergency_key", "");
-                if(dataSnapshot.getKey().toString().equals(userEmergencyKey)){
+                String creation_date = sharedPreferences.getString("creation_date", "");
+                if(dataSnapshot.getKey().toString().equals(userEmergencyKey) || dataSnapshot.child("creation_date").getValue().toString().equals(creation_date)){
                     TextView userUpdate = (TextView) findViewById(R.id.user_update );
                     userUpdate.setTextColor(Color.GREEN);
                     helpMeButton.setText("Call for Help");
@@ -361,19 +399,28 @@ public class PatientMainActivity extends AppCompatActivity {
         }
 
         // check for a pre-existing emergency on this phone by pinging the database and activating the listener above
-        String userEmergencyKey = sharedPreferences.getString("emergency_key", "");
-        if(!userEmergencyKey.equals("")){
-            String userEmergencyState = sharedPreferences.getString("user_emergency_state", "");
-            Log.wtf("KEY ------------->", userEmergencyKey + " STATE -------->: " + userEmergencyState);
-            FirebaseDatabase database = FirebaseDatabase.getInstance();
-            DatabaseReference emergency_ping_ref = database.getReference("emergencies/" + userEmergencyKey + "/ping");
-            final int min = 0;
-            final int max = 10000;
-            Random r = new Random();
-            int random = r.nextInt((max - min) + 1) + min;
-            emergency_ping_ref.setValue(random);
-        }
+        final Handler handler = new Handler();
+        final int delay = 1000; //milliseconds
 
+        handler.postDelayed(new Runnable(){
+            public void run(){
+                String userEmergencyKey = sharedPreferences.getString("emergency_key", "");
+                if(!userEmergencyKey.equals("")){
+                    String userEmergencyState = sharedPreferences.getString("user_emergency_state", "");
+                    Log.wtf("KEY ------------->", userEmergencyKey + " STATE -------->: " + userEmergencyState);
+                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    DatabaseReference emergency_ping_ref = database.getReference("emergencies/" + userEmergencyKey + "/ping");
+                    final int min = 0;
+                    final int max = 10000;
+                    Random r = new Random();
+                    int random = r.nextInt((max - min) + 1) + min;
+                    emergency_ping_ref.setValue(random);
+                }else{
+                    handler.postDelayed(this, delay);
+                }
+
+            }
+        }, delay);
 
     }
 
@@ -484,6 +531,31 @@ public class PatientMainActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         overridePendingTransition(0, 0);
+    }
+
+    //distance functions via: http://www.geodatasource.com/developers/java
+    private static double distance(double lat1, double lon1, double lat2, double lon2) {
+        double theta = lon1 - lon2;
+        double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
+        dist = Math.acos(dist);
+        dist = rad2deg(dist);
+        dist = dist * 60 * 1.1515;
+        dist = dist * 1.609344;
+        return (dist);
+    }
+
+    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+	/*::	This function converts decimal degrees to radians						 :*/
+	/*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+    private static double deg2rad(double deg) {
+        return (deg * Math.PI / 180.0);
+    }
+
+    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+	/*::	This function converts radians to decimal degrees						 :*/
+	/*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+    private static double rad2deg(double rad) {
+        return (rad * 180 / Math.PI);
     }
 
 }

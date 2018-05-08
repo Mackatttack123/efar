@@ -154,6 +154,7 @@ public class PatientInfoActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         String key = emergency_key.getKey().toString();
         editor.putString("emergency_key", key);
+        editor.putString("creation_date", timestamp);
         editor.putString("user_emergency_state", "0");
         editor.commit();
         Log.wtf("Patient Info", "Creating New Emergency!");

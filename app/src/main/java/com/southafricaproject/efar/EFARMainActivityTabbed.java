@@ -15,6 +15,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,6 +30,8 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
+
+import java.util.Random;
 
 import static com.google.android.gms.cast.CastRemoteDisplayLocalService.startService;
 
@@ -139,6 +142,7 @@ public class EFARMainActivityTabbed extends AppCompatActivity {
                 finish();
             }
         });
+
     }
 
     // Goes to patient info tab to send more to EFARs

@@ -226,7 +226,12 @@ public class EFARMainTabAll extends Fragment{
                     Double e_long = Double.parseDouble(dataSnapshot.child("longitude").getValue().toString());
                     String e_address = getCompleteAddressString(e_lat, e_long);
                     String e_creationDate = dataSnapshot.child("creation_date").getValue().toString();
-                    String e_respondingEfar = dataSnapshot.child("responding_efar").getValue().toString();
+                    String e_respondingEfar;
+                    try{
+                        e_respondingEfar = dataSnapshot.child("responding_efar").getValue().toString();
+                    }catch (NullPointerException e) {
+                        e_respondingEfar = "";
+                    }
                     String e_state = dataSnapshot.child("state").getValue().toString();
                     // only show local emergencies within 10km
                     if(distance(e_lat, e_long, my_lat, my_long) < 10.0){

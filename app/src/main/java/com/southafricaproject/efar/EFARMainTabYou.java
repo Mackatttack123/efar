@@ -302,7 +302,7 @@ public class EFARMainTabYou extends Fragment{
                 adapter.notifyDataSetChanged();
                 handler.postDelayed( this, 30 * 1000 );
             }
-        }, 30 * 1000 );
+        },30 * 1000 );
 
         return rootView;
     }
