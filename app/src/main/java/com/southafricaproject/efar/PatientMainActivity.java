@@ -1,5 +1,6 @@
 package com.southafricaproject.efar;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
@@ -40,6 +41,7 @@ import java.util.Random;
 public class PatientMainActivity extends AppCompatActivity {
 
     boolean calling_efar = false;
+    String responding_efar_id = null;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -73,47 +75,18 @@ public class PatientMainActivity extends AppCompatActivity {
             }
         });*/
 
-        /*GPSTracker gps = new GPSTracker(this);
-        double my_lat = gps.getLatitude(); // latitude
-        double my_long = gps.getLongitude(); // longitude
 
-        double efar_lat = 0.0;
-        double efar_long = 0.0;
-
-        ProgressBar distance_progress = (ProgressBar) findViewById(R.id.patient_progress_bar);
-        distance_progress.setMax(100);
-        int Total_progress = (int) Math.round((distance(efar_lat, efar_long, my_lat, my_long) / 2.0) * 100);
-        if(Total_progress >= 100){
-            distance_progress.setProgress(0);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                distance_progress.setProgressTintList(ColorStateList.valueOf(Color.RED));
-            }
-        }else {
-            distance_progress.setProgress(100 - Total_progress);
-            if(100 - Total_progress >= 75){
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    distance_progress.setProgressTintList(ColorStateList.valueOf(Color.GREEN));
-                }
-            }else if(100 - Total_progress >= 50){
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    distance_progress.setProgressTintList(ColorStateList.valueOf(Color.YELLOW));
-                }
-            }else{
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    distance_progress.setProgressTintList(ColorStateList.valueOf(Color.RED));
-                }
-            }
-        }*/
         //TODO: show the patient approximatly how far away the efar is via the progress bar
-        ProgressBar distance_progress = (ProgressBar) findViewById(R.id.patient_progress_bar);
+        final ProgressBar distance_progress = (ProgressBar) findViewById(R.id.patient_progress_bar);
         distance_progress.setVisibility(View.INVISIBLE);
+        distance_progress.setProgress(0);
 
         // to auto login if possible
         final SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
         String id = sharedPreferences.getString("id", "");
         String name = sharedPreferences.getString("name", "");
         String last_screen = sharedPreferences.getString("last_screen", "");
-        boolean efar_logged_in = sharedPreferences.getBoolean("logged_in", false);
+        final boolean efar_logged_in = sharedPreferences.getBoolean("logged_in", false);
         //to skip past the patient screen if efar opens the app and is loggd in
         boolean screen_bypass = sharedPreferences.getBoolean("screen_bypass", true);
         final SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -165,6 +138,8 @@ public class PatientMainActivity extends AppCompatActivity {
                             blinkText();
                             userUpdate.setText("An EFAR has been contacted and is responding...");
                             userUpdate.setTextColor(Color.BLUE);
+                            distance_progress.setVisibility(View.VISIBLE);
+                            ObjectAnimator.ofInt(distance_progress, "progress", 60).start();
                         }else if(e_state.equals("0")){
                             userUpdate.animate().alpha(1.0f).setDuration(1);
                             userUpdate.setText("EFARs in your area are being contacted...");
@@ -173,6 +148,8 @@ public class PatientMainActivity extends AppCompatActivity {
                             helpMeButton.setBackgroundColor(0x55000000);
                             calling_efar = true;
                             blinkText();
+                            distance_progress.setVisibility(View.VISIBLE);
+                            ObjectAnimator.ofInt(distance_progress, "progress", 30).start();
                         }else if(e_state.equals("-2") || e_state.equals("-3")) {
                             userUpdate.setTextColor(Color.RED);
                             helpMeButton.setText("Call for Help");
@@ -182,11 +159,14 @@ public class PatientMainActivity extends AppCompatActivity {
                             editor.remove("emergency_key");
                             editor.putString("user_emergency_state", "100");
                             editor.apply();
+                            responding_efar_id = null;
                             //change state to -4 and then clean up with backend
                             FirebaseDatabase.getInstance().getReference().child("emergencies/" + dataSnapshot.getKey() + "/state").setValue(-4);
                             // fade out text
                             userUpdate.animate().alpha(0.0f).setDuration(10000);
                             calling_efar = false;
+                            distance_progress.setVisibility(View.INVISIBLE);
+                            distance_progress.setProgress(0);
                         }
                     }
 
@@ -240,7 +220,10 @@ public class PatientMainActivity extends AppCompatActivity {
                     editor.putString("emergency_key", "");
                     editor.apply();
                     calling_efar = false;
+                    distance_progress.setVisibility(View.INVISIBLE);
+                    distance_progress.setProgress(0);
                 }
+
             }
 
             @Override
@@ -287,6 +270,8 @@ public class PatientMainActivity extends AppCompatActivity {
                                             helpMeButton.setBackgroundColor(0x55000000);
                                             calling_efar = true;
                                             blinkText();
+                                            distance_progress.setVisibility(View.VISIBLE);
+                                            ObjectAnimator.ofInt(distance_progress, "progress", 30).start();
                                             launchPatientInfoScreen();
                                         }
 
@@ -322,10 +307,13 @@ public class PatientMainActivity extends AppCompatActivity {
                                             editor.remove("emergency_key");
                                             editor.putString("user_emergency_state", "100");
                                             editor.apply();
+                                            responding_efar_id = null;
                                             // take away cancel button
                                             calling_efar = false;
                                             helpMeButton.setText("Call for Help");
                                             helpMeButton.setBackgroundColor(Color.RED);
+                                            distance_progress.setVisibility(View.INVISIBLE);
+                                            distance_progress.setProgress(0);
                                         }
 
                                     })
@@ -421,6 +409,7 @@ public class PatientMainActivity extends AppCompatActivity {
 
             }
         }, delay);
+
 
     }
 

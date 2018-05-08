@@ -46,6 +46,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -348,29 +349,16 @@ public class EFARMainTabYou extends Fragment{
     }
 
     private String getCompleteAddressString(double LATITUDE, double LONGITUDE) {
-        String strAdd = "";
-        Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
+        Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
+        List<Address> addresses = null;
         try {
-            List<Address> addresses = geocoder.getFromLocation(LATITUDE, LONGITUDE, 1);
-            if (addresses != null) {
-                Address returnedAddress = addresses.get(0);
-                StringBuilder strReturnedAddress = new StringBuilder("");
-
-                for (int i = 0; i < returnedAddress.getMaxAddressLineIndex(); i++) {
-                    strReturnedAddress.append(returnedAddress.getAddressLine(i)).append("\n");
-                }
-                strAdd = strReturnedAddress.toString();
-                Log.wtf("My Current loction address", "" + strReturnedAddress.toString());
-            } else {
-                Log.wtf("My Current loction address", "No Address returned!");
-                strAdd = "N/A";
-            }
-        } catch (Exception e) {
+            addresses = geocoder.getFromLocation(LATITUDE, LONGITUDE, 1);
+            return addresses.get(0).getAddressLine(0);
+        } catch (IOException e) {
             e.printStackTrace();
-            Log.wtf("My Current loction address", "Canont get Address!");
-            strAdd = "N/A";
+            return "N/A";
         }
-        return strAdd;
+
     }
 
     private void updateDistances(){
