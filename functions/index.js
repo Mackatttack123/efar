@@ -16,7 +16,7 @@ const admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
 
 
-const MAX_EFAR_TRAVEL_RADIUS = 50.0; //in kilometers
+const MAX_EFAR_TRAVEL_RADIUS = 2.0; //in kilometers
 const MAX_NUMBER_OF_EFARS_TO_NOTIFY = 5;
 
 exports.sendPushAdded = functions.database.ref('/emergencies/{id}').onCreate(event => {
@@ -39,36 +39,48 @@ exports.sendPushAdded = functions.database.ref('/emergencies/{id}').onCreate(eve
 
 		//check if any efars are online
 		if(efarArray.length > 0){
-			tokens_to_send_to = [];
-			if(efarArray.length >= MAX_NUMBER_OF_EFARS_TO_NOTIFY){
-				//only send to the 5 closest efars
-				for (var i = MAX_NUMBER_OF_EFARS_TO_NOTIFY-1; i >= 0; i--) {
-					tokens_to_send_to.push(efarArray[i].token);
-					console.log(efarArray[i].token);
-				}
+			if(efarArray[0].distance < MAX_EFAR_TRAVEL_RADIUS){
+				tokens_to_send_to = [];
+					if(efarArray.length >= MAX_NUMBER_OF_EFARS_TO_NOTIFY){
+						//only send to the 5 closest efars
+						for (var i = MAX_NUMBER_OF_EFARS_TO_NOTIFY-1; i >= 0; i--) {
+							//only send to efars in range
+							if (efarArray[i].distance < MAX_EFAR_TRAVEL_RADIUS) {
+								tokens_to_send_to.push(efarArray[i].token);
+								console.log(efarArray[i].token);
+							}
+						}
+					}else{
+						for (var i = efarArray.length - 1; i >= 0; i--) {
+							//only send to efars in range
+							if (efarArray[i].distance < MAX_EFAR_TRAVEL_RADIUS) {
+								tokens_to_send_to.push(efarArray[i].token);
+								console.log(efarArray[i].token);
+							}
+						}
+					}
+					// check if an efar created the emergency and if so don't send them a notification
+					for (var i = tokens_to_send_to.length - 1; i >= 0; i--) {
+						if(tokens_to_send_to[i] === event.data.child('emergency_made_by_efar_token').val()){
+							tokens_to_send_to.splice(i, 1);
+						}
+					}
+					console.log(tokens_to_send_to.length);
+					if(tokens_to_send_to.length < 1){
+						//no efars avalible
+						return admin.database().ref("/emergencies/"+event.data.ref.key+"/state").set(-3);
+					}else{
+						return admin.messaging().sendToDevice(tokens_to_send_to, payload).then(response => {
+						
+						});
+					}
 			}else{
-				for (var i = efarArray.length - 1; i >= 0; i--) {
-					tokens_to_send_to.push(efarArray[i].token);
-					console.log(efarArray[i].token);
-				}
-			}
-			// check if an efar created the emergency and if so don't send them a notification
-			for (var i = tokens_to_send_to.length - 1; i >= 0; i--) {
-				if(tokens_to_send_to[i] === event.data.child('emergency_made_by_efar_token').val()){
-					tokens_to_send_to.splice(i, 1);
-				}
-			}
-			if(tokens_to_send_to.length < 1){
-				//no efars avalible
-				return; //admin.database().ref("/emergencies/"+event.data.ref.key+"/state").set(-3);
-			}else{
-				return admin.messaging().sendToDevice(tokens_to_send_to, payload).then(response => {
-				
-				});
+				//no efars in range
+				return admin.database().ref("/emergencies/"+event.data.ref.key+"/state").set(-2);
 			}
 		}else{
 			//no efars avalible
-			return; //admin.database().ref("/emergencies/"+event.data.ref.key+"/state").set(-3);
+			return admin.database().ref("/emergencies/"+event.data.ref.key+"/state").set(-3);
 		}
 	});
 });
@@ -196,3 +208,26 @@ function distance(lat1, lon1, lat2, lon2) {
 	dist = dist * 1.609344;
 	return dist;
 }
+
+function moveFbRecord(oldRef, newRef) {    
+     oldRef.once('value', function(snap)  {
+          newRef.push( snap.val(), function(error) {
+               if( !error ) {  oldRef.remove(); }
+               else if( typeof(console) !== 'undefined' && console.error ) {  console.error(error); }
+          });
+     });
+}
+
+exports.checkStates = functions.database.ref('/emergencies').onWrite(event => {
+	return admin.database().ref('/emergencies').once('value', function(snapshot) {
+		snapshot.forEach(function(childSnapshot) {
+			console.log(childSnapshot.child("state").val().toString());
+	    	if(childSnapshot.child("state").val().toString().trim() === "-4"){
+	    		moveFbRecord(childSnapshot.ref, admin.database().ref('/canceled'));
+	    	}
+    	});
+    	return;
+	});
+});
+
+

@@ -7,9 +7,11 @@ package com.southafricaproject.efar;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
+import android.os.Build;
 import android.os.Handler;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -33,6 +35,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.appindexing.AppIndex;
@@ -106,6 +109,36 @@ public class EFARMainTabAll extends Fragment{
                 TextView distanceText =  (TextView) cell.findViewById(R.id.distanceTextView);
                 distanceText.setText(distanceArray.get(position).toString());
 
+
+                GPSTracker gps = new GPSTracker(getActivity());
+                my_lat = gps.getLatitude(); // latitude
+                my_long = gps.getLongitude(); // longitude
+
+                ProgressBar distance_progress = (ProgressBar) cell.findViewById(R.id.distance_progress_bar);
+                distance_progress.setMax(100);
+                int Total_progress = (int) Math.round((distance(emergenecyArray.get(position).getLatitude(), emergenecyArray.get(position).getLongitude(), my_lat, my_long) / 2.0) * 100);
+                if(Total_progress >= 100){
+                    distance_progress.setProgress(0);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        distance_progress.setProgressTintList(ColorStateList.valueOf(Color.RED));
+                    }
+                }else {
+                    distance_progress.setProgress(100 - Total_progress);
+                    if(100 - Total_progress >= 75){
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            distance_progress.setProgressTintList(ColorStateList.valueOf(Color.GREEN));
+                        }
+                    }else if(100 - Total_progress >= 50){
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            distance_progress.setProgressTintList(ColorStateList.valueOf(Color.YELLOW));
+                        }
+                    }else{
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            distance_progress.setProgressTintList(ColorStateList.valueOf(Color.RED));
+                        }
+                    }
+                }
+
                 TextView activeStateText =  (TextView) cell.findViewById(R.id.stateTextView);
                 if (emergenecyArray.get(position).getState().equals("0")){
                     //cell.setBackgroundColor(Color.argb(150, 255, 0, 0));
@@ -159,11 +192,14 @@ public class EFARMainTabAll extends Fragment{
                         e_respondingEfar = "N/A";
                     }
                     String e_state = dataSnapshot.child("state").getValue().toString();
-                    emergenecyArray.add(new Emergency(e_key, e_address, e_lat, e_long, e_phone_number, e_info, e_creationDate, e_respondingEfar, e_state));
-                    distanceArray.add(String.format("%.2f", distance(e_lat, e_long, my_lat, my_long)) + " km");
-                    adapter.notifyDataSetChanged();
-                    listView.setVisibility(View.VISIBLE);
-                    listView.setBackgroundColor(Color.WHITE);
+                    // only show local emergencies within 10km
+                    if(distance(e_lat, e_long, my_lat, my_long) < 10.0){
+                        emergenecyArray.add(new Emergency(e_key, e_address, e_lat, e_long, e_phone_number, e_info, e_creationDate, e_respondingEfar, e_state));
+                        distanceArray.add(String.format("%.2f", distance(e_lat, e_long, my_lat, my_long)) + " km");
+                        adapter.notifyDataSetChanged();
+                        listView.setVisibility(View.VISIBLE);
+                        listView.setBackgroundColor(Color.WHITE);
+                    }
                 }catch (NullPointerException e){
                     Log.wtf("added", "not yet");
                 }
@@ -192,9 +228,13 @@ public class EFARMainTabAll extends Fragment{
                     String e_creationDate = dataSnapshot.child("creation_date").getValue().toString();
                     String e_respondingEfar = dataSnapshot.child("responding_efar").getValue().toString();
                     String e_state = dataSnapshot.child("state").getValue().toString();
-                    emergenecyArray.add(new Emergency(e_key, e_address, e_lat, e_long, e_phone_number, e_info, e_creationDate, e_respondingEfar, e_state));
-                    distanceArray.add(String.format("%.2f", distance(e_lat, e_long, my_lat, my_long)) + " km");
-                    adapter.notifyDataSetChanged();
+                    // only show local emergencies within 10km
+                    if(distance(e_lat, e_long, my_lat, my_long) < 10.0){
+                        emergenecyArray.add(new Emergency(e_key, e_address, e_lat, e_long, e_phone_number, e_info, e_creationDate, e_respondingEfar, e_state));
+                        distanceArray.add(String.format("%.2f", distance(e_lat, e_long, my_lat, my_long)) + " km");
+                        adapter.notifyDataSetChanged();
+                    }
+
                 }catch (NullPointerException e){
                     Log.wtf("added", "not yet");
                 }

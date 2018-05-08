@@ -76,7 +76,8 @@
         <activity
             android:name=".EFARMainActivityTabbed"
             android:label="@string/title_activity_efarmain_tabbed"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme"
+            android:screenOrientation="portrait">
         </activity>
     </application>
 

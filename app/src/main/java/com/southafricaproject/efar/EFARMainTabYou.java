@@ -7,9 +7,11 @@ package com.southafricaproject.efar;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
+import android.os.Build;
 import android.os.Handler;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -32,6 +34,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.appindexing.AppIndex;
@@ -109,6 +112,35 @@ public class EFARMainTabYou extends Fragment{
                     activeStateText.setText("Responded to by you");
                     activeStateText.setTextColor(Color.argb(255, 0, 150, 0));
 
+                }
+
+                GPSTracker gps = new GPSTracker(getActivity());
+                my_lat = gps.getLatitude(); // latitude
+                my_long = gps.getLongitude(); // longitude
+
+                ProgressBar distance_progress = (ProgressBar) cell.findViewById(R.id.distance_progress_bar);
+                distance_progress.setMax(100);
+                int Total_progress = (int) Math.round((distance(emergenecyArray.get(position).getLatitude(), emergenecyArray.get(position).getLongitude(), my_lat, my_long) / 2.0) * 100);
+                if(Total_progress >= 100){
+                    distance_progress.setProgress(0);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        distance_progress.setProgressTintList(ColorStateList.valueOf(Color.RED));
+                    }
+                }else {
+                    distance_progress.setProgress(100 - Total_progress);
+                    if(100 - Total_progress >= 75){
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            distance_progress.setProgressTintList(ColorStateList.valueOf(Color.GREEN));
+                        }
+                    }else if(100 - Total_progress >= 50){
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            distance_progress.setProgressTintList(ColorStateList.valueOf(Color.YELLOW));
+                        }
+                    }else{
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            distance_progress.setProgressTintList(ColorStateList.valueOf(Color.RED));
+                        }
+                    }
                 }
 
                 if(position % 2 == 0){

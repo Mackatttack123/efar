@@ -184,6 +184,10 @@ public class MessagingScreenActivity extends AppCompatActivity {
 
         Map<String, String> data = new HashMap<String, String>();
         data.put("user",name);
+        Date currentTime = Calendar.getInstance().getTime();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        String timestamp = simpleDateFormat.format(currentTime);
+        data.put("timestamp",timestamp);
         data.put("message",message.trim());
         messsage_ref.child(message_key.getKey()).setValue(data);
     }

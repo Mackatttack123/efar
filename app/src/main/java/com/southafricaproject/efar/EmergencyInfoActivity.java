@@ -134,7 +134,7 @@ public class EmergencyInfoActivity extends AppCompatActivity {
 
         Button messageButton = (Button) findViewById(R.id.messagesButton);
 
-        Button endButton = (Button) findViewById(R.id.endButton);
+        final Button endButton = (Button) findViewById(R.id.endButton);
 
         final Button respondButton = (Button) findViewById(R.id.respondButton);
 
@@ -176,7 +176,6 @@ public class EmergencyInfoActivity extends AppCompatActivity {
                                             // None
                                         }
                                     });
-
                                     setUpButtons(key, time, "1");
                                 }
 
@@ -187,7 +186,7 @@ public class EmergencyInfoActivity extends AppCompatActivity {
             });
             respondButton.setVisibility(View.GONE);
         }else{
-            messageButton.setText("Message");
+            messageButton.setText("Message EFARs");
             messageButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -252,7 +251,11 @@ public class EmergencyInfoActivity extends AppCompatActivity {
             }
         }
 
-        if(state.equals("0")){
+        SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+        String efar_id = sharedPreferences.getString("id", "");
+        Bundle bundle = getIntent().getExtras();
+        final String responding_ids = bundle.getString("id");
+        if(state.equals("0") || !responding_ids.contains(efar_id)){
             endButton.setText("");
             endButton.setVisibility(View.GONE);
         }else{
@@ -328,7 +331,7 @@ public class EmergencyInfoActivity extends AppCompatActivity {
 
             SpannableString addressTextSpan = new SpannableString("Incident Address: <br><a href=" + "http://maps.google.com/?q=" + latitude + "," + longitude + ">" + address + "</a>");
 
-            SpannableString phoneTextSpan = new SpannableString("Patient's Phone: <br><a href=" + phoneLink + ">" + phoneNumber + "</a>");
+            SpannableString phoneTextSpan = new SpannableString("Contact Number: <br><a href=" + phoneLink + ">" + phoneNumber + "</a>");
 
             if (Build.VERSION.SDK_INT >= 24) {
                 // for 24 api and more
