@@ -1,10 +1,14 @@
 package com.southafricaproject.efar;
 
 import android.animation.ObjectAnimator;
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Vibrator;
@@ -27,6 +31,7 @@ import android.view.animation.Animation;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.google.android.gms.location.Geofence;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -40,8 +45,11 @@ import java.util.Random;
 
 public class PatientMainActivity extends AppCompatActivity {
 
+    String VERSION_NUMBER = "beta";
+
     boolean calling_efar = false;
     String responding_efar_id = null;
+    String phone_token = "";
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -75,9 +83,73 @@ public class PatientMainActivity extends AppCompatActivity {
             }
         });*/
 
+        //check connection
+        try {
+            ConnectivityManager cm = (ConnectivityManager) this
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+            NetworkInfo mWifi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
+            if ((networkInfo != null && networkInfo.isConnected()) || mWifi.isConnected()) {
+
+            }else{
+                new AlertDialog.Builder(PatientMainActivity.this)
+                        .setTitle("Connection Error:")
+                        .setMessage("Your device is currently unable connect to our services. " +
+                                "Please check your connection or try again later.")
+                        .show();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            new AlertDialog.Builder(PatientMainActivity.this)
+                    .setTitle("Connection Error:")
+                    .setMessage("Your device is currently unable connect to our services. " +
+                            "Please check your connection or try again later.")
+                    .show();
+        }
+
+        //check if an update is needed
+        FirebaseDatabase.getInstance().getReference().child("version").addListenerForSingleValueEvent(new ValueEventListener() {
+             @Override
+             public void onDataChange(DataSnapshot snapshot) {
+                 String current_version = snapshot.child("version_number").getValue().toString();
+                 if(!current_version.equals(VERSION_NUMBER)){
+                     AlertDialog.Builder alert = new AlertDialog.Builder(PatientMainActivity.this)
+                             .setTitle("Update Needed:")
+                             .setMessage("Please updated to the the latest version of our app.").setPositiveButton("Update", new DialogInterface.OnClickListener() {
+                         @Override
+                         public void onClick(DialogInterface dialog, int which) {
+                             final String appPackageName = getPackageName(); // getPackageName() from Context or Activity object
+                             try {
+                                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+                             } catch (android.content.ActivityNotFoundException anfe) {
+                                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+                             }
+                             finish();
+                             startActivity(getIntent());
+                         }
+                     }).setNegativeButton("Exit App", new DialogInterface.OnClickListener() {
+                         @Override
+                         public void onClick(DialogInterface dialog, int which) {
+                             finishAndRemoveTask();
+                         }
+                     }).setCancelable(false);
+                     if(!((Activity) PatientMainActivity.this).isFinishing())
+                     {
+                         alert.show();
+                     }
+                 }
+             }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         //TODO: show the patient approximatly how far away the efar is via the progress bar
         final ProgressBar distance_progress = (ProgressBar) findViewById(R.id.patient_progress_bar);
+        //distance_progress.setProgressTintList(ColorStateList.valueOf(Color.BLUE));
         distance_progress.setVisibility(View.INVISIBLE);
         distance_progress.setProgress(0);
 
@@ -157,6 +229,7 @@ public class PatientMainActivity extends AppCompatActivity {
                             userUpdate.setText("There are no EFARs in your area!");
                             //clear the emergency key and state
                             editor.remove("emergency_key");
+                            editor.putString("creation_date", "");
                             editor.putString("user_emergency_state", "100");
                             editor.apply();
                             responding_efar_id = null;
@@ -218,10 +291,75 @@ public class PatientMainActivity extends AppCompatActivity {
                     // fade out text
                     userUpdate.animate().alpha(0.0f).setDuration(10000);
                     editor.putString("emergency_key", "");
+                    editor.putString("creation_date", "");
                     editor.apply();
                     calling_efar = false;
                     distance_progress.setVisibility(View.INVISIBLE);
                     distance_progress.setProgress(0);
+                }
+                TextView userUpdate = (TextView) findViewById(R.id.user_update );
+                if(dataSnapshot.child("emergency_made_by_efar_token").exists() && !userUpdate.getText().toString().equals("")){
+                    if(dataSnapshot.child("emergency_made_by_efar_token").getValue().toString().equals(FirebaseInstanceId.getInstance().getToken())){
+                        userUpdate.setTextColor(Color.GREEN);
+                        helpMeButton.setText("Call for Help");
+                        helpMeButton.setBackgroundColor(Color.RED);
+                        userUpdate.setText("Emergency has been ended.");
+                        // fade out text
+                        userUpdate.animate().alpha(0.0f).setDuration(10000);
+                        editor.putString("emergency_key", "");
+                        editor.putString("creation_date", "");
+                        editor.apply();
+                        calling_efar = false;
+                        distance_progress.setVisibility(View.INVISIBLE);
+                        distance_progress.setProgress(0);
+                    }
+                }
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        FirebaseDatabase.getInstance().getReference().child("canceled").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                //check if an efar sent the message and if they are the only one in their area
+                if(dataSnapshot.child("emergency_made_by_efar_token").exists()){
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    String creation_date = sharedPreferences.getString("creation_date", "");
+                    if(dataSnapshot.child("emergency_made_by_efar_token").getValue().toString().equals(phone_token)){
+                        phone_token = "";
+                        TextView userUpdate = (TextView) findViewById(R.id.user_update );
+                        userUpdate.setTextColor(Color.RED);
+                        helpMeButton.setText("Call for Help");
+                        helpMeButton.setBackgroundColor(Color.RED);
+                        userUpdate.setText("No other EFARs available.");
+                        // fade out text
+                        userUpdate.animate().alpha(0.0f).setDuration(10000);
+                        editor.putString("emergency_key", "");
+                        editor.putString("creation_date", "");
+                        editor.apply();
+                        calling_efar = false;
+                        distance_progress.setVisibility(View.INVISIBLE);
+                        distance_progress.setProgress(0);
+                    }
                 }
 
             }
@@ -272,6 +410,7 @@ public class PatientMainActivity extends AppCompatActivity {
                                             blinkText();
                                             distance_progress.setVisibility(View.VISIBLE);
                                             ObjectAnimator.ofInt(distance_progress, "progress", 30).start();
+                                            phone_token = FirebaseInstanceId.getInstance().getToken();
                                             launchPatientInfoScreen();
                                         }
 
@@ -295,8 +434,8 @@ public class PatientMainActivity extends AppCompatActivity {
                                             userUpdate.animate().alpha(0.0f).setDuration(3000);
                                             // when canceled, delete the emergancy and move to canceled
                                             SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
-                                            String emergency_key_to_delete = sharedPreferences.getString("emergency_key", "");
-                                            FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                            final String emergency_key_to_delete = sharedPreferences.getString("emergency_key", "");
+                                            final FirebaseDatabase database = FirebaseDatabase.getInstance();
                                             DatabaseReference emergency_ref = database.getReference("emergencies/" + emergency_key_to_delete );
                                             DatabaseReference emergency_state_ref = database.getReference("emergencies/" + emergency_key_to_delete + "/state");
                                             emergency_state_ref.setValue("-1");

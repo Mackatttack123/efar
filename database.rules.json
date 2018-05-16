@@ -11,6 +11,22 @@
     "emergencies": {
       ".read": true,
       ".write": true
+    },
+    "tokens": {
+      ".read": true,
+      ".write": true
+    },
+    "canceled": {
+      ".read": true,
+      ".write": true
+    },
+    "completed": {
+      ".read": true,
+      ".write": true
+    },
+    "version": {
+      ".read": true,
+      ".write": true
     }
   }
 }

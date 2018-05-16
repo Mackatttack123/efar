@@ -1,12 +1,18 @@
 package com.southafricaproject.efar;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Handler;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -27,8 +33,11 @@ import android.widget.TextView;
 
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.Random;
@@ -37,6 +46,7 @@ import static com.google.android.gms.cast.CastRemoteDisplayLocalService.startSer
 
 public class EFARMainActivityTabbed extends AppCompatActivity {
 
+    String VERSION_NUMBER = "beta";
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -90,6 +100,70 @@ public class EFARMainActivityTabbed extends AppCompatActivity {
                 System.err.println("Listener was cancelled");
             }
         });*/
+
+        //check connection
+        try {
+            ConnectivityManager cm = (ConnectivityManager) this
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+            NetworkInfo mWifi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
+            if ((networkInfo != null && networkInfo.isConnected()) || mWifi.isConnected()) {
+
+            }else{
+                new android.app.AlertDialog.Builder(EFARMainActivityTabbed.this)
+                        .setTitle("Connection Error:")
+                        .setMessage("Your device is currently unable connect to our services. " +
+                                "Please check your connection or try again later.")
+                        .show();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            new android.app.AlertDialog.Builder(EFARMainActivityTabbed.this)
+                    .setTitle("Connection Error:")
+                    .setMessage("Your device is currently unable connect to our services. " +
+                            "Please check your connection or try again later.")
+                    .show();
+        }
+
+        //check if an update is needed
+        FirebaseDatabase.getInstance().getReference().child("version").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                String current_version = snapshot.child("version_number").getValue().toString();
+                if(!current_version.equals(VERSION_NUMBER)){
+                    android.app.AlertDialog.Builder alert = new android.app.AlertDialog.Builder(EFARMainActivityTabbed.this)
+                            .setTitle("Update Needed:")
+                            .setMessage("Please updated to the the latest version of our app.").setPositiveButton("Update", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    final String appPackageName = getPackageName(); // getPackageName() from Context or Activity object
+                                    try {
+                                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+                                    } catch (android.content.ActivityNotFoundException anfe) {
+                                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+                                    }
+                                    finish();
+                                    //startActivity(getIntent());
+                                }
+                            }).setNegativeButton("Exit App", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    finishAndRemoveTask();
+                                }
+                            }).setCancelable(false);
+                    if(!((Activity) EFARMainActivityTabbed.this).isFinishing())
+                    {
+                        alert.show();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         // start tracking efar
         startService(new Intent(this, MyService.class));

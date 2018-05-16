@@ -1,3 +1,4 @@
+
 function Efar (distance_away, token, message) {
     this.distance_away = distance_away;
     this.token = token;
@@ -19,23 +20,20 @@ admin.initializeApp(functions.config().firebase);
 const MAX_EFAR_TRAVEL_RADIUS = 2.0; //in kilometers
 const MAX_NUMBER_OF_EFARS_TO_NOTIFY = 5;
 
-exports.sendPushAdded = functions.database.ref('/emergencies/{id}').onCreate(event => {
-	return admin.database().ref('/tokens').once('value', function(snapshot) {
-	    var efarArray = snapshotToArray(snapshot, event.data.child('latitude').val(), event.data.child('longitude').val());
+exports.sendPushAdded = functions.database.ref('/emergencies/{id}').onCreate((snap, context) => {
+	return admin.database().ref('/tokens').once('value').then(function(snapshot) {
+	    var efarArray = snapshotToArray(snapshot, snap.child('latitude').val(), snap.child('longitude').val());
 	    efarArray.sort(function(a, b) {
 		    return a.distance - b.distance;
 		});
 	    var payload = {
  			data: {
  				title: "NEW EMERGANCY!",
-				body: "Patient Message: " + event.data.child('other_info').val(),
+				body: "Patient Message: " + snap.child('other_info').val(),
  				//badge: '1',
  				sound: 'default',
  			}
  		};
-		//TODO: use the MAX_EFAR_TRAVEL_RADIUS to check and see if the patient is out of range.
-		//      If they are out of range then we: 
-		//      return admin.database().ref("/emergencies/"+event.data.ref.key+"/state").set(-2);
 
 		//check if any efars are online
 		if(efarArray.length > 0){
@@ -61,14 +59,14 @@ exports.sendPushAdded = functions.database.ref('/emergencies/{id}').onCreate(eve
 					}
 					// check if an efar created the emergency and if so don't send them a notification
 					for (var i = tokens_to_send_to.length - 1; i >= 0; i--) {
-						if(tokens_to_send_to[i] === event.data.child('emergency_made_by_efar_token').val()){
+						if(tokens_to_send_to[i] === snap.child('emergency_made_by_efar_token').val()){
 							tokens_to_send_to.splice(i, 1);
 						}
 					}
 					console.log(tokens_to_send_to.length);
 					if(tokens_to_send_to.length < 1){
 						//no efars avalible
-						return admin.database().ref("/emergencies/"+event.data.ref.key+"/state").set(-3);
+						return admin.database().ref("/emergencies/"+context.ref.key+"/state").set(-3);
 					}else{
 						return admin.messaging().sendToDevice(tokens_to_send_to, payload).then(response => {
 						
@@ -76,11 +74,11 @@ exports.sendPushAdded = functions.database.ref('/emergencies/{id}').onCreate(eve
 					}
 			}else{
 				//no efars in range
-				return admin.database().ref("/emergencies/"+event.data.ref.key+"/state").set(-2);
+				return admin.database().ref("/emergencies/"+context.ref.key+"/state").set(-2);
 			}
 		}else{
 			//no efars avalible
-			return admin.database().ref("/emergencies/"+event.data.ref.key+"/state").set(-3);
+			return admin.database().ref("/emergencies/"+context.ref.key+"/state").set(-3);
 		}
 	});
 });
@@ -105,18 +103,18 @@ function snapshotToArray(snapshot, incoming_latitude, incoming_longitude) {
 };
 
 //send notifications to efars when they get messages 
-exports.sendPushMessage = functions.database.ref('/emergencies/{id}/messages/{uid}').onCreate(event => {
-	var user = event.data.child("user").val()
+exports.sendPushMessage = functions.database.ref('/emergencies/{id}/messages/{uid}').onCreate((snap, context) => {
+	var user = snap.child("user").val()
 	const payload = {
 		data: {
 			title: "Message (" + user + "):",
-			body: event.data.child("message").val(),
+			body: snap.child("message").val(),
 			//badge: '1',
 			sound: 'default',
 		}
 	};
 	//send notifications to all responding efars
-	return event.data.adminRef.parent.parent.once("value").then(parentSnap => {
+	return admin.database().ref('/emergencies/' + snap.ref.parent.parent.getKey()).once('value').then(parentSnap => {
 		var responding_efars = parentSnap.child("responding_efar").val();
 		var id_array = responding_efars.split(", ");
 		return admin.database().ref("/users/").once('value').then((snapshot) => {
@@ -128,6 +126,7 @@ exports.sendPushMessage = functions.database.ref('/emergencies/{id}/messages/{ui
 				   tokens_to_send_to.push(token);
 				}
 				console.log(id_array[i]);
+				console.log(tokens_to_send_to[i]);
 			} 
 			return admin.messaging().sendToDevice(tokens_to_send_to, payload).then(response => {
 
@@ -138,7 +137,7 @@ exports.sendPushMessage = functions.database.ref('/emergencies/{id}/messages/{ui
 
 //TODO: Modify these so they only send notifications teh efars involved with them
 //proably don't need to two push notification senders below?
-exports.sendPushCanceled = functions.database.ref('/canceled/{id}').onCreate(event => {
+exports.sendPushCanceled = functions.database.ref('/canceled/{id}').onCreate((snap, context) => {
 	const payload = {
 		data: {
 			title: "Emergency Canceled:",
@@ -148,8 +147,8 @@ exports.sendPushCanceled = functions.database.ref('/canceled/{id}').onCreate(eve
 		}
 	};
 	//send notifications to all responding efars
-	if(event.data.hasChild("responding_efar")){
-		var responding_efars = event.data.child("responding_efar").val();
+	if(snap.hasChild("responding_efar")){
+		var responding_efars = snap.child("responding_efar").val();
 		var id_array = responding_efars.split(", ");
 		return admin.database().ref("/users/").once('value').then((snapshot) => {
 			var tokens_to_send_to = [];
@@ -167,7 +166,7 @@ exports.sendPushCanceled = functions.database.ref('/canceled/{id}').onCreate(eve
 	}
 });
 
-exports.sendPushCompleted = functions.database.ref('/completed/{id}').onCreate(event => {
+exports.sendPushCompleted = functions.database.ref('/completed/{id}').onCreate((snap, context) => {
 	const payload = {
 		data: {
 			title: "Emergency Over:",
@@ -177,8 +176,8 @@ exports.sendPushCompleted = functions.database.ref('/completed/{id}').onCreate(e
 		}
 	};
 	//send notifications to all responding efars
-	if(event.data.hasChild("responding_efar")){
-		var responding_efars = event.data.child("responding_efar").val();
+	if(snap.hasChild("responding_efar")){
+		var responding_efars = snap.child("responding_efar").val();
 		var id_array = responding_efars.split(", ");
 		return admin.database().ref("/users/").once('value').then((snapshot) => {
 			var tokens_to_send_to = [];
@@ -218,7 +217,7 @@ function moveFbRecord(oldRef, newRef) {
      });
 }
 
-exports.checkStates = functions.database.ref('/emergencies').onWrite(event => {
+exports.checkStates = functions.database.ref('/emergencies').onWrite((snap, context) => {
 	return admin.database().ref('/emergencies').once('value', function(snapshot) {
 		snapshot.forEach(function(childSnapshot) {
 			console.log(childSnapshot.child("state").val().toString());
@@ -229,5 +228,3 @@ exports.checkStates = functions.database.ref('/emergencies').onWrite(event => {
     	return;
 	});
 });
-
-

@@ -2,6 +2,8 @@ package com.southafricaproject.efar;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
@@ -10,6 +12,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 
 import android.content.Context;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -24,6 +27,7 @@ import android.telephony.PhoneNumberFormattingTextWatcher;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.util.HashMap;
 
 import com.google.firebase.database.DataSnapshot;
@@ -71,7 +75,7 @@ public class PatientInfoActivity extends AppCompatActivity {
 
         GPSTracker gps = new GPSTracker(this);
         // check if GPS is avalible
-        if(!gps.canGetLocation()){
+        if (!gps.canGetLocation()) {
             gps.showSettingsAlert();
         }
 
@@ -89,7 +93,7 @@ public class PatientInfoActivity extends AppCompatActivity {
         //TextView userInfoScreenUpdate = (TextView) findViewById(R.id.user_update_info_screen);
         //userInfoScreenUpdate.setText("An EFAR will be contacted once you fill in this information:");
 
-        Button infoSumbitButton = (Button)findViewById(R.id.patient_info_sumbmit_button);
+        Button infoSumbitButton = (Button) findViewById(R.id.patient_info_sumbmit_button);
         final EditText patient_phone_number = (EditText) findViewById(R.id.patient_phone_number);
         patient_phone_number.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
         final EditText patient_other_info = (EditText) findViewById(R.id.patient_other_info);
