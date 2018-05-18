@@ -18,7 +18,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
-        android:text="There are no emergencies at this time.\n\n¯\\_(ツ)_/¯"
+        android:text="There are no emergencies at this time."
         android:textAlignment="center"
         android:textSize="45dp"
         app:layout_constraintLeft_toLeftOf="parent"
