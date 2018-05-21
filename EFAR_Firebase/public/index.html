@@ -39,7 +39,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
   <link rel="shortcut icon" href="assets/images/efar-logo-black-122x130.png" type="image/x-icon">
   <meta name="description" content="">
-  <title>Home</title>
+  <title>Login</title>
   <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
   <link rel="stylesheet" href="assets/bootstrap/css/bootstrap-grid.min.css">
   <link rel="stylesheet" href="assets/bootstrap/css/bootstrap-reboot.min.css">
@@ -65,6 +65,7 @@
   <!-- Page top navigation bar-->
   <section class="menu cid-qNlaB05VQl" once="menu" id="menu1-e">
     <nav class="navbar navbar-expand beta-menu navbar-dropdown align-items-center navbar-fixed-top navbar-toggleable-sm">
+        <!--
         <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <div class="hamburger">
                 <span></span>
@@ -73,6 +74,7 @@
                 <span></span>
             </div>
         </button>
+        -->
         <div class="menu-logo">
             <div class="navbar-brand">
                 <span class="navbar-logo">
@@ -85,6 +87,7 @@
                 </span>
             </div>
         </div>
+        <!--
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav nav-dropdown nav-right" data-app-modern-menu="true">
               <li class="nav-item">
@@ -108,17 +111,17 @@
                     </form>
                 </div>
               </li>
-              <!--
               <li class="nav-item">
                 <a class="nav-link link text-white display-4" href="https://mobirise.com">
                   <span class="mbri-setting mbr-iconfont mbr-iconfont-btn"></span>Settings</a>
               <li>
-              -->
             </ul>
         </div>
+        -->
     </nav>
 </section>
 
+<!-- 
 <script language="javascript"> 
   function showCheckAlert() {
     var alert = document.getElementById("info");
@@ -133,34 +136,32 @@
     call_efar.style.display = "block";
   }
 </script>
+-->
 
 <!-- Page body for EFAR emergenecy button-->
 <section class="features3 cid-qNlbiC5je7" id="features3-h">
     <div class="container">
         <div class="media-container-row">
             <div class="card p-3 col-12 col-md-6">
-              <div style="display: none" id="info">
+              <div style="display: block" id="info">
                   <center>
                     <form>
-                      <h1><hr>Emergency Information:<hr></h1>
+                      <h1><hr>Login Information:<hr></h1>
                       <div class="form-group">
-                        <label for="phoneNumber">Phone Number:</label>
-                        <input type="tel" class="form-control" id="phoneNumber" aria-describedby="phoneHelp" placeholder="Enter Phone Number">
-                        <small id="phoneHelp" class="form-text text-muted">Your number will be kept private and helps EFARs better communicate with you.</small>
+                        <label for="Username">Username:</label>
+                        <input type="text" class="form-control" id="Username" placeholder="Enter Username">
+                        
                       </div>
                       <div class="form-group">
-                        <label for="information">Other Information:</label>
-                        <input type="information" class="form-control" id="information" placeholder="Enter Other Information">
-                        <small id="infoHelp" class="form-text text-muted">Enter any infomation you may think is important for EFARs to know before they arrive.</small>
+                        <label for="Password">Password:</label>
+                        <input type="password" class="form-control" id="Password" placeholder="Enter Password">
                       </div>
                       <hr>
-                      <button type="button" class="btn btn-primary btn-lg" id="call_efar_button" onclick="add_emergency()">Call for EFARs</button>
-                      <div></div>
-                      <button type="button" class="btn btn-danger btn-sm" onclick="hideCheckAlert()" id="cancel_button">Cancel</button>
-                      <div id="loading_bar_container"></div>
+                      <button type="button" class="btn btn-primary btn-lg" id="call_efar_button" onclick="attempt_login()">Submit</button>
                     </form>
                   </center>
                 </div>
+                <!--
                 <div class="card-wrapper" id="card" onclick="showCheckAlert()">
                   <div class="card-img">
                     <img src="assets/images/red_phone.png" alt="Phone-Image" title="" style="padding-top: 30px; height: auto; width: 60%">
@@ -170,6 +171,7 @@
                           Call EFAR</h4>
                   </div>
                 </div>
+                -->
             </div>  
         </div>
     </div>

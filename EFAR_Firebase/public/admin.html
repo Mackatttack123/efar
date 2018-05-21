@@ -117,17 +117,29 @@
 <section class="features3 cid-qNlbiC5je7" id="features3-h">
     <div class="container">
       <center>
-        <h1>Registered EFAR Data</h1>
+        <h1>Register EFAR Data</h1>
+        <hr>
+      <button onclick="addNewEFAR()">Add New EFAR</button>
+      <label for="new_EFAR_ID">ID:</label>
+      <input type="text" name="new_EFAR_ID" id="new_EFAR_ID">
+      <label for="new_EFAR_Name">Name:</label>
+      <input type="text" name="new_EFAR_Name" id="new_EFAR_Name">
+      <label for="new_EFAR_Phone">Phone #:</label>
+      <input type="text" name="new_EFAR_Phone" id="new_EFAR_Phone">
+      <p></p>
+        <h3>Registered EFARs</h1>
         <hr>
         <table bgcolor="#eeffee" width="100%" border="1" cellpadding="10" id="efar_data_table">
-          <tr>
+          <thead>
             <th>ID</th>
             <th>Name</th>
             <th>Phone</th> 
             <th>Latitude</th>
             <th>Longitude</th>
             <th>Logged In</th>
-          </tr>
+          </thead>
+          <tbody id="efar_data_table_body">
+          </tbody>
         </table>
         <hr>
       </center>

@@ -4,8 +4,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 function attempt_login(){
 	console.log("checking name");
-	var id_entered = document.getElementById("dropdownFormID").value;
-    var password_entered = document.getElementById("dropdownFormPassword").value;
+	var id_entered = document.getElementById("Username").value;
+    var password_entered = document.getElementById("Password").value;
 
   	firebase.auth().signInWithEmailAndPassword(id_entered + "@email.com", password_entered).catch(function(error) {
 	  // Handle Errors here.
@@ -15,7 +15,7 @@ function attempt_login(){
 	  if(errorCode === 'auth/wrong-password') {
 	    alert('Wrong password.');
 	  }else if(errorCode === 'auth/invalid-email') {
-	    alertify.error('Invalid email.');
+	    alert('Invalid user.');
 	  } else {
 	    alert(errorMessage);
 	  }

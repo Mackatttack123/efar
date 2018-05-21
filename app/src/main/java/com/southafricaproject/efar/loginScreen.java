@@ -75,7 +75,7 @@ public class loginScreen extends AppCompatActivity {
 
         if(old_id != "" && old_name != ""){
             user_name.setText(old_name);
-            user_id.setText(old_id);
+            //user_id.setText(old_id);
         }
 
         // logic for the login submit button

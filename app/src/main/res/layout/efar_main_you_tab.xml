@@ -18,7 +18,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
-        android:text="You are not refirebase initonding to any emergencies."
+        android:text="You are not responding to any emergencies."
         android:textAlignment="center"
         android:textSize="45dp"
         app:layout_constraintLeft_toLeftOf="parent"

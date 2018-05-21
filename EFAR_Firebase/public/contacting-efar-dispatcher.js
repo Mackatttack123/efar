@@ -15,7 +15,7 @@ function draw(){
     var efar_name;
     var efar_phone;
     firebase.database().ref("/emergencies/" + window.location.hash.substring(1)).on("value", function(snapshot) {
-      state = snapshot.child("state").val();
+      state = snapshot.child("state").val().toString();
       efar_id = snapshot.child("responding_efar").val();
     }, function (errorObject) {
       console.log("The read failed: " + errorObject.code);
@@ -25,38 +25,59 @@ function draw(){
         text.html("<h2>EFAR Contacted!</h2>");
         text.style("color", "#00bb00")
 
-        firebase.database().ref("/users/" + efar_id).on("value", function(snapshot) {
-          efar_name = snapshot.child("name").val();
-          efar_phone = snapshot.child("phone").val();
-          if(!found_efar){
-            found_efar = true;
-              efarDiv = createDiv("<hr><h3><center><strong>Name:</strong> <i>" + efar_name 
-                + "</i><div><strong>Phone:</strong> <i>" + efar_phone 
-                + "</i></div><div><strong>ID:</strong> <i>" + efar_id 
-                + "</i></div></center></h3>");
-              efarDiv.parent("contacted_efar_info");
-              var message_popup = select("#message_popup");
-              message_popup.show();
-          } 
-        }, function (errorObject) {
-          console.log("The read failed: " + errorObject.code);
-        });
+        var names = "N/A";
+        var phones = "N/A";
 
+        var id_array = efar_id.split(', ');
+
+        for (var i = 0; i < id_array.length; i++) {
+          firebase.database().ref("/users/" + id_array[i]).on("value", function(snapshot) {
+            if(i === 0){
+              names = snapshot.child("name").val();
+              phones = snapshot.child("phone").val();
+            }else{
+              names = names + ", " + snapshot.child("name").val();
+              phones = phones + ", " + snapshot.child("phone").val();
+            }
+            
+          }, function (errorObject) {
+            console.log("The read failed: " + errorObject.code);
+          });
+        }
+
+        //update contacted card
+        var contacted_card = select("#contacted_card");
+        if(contacted_card != null){
+          contacted_card.remove();
+        }
+        
+        efarDiv = createDiv("<div id='contacted_card'><hr><h3><center><strong>Name(s):</strong> <i>" + names 
+              + "</i><div><strong>Phone(s):</strong> <i>" + phones 
+              + "</i></div><div><strong>ID(s):</strong> <i>" + efar_id 
+              + "</i></div></center></h3></div>");
+            efarDiv.parent("contacted_efar_info");
+            var message_popup = select("#message_popup");
+            message_popup.show();
+
+        //get messages here
         var message_count = 0;
         firebase.database().ref("/emergencies/" + window.location.hash.substring(1) + "/messages").on('value', function(snapshot) {
             message_count = snapshot.numChildren();
         });
 
         if(message_count != number_of_messages){
-            var badge = select('#badge');
-            badge.html(message_count);
             number_of_messages = message_count;
             updateMessages();
         }
-
     }else if(state == "0"){
         var text = select("#contacting_title");
         text.html("Contacting EFAR...");
+        text.style("color", "#bb0000")
+        var message_popup = select("#message_popup");
+        message_popup.hide();
+    }else if(state == "-2" || state == "-3"){
+        var text = select("#contacting_title");
+        text.html("No EFARs Avalible");
         text.style("color", "#bb0000")
         var message_popup = select("#message_popup");
         message_popup.hide();
@@ -98,13 +119,17 @@ function updateMessages(){
 
 function sendMessage(){
     var new_message = select("#message_to_send");
-    var package = {
+    if(new_message.value() != ""){
+
+      var package = {
         user: user_id, 
         message: new_message.value()
-    }
-    firebase.database().ref('/emergencies/' + window.location.hash.substring(1) + "/messages").push(package).then(
+      }
+
+      firebase.database().ref('/emergencies/' + window.location.hash.substring(1) + "/messages").push(package).then(
             function onSuccess(res) {
                 new_message.value("");
           });
+    }
 }
 

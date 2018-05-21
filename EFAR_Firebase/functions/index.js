@@ -65,7 +65,7 @@ exports.sendPushAdded = functions.database.ref('/emergencies/{id}').onCreate((sn
 					console.log(tokens_to_send_to.length);
 					if(tokens_to_send_to.length < 1){
 						//no efars avalible
-						return admin.database().ref("/emergencies/"+context.ref.key+"/state").set(-3);
+						return admin.database().ref("/emergencies/"+snap.key+"/state").set(-3);
 					}else{
 						return admin.messaging().sendToDevice(tokens_to_send_to, payload).then(response => {
 							return
@@ -73,11 +73,11 @@ exports.sendPushAdded = functions.database.ref('/emergencies/{id}').onCreate((sn
 					}
 			}else{
 				//no efars in range
-				return admin.database().ref("/emergencies/"+context.ref.key+"/state").set(-2);
+				return admin.database().ref("/emergencies/"+snap.key+"/state").set(-2);
 			}
 		}else{
 			//no efars avalible
-			return admin.database().ref("/emergencies/"+context.ref.key+"/state").set(-3);
+			return admin.database().ref("/emergencies/"+snap.key+"/state").set(-3);
 		}
 	});
 });
@@ -218,10 +218,18 @@ exports.checkStates = functions.database.ref('/emergencies').onWrite((snap, cont
 	return admin.database().ref('/emergencies').once('value', function(snapshot) {
 		snapshot.forEach(function(childSnapshot) {
 			console.log(childSnapshot.child("state").val().toString());
-	    	if(childSnapshot.child("state").val().toString().trim() === "-4"){
+			var state = childSnapshot.child("state").val().toString().trim();
+	    	if(state === "-2" || state === "-3" || state === "-4"){
 	    		moveFbRecord(childSnapshot.ref, admin.database().ref('/canceled'));
 	    	}
     	});
     	return;
 	});
+});
+
+exports.checkNewTokens = functions.database.ref('/tokens/{token_id}').onCreate((snap, context) => {
+	if(snap.child("latitude").val() === 0.0 && snap.child("longitude").val() === 0.0){
+		snap.ref.remove();
+	}
+	return;
 });
