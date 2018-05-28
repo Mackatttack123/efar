@@ -154,13 +154,13 @@ public class EFARMainTabAll extends Fragment{
                 }else if(emergenecyArray.get(position).getRespondingEfar().contains(id)){
                     //cell.setBackgroundColor(Color.argb(150, 0, 255, 0));
                     activeStateText.setText("Responded to by you");
-                    activeStateText.setTextColor(Color.rgb(81, 150, 80));
+                    activeStateText.setTextColor(Color.rgb(2, 55, 98));
                 }else{
                     String[] responders = emergenecyArray.get(position).getRespondingEfar().split(",");
                     int num = responders.length;
                     //cell.setBackgroundColor(Color.argb(150, 255, 255, 0));
                     activeStateText.setText("Responded to by " + num);
-                    activeStateText.setTextColor(Color.rgb(2, 55, 98));
+                    activeStateText.setTextColor(Color.rgb(81, 150, 80));
                 }
 
                 if(position % 2 == 0){

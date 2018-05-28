@@ -2,6 +2,7 @@ package com.southafricaproject.efar;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -13,6 +14,7 @@ import android.text.Html;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -173,6 +175,7 @@ public class MessagingScreenActivity extends AppCompatActivity {
                 message_to_send.setText("");
             }
         });
+
     }
 
     private void add_message(String name, String message) throws JSONException {

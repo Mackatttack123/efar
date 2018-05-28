@@ -26,6 +26,7 @@
         // User is signed in.
         user_email = user.email;
         user_id = user_email.replace('@email.com','');
+        firebase.database().ref('/dispatchers/' + user_id + "/dipatcher_name").set(user_id);
         // ...
         document.getElementsByTagName("html")[0].style.visibility = "visible";
       } else {
@@ -175,6 +176,21 @@
                   </div>
                 </div>
             </div>  
+
+            <div class="card p-3 col-12 col-md-6" id="message_popup">
+                <div class="card-wrapper" id="card">
+                    <div>
+                      <hr>
+                      <center>
+                        <h1 style="color: #000">Current Calls:</h1>
+                      </center>
+                    </div>
+                    <hr>
+                    <div style="height: 320px; width: 100%; padding: 10px; word-break: break-all; word-wrap: break-word; overflow-y: auto; " id="Current_calls_field" ></div>
+                    <hr>
+                </div>  
+            </div>
+
         </div>
     </div>
 </section>

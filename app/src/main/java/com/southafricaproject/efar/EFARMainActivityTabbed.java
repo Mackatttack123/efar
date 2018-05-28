@@ -89,6 +89,7 @@ public class EFARMainActivityTabbed extends AppCompatActivity {
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+        tabLayout.setSelectedTabIndicatorHeight((int) (4 * getResources().getDisplayMetrics().density));
 
         //check database connection
         /*DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
@@ -192,29 +193,42 @@ public class EFARMainActivityTabbed extends AppCompatActivity {
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //to get rid of stored password and username
-                SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
+                new android.app.AlertDialog.Builder(EFARMainActivityTabbed.this)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setTitle("Logging Out")
+                        .setMessage("Are you sure you want to log out?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //to get rid of stored password and username
+                                SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sharedPreferences.edit();
 
-                // say that user has logged off
-                FirebaseDatabase database = FirebaseDatabase.getInstance();
-                DatabaseReference userRef = database.getReference("users");
-                userRef.child(sharedPreferences.getString("id", "") + "/logged_in").setValue(false);
-                userRef.child(sharedPreferences.getString("id", "") + "/token").setValue("null");
-                editor.putString("id", "");
-                editor.putString("name", "");
-                editor.putBoolean("logged_in", false);
-                stopService(new Intent(EFARMainActivityTabbed.this, MyService.class));
-                editor.apply();
+                                // say that user has logged off
+                                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                DatabaseReference userRef = database.getReference("users");
+                                userRef.child(sharedPreferences.getString("id", "") + "/logged_in").setValue(false);
+                                userRef.child(sharedPreferences.getString("id", "") + "/token").setValue("null");
+                                editor.putString("id", "");
+                                editor.putString("name", "");
+                                editor.putBoolean("logged_in", false);
+                                stopService(new Intent(EFARMainActivityTabbed.this, MyService.class));
+                                editor.apply();
 
-                //clear the phones token for the database
-                String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-                DatabaseReference token_ref = database.getReference("tokens/" + refreshedToken);
-                token_ref.removeValue();
+                                //clear the phones token for the database
+                                String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+                                DatabaseReference token_ref = database.getReference("tokens/" + refreshedToken);
+                                token_ref.removeValue();
 
-                mAuth.getCurrentUser().delete();
-                launchPatientMainScreen();
-                finish();
+                                mAuth.getCurrentUser().delete();
+                                launchPatientMainScreen();
+                                finish();
+                            }
+
+                        })
+                        .setNegativeButton("No", null)
+                        .show();
             }
         });
 

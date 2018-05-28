@@ -111,7 +111,7 @@ public class EFARMainTabYou extends Fragment{
                 if(emergenecyArray.get(position).getRespondingEfar().contains(id)){
                     //cell.setBackgroundColor(Color.argb(150, 0, 255, 0));
                     activeStateText.setText("Responded to by you");
-                    activeStateText.setTextColor(Color.argb(255, 0, 150, 0));
+                    activeStateText.setTextColor(Color.rgb(2, 55, 98));
 
                 }
 

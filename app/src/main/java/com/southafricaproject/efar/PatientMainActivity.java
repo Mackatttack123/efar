@@ -504,28 +504,43 @@ public class PatientMainActivity extends AppCompatActivity {
             toLoginButton.setOnClickListener(
                     new Button.OnClickListener() {
                         public void onClick(View v) {
-                            //to get rid of stored password and username
-                            SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
-                            SharedPreferences.Editor editor = sharedPreferences.edit();
 
-                            // say that user has logged off
-                            FirebaseDatabase database = FirebaseDatabase.getInstance();
-                            DatabaseReference userRef = database.getReference("users");
-                            userRef.child(sharedPreferences.getString("id", "") + "/logged_in").setValue(false);
-                            userRef.child(sharedPreferences.getString("id", "") + "/token").setValue("null");
-                            editor.putString("id", "");
-                            editor.putString("name", "");
-                            editor.putBoolean("logged_in", false);
-                            stopService(new Intent(PatientMainActivity.this, MyService.class));
-                            editor.commit();
+                            new AlertDialog.Builder(PatientMainActivity.this)
+                                    .setIcon(android.R.drawable.ic_dialog_alert)
+                                    .setTitle("Logging Out")
+                                    .setMessage("Are you sure you want to log out?")
+                                    .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                                    {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            //to get rid of stored password and username
+                                            SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                                            SharedPreferences.Editor editor = sharedPreferences.edit();
 
-                            //clear the phones token for the database
-                            String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-                            DatabaseReference token_ref = database.getReference("tokens/" + refreshedToken);
-                            token_ref.removeValue();
-                            mAuth.getCurrentUser().delete();
-                            finish();
-                            startActivity(getIntent());
+                                            // say that user has logged off
+                                            FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                            DatabaseReference userRef = database.getReference("users");
+                                            userRef.child(sharedPreferences.getString("id", "") + "/logged_in").setValue(false);
+                                            userRef.child(sharedPreferences.getString("id", "") + "/token").setValue("null");
+                                            editor.putString("id", "");
+                                            editor.putString("name", "");
+                                            editor.putBoolean("logged_in", false);
+                                            stopService(new Intent(PatientMainActivity.this, MyService.class));
+                                            editor.commit();
+
+                                            //clear the phones token for the database
+                                            String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+                                            DatabaseReference token_ref = database.getReference("tokens/" + refreshedToken);
+                                            token_ref.removeValue();
+                                            mAuth.getCurrentUser().delete();
+                                            finish();
+                                            startActivity(getIntent());
+                                        }
+
+                                    })
+                                    .setNegativeButton("No", null)
+                                    .show();
+
                         }
                     }
             );

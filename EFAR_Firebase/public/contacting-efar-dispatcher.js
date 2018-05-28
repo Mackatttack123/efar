@@ -8,8 +8,6 @@ function setup() {
 
 var efarDiv;
 var found_efar = false;
-var keep_messages = false;
-var stop_messaging = false;
 
 function draw(){
     var state; 
@@ -30,7 +28,14 @@ function draw(){
         var names = "N/A";
         var phones = "N/A";
 
-        var id_array = efar_id.split(', ');
+        id_array = [];
+        try {
+            id_array = efar_id.split(', ');
+        }
+        catch(err) {
+            location.reload();
+        }
+        
 
         for (var i = 0; i < id_array.length; i++) {
           firebase.database().ref("/users/" + id_array[i]).on("value", function(snapshot) {
@@ -71,7 +76,6 @@ function draw(){
             number_of_messages = message_count;
             updateMessages();
         }
-        keep_messages = true;
     }else if(state == "0"){
         var text = select("#contacting_title");
         text.html("Contacting EFAR...");
@@ -88,11 +92,8 @@ function draw(){
         var text = select("#contacting_title");
         text.html("Signal lost.");
         text.style("color", "#0000bb")
-        stop_messaging = true;
-        if(!keep_messages){
-          var message_popup = select("#message_popup");
-          message_popup.hide();
-        }
+        var message_popup = select("#message_popup");
+        message_popup.hide();
     }
 }
 
@@ -123,18 +124,15 @@ function updateMessages(){
     });
 }
 
-//send message on ENTER key pressed
-function keyPressed() {
-  if(keyCode === 13){
-      sendMessage();
-  }
-}
-
 function sendMessage(){
     var new_message = select("#message_to_send");
-    if(new_message.value() != "" && !stop_messaging){
+    if(new_message.value() != ""){
 
+      var date = new Date();
+      var time = (date.getYear() + 1900) + "-" + (date.getMonth() + 1) + "-" + date.getDate() + "T" +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+      
       var package = {
+        timestamp: time,
         user: user_id, 
         message: new_message.value()
       }

@@ -339,7 +339,7 @@ public class EmergencyInfoActivity extends AppCompatActivity {
             addressText.setMovementMethod(LinkMovementMethod.getInstance());
             phoneNumberText.setText(phoneTextSpan);
             phoneNumberText.setMovementMethod(LinkMovementMethod.getInstance());
-            infoText.setText("Message Given by Patient: \n" + info);
+            infoText.setText("Info Given: \n" + info);
             if(!id.equals("") && !id.equals("N/A")) {
                 idText.setText("Responder ID(s): " + id);
             }else{
