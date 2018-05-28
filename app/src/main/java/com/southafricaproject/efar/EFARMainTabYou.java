@@ -105,7 +105,7 @@ public class EFARMainTabYou extends Fragment{
                 TextView timeText = (TextView) cell.findViewById(R.id.timeTextView);
                 timeText.setText(dipslayTime);
                 TextView distanceText =  (TextView) cell.findViewById(R.id.distanceTextView);
-                distanceText.setText(distanceArray.get(position).toString());
+                distanceText.setText(distanceArray.get(position).toString() + " away");
 
                 TextView activeStateText =  (TextView) cell.findViewById(R.id.stateTextView);
                 if(emergenecyArray.get(position).getRespondingEfar().contains(id)){
@@ -125,10 +125,14 @@ public class EFARMainTabYou extends Fragment{
                 if(Total_progress >= 100){
                     distance_progress.setProgress(0);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        distance_progress.setProgressTintList(ColorStateList.valueOf(Color.RED));
+                        distance_progress.setProgressTintList(ColorStateList.valueOf(Color.rgb(200, 0, 0)));
                     }
                 }else {
                     distance_progress.setProgress(100 - Total_progress);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        distance_progress.setProgressTintList(ColorStateList.valueOf(Color.rgb(2, 55, 98)));
+                    }
+                    /*
                     if(100 - Total_progress >= 75){
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             distance_progress.setProgressTintList(ColorStateList.valueOf(Color.GREEN));
@@ -142,6 +146,7 @@ public class EFARMainTabYou extends Fragment{
                             distance_progress.setProgressTintList(ColorStateList.valueOf(Color.RED));
                         }
                     }
+                    */
                 }
 
                 if(position % 2 == 0){

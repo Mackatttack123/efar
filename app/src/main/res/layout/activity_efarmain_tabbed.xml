@@ -100,7 +100,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:backgroundTint="#ffffff"
-            app:tabIndicatorColor="@android:color/holo_blue_dark"/>
+            app:tabIndicatorColor="@color/navy"/>
 
     </android.support.design.widget.AppBarLayout>
 

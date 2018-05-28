@@ -108,7 +108,7 @@ public class EFARMainTabAll extends Fragment{
                 TextView timeText = (TextView) cell.findViewById(R.id.timeTextView);
                 timeText.setText(dipslayTime);
                 TextView distanceText =  (TextView) cell.findViewById(R.id.distanceTextView);
-                distanceText.setText(distanceArray.get(position).toString());
+                distanceText.setText(distanceArray.get(position).toString() + " away");
 
 
                 GPSTracker gps = new GPSTracker(getActivity());
@@ -121,40 +121,46 @@ public class EFARMainTabAll extends Fragment{
                 if(Total_progress >= 100){
                     distance_progress.setProgress(0);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        distance_progress.setProgressTintList(ColorStateList.valueOf(Color.RED));
+                        distance_progress.setProgressTintList(ColorStateList.valueOf(Color.rgb(200, 0, 0)));
                     }
                 }else {
                     distance_progress.setProgress(100 - Total_progress);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        distance_progress.setProgressTintList(ColorStateList.valueOf(Color.rgb(2, 55, 98)));
+                    }
+
+                    /*
                     if(100 - Total_progress >= 75){
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            distance_progress.setProgressTintList(ColorStateList.valueOf(Color.GREEN));
+                            distance_progress.setProgressTintList(ColorStateList.valueOf(Color.rgb(81, 150, 80)));
                         }
                     }else if(100 - Total_progress >= 50){
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            distance_progress.setProgressTintList(ColorStateList.valueOf(Color.YELLOW));
+                            distance_progress.setProgressTintList(ColorStateList.valueOf(Color.rgb(225, 200, 0)));
                         }
                     }else{
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            distance_progress.setProgressTintList(ColorStateList.valueOf(Color.RED));
+                            distance_progress.setProgressTintList(ColorStateList.valueOf(Color.rgb(200, 0, 0)));
                         }
                     }
+                    */
                 }
 
                 TextView activeStateText =  (TextView) cell.findViewById(R.id.stateTextView);
                 if (emergenecyArray.get(position).getState().equals("0")){
                     //cell.setBackgroundColor(Color.argb(150, 255, 0, 0));
                     activeStateText.setText("Awaiting Response!");
-                    activeStateText.setTextColor(Color.argb(255, 200, 0, 0));
+                    activeStateText.setTextColor(Color.rgb(200, 0, 0));
                 }else if(emergenecyArray.get(position).getRespondingEfar().contains(id)){
                     //cell.setBackgroundColor(Color.argb(150, 0, 255, 0));
                     activeStateText.setText("Responded to by you");
-                    activeStateText.setTextColor(Color.argb(255, 0, 150, 0));
+                    activeStateText.setTextColor(Color.rgb(81, 150, 80));
                 }else{
                     String[] responders = emergenecyArray.get(position).getRespondingEfar().split(",");
                     int num = responders.length;
                     //cell.setBackgroundColor(Color.argb(150, 255, 255, 0));
                     activeStateText.setText("Responded to by " + num);
-                    activeStateText.setTextColor(Color.argb(255, 200, 200, 0));
+                    activeStateText.setTextColor(Color.rgb(225, 200, 0));
                 }
 
                 if(position % 2 == 0){

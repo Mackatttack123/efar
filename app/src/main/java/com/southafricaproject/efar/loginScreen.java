@@ -171,6 +171,7 @@ public class loginScreen extends AppCompatActivity {
                         userRef.child(id + "/logged_in").setValue(true);
 
                         //if all matches then go onto the efar screen
+                        mAuth.getCurrentUser().delete();
                         mAuth.signInAnonymously()
                                 .addOnCompleteListener(loginScreen.this, new OnCompleteListener<AuthResult>() {
                                     @Override
