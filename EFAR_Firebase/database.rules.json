@@ -8,6 +8,10 @@
       ".write": "auth != null", //"auth != null"
       ".indexOn": ["id", "name"]
     },
+    "dispatchers": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
     "emergencies": {
       ".read": "auth != null",
       ".write": "auth != null"
