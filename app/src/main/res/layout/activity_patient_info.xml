@@ -92,7 +92,6 @@
         android:background="#FFFFFF"
         android:ems="10"
         android:hint="Your Phone Number"
-        android:inputType="phone"
         android:maxLength="14"
         android:padding="10dp"
         app:layout_constraintHorizontal_bias="0.503"
