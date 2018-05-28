@@ -27,20 +27,22 @@ function setup() {
         		+ "</td><td>" + logged_in + "</td>");
         	newDiv.parent("efar_data_table_body");
         });
-    });
+	});
 }
 
 function addNewEFAR(){
     var id = document.getElementById("new_EFAR_ID").value;
     var name = document.getElementById("new_EFAR_Name").value;
     var phone = document.getElementById("new_EFAR_Phone").value;
+    var address = document.getElementById("new_EFAR_Address").value;
 
     if(id != "" && name != "" && phone != ""){
 
         var EFAR_package = {
             id: id, 
             name: name,
-            phone: phone
+            phone: phone,
+            address: address
         }
 
         //TODO: Maybe check if id is already in the database so someone doesnt get overwritten?
@@ -50,6 +52,7 @@ function addNewEFAR(){
                     document.getElementById("new_EFAR_ID").value = "";
                     document.getElementById("new_EFAR_Name").value = "";
                     document.getElementById("new_EFAR_Phone").value = "";
+                    document.getElementById("new_EFAR_Address").value = "";
                     location.reload();
               });
     }else{

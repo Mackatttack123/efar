@@ -184,7 +184,12 @@ public class EFARMainTabAll extends Fragment{
                     String e_info = dataSnapshot.child("other_info").getValue().toString();
                     Double e_lat = Double.parseDouble(dataSnapshot.child("latitude").getValue().toString());
                     Double e_long = Double.parseDouble(dataSnapshot.child("longitude").getValue().toString());
-                    String e_address = getCompleteAddressString(e_lat, e_long);
+                    String e_address = "";
+                    try {
+                        e_address = getCompleteAddressString(e_lat, e_long);
+                    }catch (Exception e) {
+                        e_address = "N/A";
+                    }
                     String e_creationDate = dataSnapshot.child("creation_date").getValue().toString();
                     String e_respondingEfar;
                     try {

@@ -32,6 +32,8 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.google.android.gms.location.Geofence;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -51,6 +53,8 @@ public class PatientMainActivity extends AppCompatActivity {
     String responding_efar_id = null;
     String phone_token = "";
 
+    FirebaseAuth mAuth;
+
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +65,8 @@ public class PatientMainActivity extends AppCompatActivity {
 
             ActivityCompat.requestPermissions( this, new String[] {  android.Manifest.permission.ACCESS_COARSE_LOCATION  }, 1 );
         }
+
+        mAuth = FirebaseAuth.getInstance();
 
         //check database connection
         /*DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
@@ -153,6 +159,8 @@ public class PatientMainActivity extends AppCompatActivity {
         distance_progress.setVisibility(View.INVISIBLE);
         distance_progress.setProgress(0);
 
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
         // to auto login if possible
         final SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
         String id = sharedPreferences.getString("id", "");
@@ -162,7 +170,7 @@ public class PatientMainActivity extends AppCompatActivity {
         //to skip past the patient screen if efar opens the app and is loggd in
         boolean screen_bypass = sharedPreferences.getBoolean("screen_bypass", true);
         final SharedPreferences.Editor editor = sharedPreferences.edit();
-        if(efar_logged_in && screen_bypass){
+        if(efar_logged_in && screen_bypass && currentUser != null){
             editor.putBoolean("screen_bypass", false);
             editor.apply();
             launchEfarScreen();
@@ -496,7 +504,7 @@ public class PatientMainActivity extends AppCompatActivity {
                             String refreshedToken = FirebaseInstanceId.getInstance().getToken();
                             DatabaseReference token_ref = database.getReference("tokens/" + refreshedToken);
                             token_ref.removeValue();
-
+                            mAuth.getCurrentUser().delete();
                             finish();
                             startActivity(getIntent());
                         }

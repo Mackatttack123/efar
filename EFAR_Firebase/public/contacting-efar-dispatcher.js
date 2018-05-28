@@ -8,6 +8,8 @@ function setup() {
 
 var efarDiv;
 var found_efar = false;
+var keep_messages = false;
+var stop_messaging = false;
 
 function draw(){
     var state; 
@@ -69,6 +71,7 @@ function draw(){
             number_of_messages = message_count;
             updateMessages();
         }
+        keep_messages = true;
     }else if(state == "0"){
         var text = select("#contacting_title");
         text.html("Contacting EFAR...");
@@ -85,8 +88,11 @@ function draw(){
         var text = select("#contacting_title");
         text.html("Signal lost.");
         text.style("color", "#0000bb")
-        var message_popup = select("#message_popup");
-        message_popup.hide();
+        stop_messaging = true;
+        if(!keep_messages){
+          var message_popup = select("#message_popup");
+          message_popup.hide();
+        }
     }
 }
 
@@ -117,9 +123,16 @@ function updateMessages(){
     });
 }
 
+//send message on ENTER key pressed
+function keyPressed() {
+  if(keyCode === 13){
+      sendMessage();
+  }
+}
+
 function sendMessage(){
     var new_message = select("#message_to_send");
-    if(new_message.value() != ""){
+    if(new_message.value() != "" && !stop_messaging){
 
       var package = {
         user: user_id, 
