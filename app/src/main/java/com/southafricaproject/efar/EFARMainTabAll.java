@@ -160,7 +160,7 @@ public class EFARMainTabAll extends Fragment{
                     int num = responders.length;
                     //cell.setBackgroundColor(Color.argb(150, 255, 255, 0));
                     activeStateText.setText("Responded to by " + num);
-                    activeStateText.setTextColor(Color.rgb(225, 200, 0));
+                    activeStateText.setTextColor(Color.rgb(2, 55, 98));
                 }
 
                 if(position % 2 == 0){
