@@ -79,7 +79,7 @@ public class MyService extends Service {
             }
         };
 
-        handler.postDelayed(runnable, 15000);
+        handler.postDelayed(runnable, 0);
     }
 
     @Override

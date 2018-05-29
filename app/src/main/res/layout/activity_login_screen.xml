@@ -38,14 +38,14 @@
         android:layout_height="wrap_content"
         android:id="@+id/login_submit_button"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="26dp"
-        app:layout_constraintTop_toBottomOf="@+id/login_id_field"
         android:layout_marginRight="8dp"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginLeft="8dp"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"/>
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/checkBoxShowPassword"/>
 
     <TextView
         android:text="@string/login_title"
@@ -82,7 +82,7 @@
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="numberPassword"
+        android:inputType="textPassword"
         android:ems="10"
         android:id="@+id/login_id_field"
         android:hint="@string/login_id_field"
@@ -130,5 +130,15 @@
         android:textSize="12dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
+
+    <CheckBox
+        android:id="@+id/checkBoxShowPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="9dp"
+        android:text="Show Password"
+        app:layout_constraintLeft_toLeftOf="@+id/login_id_field"
+        app:layout_constraintTop_toBottomOf="@+id/login_id_field"/>
 
 </android.support.constraint.ConstraintLayout>

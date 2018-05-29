@@ -8,6 +8,8 @@ import android.content.SharedPreferences;
 import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -103,6 +105,75 @@ public class EFARInfoActivity extends AppCompatActivity {
             final View cell = inflater.inflate(R.layout.writeup_full, parent, false);
 
             //TODO: make it so you can either select a radio button or type other.
+
+            //for Violent Injury section in Box 3
+            final EditText weaponTextView = (EditText) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.editTextWeponOther);
+            final RadioGroup weaponRadioGroup = (RadioGroup) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.radioGroupWepons);
+            weaponTextView.addTextChangedListener(new TextWatcher() {
+
+                @Override
+                public void afterTextChanged(Editable s) {}
+
+                @Override
+                public void beforeTextChanged(CharSequence s, int start,
+                                              int count, int after) {
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start,
+                                          int before, int count) {
+                    if(!weaponTextView.getText().toString().equals("")){
+                        // get selected radio button from radioGroup
+                        int selectedId = weaponRadioGroup.getCheckedRadioButtonId();
+                        if(selectedId != -1) {
+                            weaponRadioGroup.clearCheck();
+                        }
+                    }
+                }
+            });
+            weaponRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
+            {
+                @Override
+                public void onCheckedChanged(RadioGroup group, int checkedId) {
+                    // checkedId is the RadioButton selected
+                    weaponTextView.setText("");
+                }
+            });
+
+            //for motor vehicle acident section in Box 3
+            final EditText motorVehicleTextView = (EditText) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.editTextMotorVehicleOther);
+            final RadioGroup motorVehicleRadioGroup = (RadioGroup) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.radioGroupMotorVehicle);
+            motorVehicleTextView.addTextChangedListener(new TextWatcher() {
+
+                @Override
+                public void afterTextChanged(Editable s) {}
+
+                @Override
+                public void beforeTextChanged(CharSequence s, int start,
+                                              int count, int after) {
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start,
+                                          int before, int count) {
+                    if(!motorVehicleTextView.getText().toString().equals("")){
+                        // get selected radio button from radioGroup
+                        int selectedId = motorVehicleRadioGroup.getCheckedRadioButtonId();
+                        if(selectedId != -1) {
+                            motorVehicleRadioGroup.clearCheck();
+                        }
+                    }
+                }
+            });
+            motorVehicleRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
+            {
+                @Override
+                public void onCheckedChanged(RadioGroup group, int checkedId) {
+                    // checkedId is the RadioButton selected
+                    motorVehicleTextView.setText("");
+                }
+            });
+
             Button submitReportButton = (Button) cell.findViewById(R.id.comments_writeup).findViewById(R.id.submit_report_button);
 
             submitReportButton.setOnClickListener(new View.OnClickListener() {
@@ -136,8 +207,8 @@ public class EFARInfoActivity extends AppCompatActivity {
                                     emergency_ref.child("/elapsed_time").setValue(currentTime.getTime() - e_creation_date.getTime());
 
                                     //Box 1: Patient Details
-                                    EditText nameTextView = (EditText) cell.findViewById(R.id.patient_detail_writeup).findViewById(R.id.patientNameText);
-                                    emergency_ref.child("/patient_care_report_form/patient_details/name").setValue(nameTextView.getText().toString());
+                                    //EditText nameTextView = (EditText) cell.findViewById(R.id.patient_detail_writeup).findViewById(R.id.patientNameText);
+                                    //emergency_ref.child("/patient_care_report_form/patient_details/name").setValue(nameTextView.getText().toString());
                                     RadioGroup genderRadioGroup = (RadioGroup) cell.findViewById(R.id.patient_detail_writeup).findViewById(R.id.radioGroupGender);
                                     // get selected radio button from radioGroup
                                     int selectedId = genderRadioGroup.getCheckedRadioButtonId();
