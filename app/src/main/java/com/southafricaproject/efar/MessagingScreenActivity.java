@@ -176,6 +176,44 @@ public class MessagingScreenActivity extends AppCompatActivity {
             }
         });
 
+        FirebaseDatabase.getInstance().getReference().child("emergencies/").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.getKey().equals(key)){
+                    AlertDialog.Builder alert = new AlertDialog.Builder(MessagingScreenActivity.this);
+                    alert.setTitle("This emergency has been ended.");
+                    alert.setMessage("You will be returned to the EFAR home screen now.");
+                    alert.setCancelable(false);
+                    alert.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            launchEfarMain();
+                        }
+                    });
+                    alert.show();
+                }
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
     private void add_message(String name, String message) throws JSONException {
@@ -229,5 +267,12 @@ public class MessagingScreenActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         overridePendingTransition(0, 0);
+    }
+
+    // Goes to patient info tab to send more to EFARs
+    private void launchEfarMain() {
+        Intent tolaunchEfarMain = new Intent(this, EFARMainActivityTabbed.class);
+        startActivity(tolaunchEfarMain);
+        finish();
     }
 }

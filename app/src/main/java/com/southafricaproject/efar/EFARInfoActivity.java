@@ -26,6 +26,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -78,6 +79,47 @@ public class EFARInfoActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+        FirebaseDatabase.getInstance().getReference().child("emergencies/").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                String finished_emergency_key = sharedPreferences.getString("finished_emergency_key", "");
+                if(dataSnapshot.getKey().equals(finished_emergency_key)){
+                    AlertDialog.Builder alert = new AlertDialog.Builder(EFARInfoActivity.this);
+                    alert.setTitle("This emergency has been ended.");
+                    alert.setMessage("You will be returned to the EFAR home screen now.");
+                    alert.setCancelable(false);
+                    alert.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            launchEfarMainScreen();
+                        }
+                    });
+                    alert.show();
+                }
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
 
     }
 

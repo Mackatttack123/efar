@@ -213,8 +213,10 @@ public class EmergencyInfoActivity extends AppCompatActivity {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     final FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                    DatabaseReference emergency_ref = database.getReference("emergencies/" + keyToUpdate + "/state");
-                                    emergency_ref.setValue("1");
+                                    if(!state.equals("1.5")) {
+                                        DatabaseReference emergency_ref = database.getReference("emergencies/" + keyToUpdate + "/state");
+                                        emergency_ref.setValue("1");
+                                    }
                                     DatabaseReference ref = database.getReference("emergencies/" + keyToUpdate);
                                     ref.addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
@@ -265,6 +267,10 @@ public class EmergencyInfoActivity extends AppCompatActivity {
 
                                                         AlertDialog.Builder alert = new AlertDialog.Builder(EmergencyInfoActivity.this);
                                                         final EditText edittext = new EditText(EmergencyInfoActivity.this);
+                                                        final ViewGroup.LayoutParams lparams = new ViewGroup.LayoutParams(50, 30);
+                                                        SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                                                        final String efar_id = sharedPreferences.getString("id", "");
+                                                        edittext.setLayoutParams(lparams);
                                                         alert.setMessage("What do you see?");
                                                         alert.setTitle("You are on scene");
                                                         alert.setCancelable(false);
@@ -280,9 +286,9 @@ public class EmergencyInfoActivity extends AppCompatActivity {
                                                                 String timestamp = simpleDateFormat.format(currentTime);
                                                                 final FirebaseDatabase database = FirebaseDatabase.getInstance();
                                                                 final String keyToUpdate = key;
-                                                                DatabaseReference emergency_ref_comment = database.getReference("emergencies/" + keyToUpdate + "/on_scene_first_impression");
+                                                                DatabaseReference emergency_ref_comment = database.getReference("emergencies/" + keyToUpdate + "/on_scene_first_impression/" + efar_id);
                                                                 emergency_ref_comment.setValue(comment);
-                                                                DatabaseReference emergency_ref_time = database.getReference("emergencies/" + keyToUpdate + "/on_scene_time");
+                                                                DatabaseReference emergency_ref_time = database.getReference("emergencies/" + keyToUpdate + "/on_scene_time/" + efar_id);
                                                                 emergency_ref_time.setValue(timestamp);
                                                                 DatabaseReference emergency_ref_state = database.getReference("emergencies/" + keyToUpdate + "/state");
                                                                 emergency_ref_state.setValue("1.5");
@@ -363,6 +369,10 @@ public class EmergencyInfoActivity extends AppCompatActivity {
 
                         AlertDialog.Builder alert = new AlertDialog.Builder(EmergencyInfoActivity.this);
                         final EditText edittext = new EditText(EmergencyInfoActivity.this);
+                        final ViewGroup.LayoutParams lparams = new ViewGroup.LayoutParams(50, 30);
+                        SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                        final String efar_id = sharedPreferences.getString("id", "");
+                        edittext.setLayoutParams(lparams);
                         alert.setMessage("What do you see?");
                         alert.setTitle("You are on scene");
                         alert.setCancelable(false);
@@ -378,9 +388,9 @@ public class EmergencyInfoActivity extends AppCompatActivity {
                                 String timestamp = simpleDateFormat.format(currentTime);
                                 final FirebaseDatabase database = FirebaseDatabase.getInstance();
                                 final String keyToUpdate = key;
-                                DatabaseReference emergency_ref_comment = database.getReference("emergencies/" + keyToUpdate + "/on_scene_first_impression");
+                                DatabaseReference emergency_ref_comment = database.getReference("emergencies/" + keyToUpdate + "/on_scene_first_impression/" + efar_id);
                                 emergency_ref_comment.setValue(comment);
-                                DatabaseReference emergency_ref_time = database.getReference("emergencies/" + keyToUpdate + "/on_scene_time");
+                                DatabaseReference emergency_ref_time = database.getReference("emergencies/" + keyToUpdate + "/on_scene_time/" + efar_id);
                                 emergency_ref_time.setValue(timestamp);
                                 DatabaseReference emergency_ref_state = database.getReference("emergencies/" + keyToUpdate + "/state");
                                 emergency_ref_state.setValue("1.5");
