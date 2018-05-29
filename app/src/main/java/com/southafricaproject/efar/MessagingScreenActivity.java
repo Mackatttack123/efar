@@ -176,6 +176,7 @@ public class MessagingScreenActivity extends AppCompatActivity {
             }
         });
 
+        //check if the emergency is still in the database
         FirebaseDatabase.getInstance().getReference().child("emergencies/").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -189,18 +190,7 @@ public class MessagingScreenActivity extends AppCompatActivity {
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.getKey().equals(key)){
-                    AlertDialog.Builder alert = new AlertDialog.Builder(MessagingScreenActivity.this);
-                    alert.setTitle("This emergency has been ended.");
-                    alert.setMessage("You will be returned to the EFAR home screen now.");
-                    alert.setCancelable(false);
-                    alert.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int whichButton) {
-                            launchEfarMain();
-                        }
-                    });
-                    alert.show();
-                }
+                launchEfarMain();
             }
 
             @Override
