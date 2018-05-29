@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -120,6 +121,44 @@ public class EmergencyInfoActivity extends AppCompatActivity {
         final String state  = bundle.getString("state");
 
         setUpButtons(key, time, state);
+
+        FirebaseDatabase.getInstance().getReference().child("emergencies/").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.getKey().equals(key)){
+                    AlertDialog.Builder alert = new AlertDialog.Builder(EmergencyInfoActivity.this);
+                    alert.setTitle("This emergency has been ended.");
+                    alert.setMessage("You will be returned to the EFAR home screen now.");
+                    alert.setCancelable(false);
+                    alert.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            launchEfarMain();
+                        }
+                    });
+                    alert.show();
+                }
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void setUpButtons(final String key, final String time, final String state) {
@@ -142,7 +181,7 @@ public class EmergencyInfoActivity extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         final String responding_ids = bundle.getString("id");
         if(state.equals("0")|| !responding_ids.contains(efar_id)){
-            if(state.equals("1")){
+            if(state.equals("1") || state.equals("1.5")){
                 messageButton.setVisibility(View.VISIBLE);
                 messageButton.setText("Message EFARs");
                 messageButton.setOnClickListener(new View.OnClickListener() {
@@ -203,19 +242,76 @@ public class EmergencyInfoActivity extends AppCompatActivity {
                                                     launchMessagingScreen();
                                                 }
                                             });
-                                            endButton.setVisibility(View.VISIBLE);
-                                            endButton.setText("End Emergency");
-                                            endButton.setOnClickListener(new View.OnClickListener() {
-                                                @Override
-                                                public void onClick(View view) {
-                                                    SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
-                                                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                                                    editor.putString("finished_emergency_key", key);
-                                                    editor.putString("finished_emergency_date", time);
-                                                    editor.commit();
-                                                    launchEfarWriteUpScreen();
-                                                }
-                                            });
+                                            if(state.equals("1.5")){
+                                                endButton.setVisibility(View.VISIBLE);
+                                                endButton.setText("End Emergency");
+                                                endButton.setOnClickListener(new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View view) {
+                                                        SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                                                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                                                        editor.putString("finished_emergency_key", key);
+                                                        editor.putString("finished_emergency_date", time);
+                                                        editor.commit();
+                                                        launchEfarWriteUpScreen();
+                                                    }
+                                                });
+                                            }else{
+                                                endButton.setVisibility(View.VISIBLE);
+                                                endButton.setText("On Scene");
+                                                endButton.setOnClickListener(new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View view) {
+
+                                                        AlertDialog.Builder alert = new AlertDialog.Builder(EmergencyInfoActivity.this);
+                                                        final EditText edittext = new EditText(EmergencyInfoActivity.this);
+                                                        alert.setMessage("What do you see?");
+                                                        alert.setTitle("You are on scene");
+                                                        alert.setCancelable(false);
+                                                        alert.setView(edittext);
+
+                                                        alert.setPositiveButton("Submit", new DialogInterface.OnClickListener() {
+                                                            public void onClick(DialogInterface dialog, int whichButton) {
+
+                                                                String comment = edittext.getText().toString();
+
+                                                                Date currentTime = Calendar.getInstance().getTime();
+                                                                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                                                                String timestamp = simpleDateFormat.format(currentTime);
+                                                                final FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                                                final String keyToUpdate = key;
+                                                                DatabaseReference emergency_ref_comment = database.getReference("emergencies/" + keyToUpdate + "/on_scene_first_impression");
+                                                                emergency_ref_comment.setValue(comment);
+                                                                DatabaseReference emergency_ref_time = database.getReference("emergencies/" + keyToUpdate + "/on_scene_time");
+                                                                emergency_ref_time.setValue(timestamp);
+                                                                DatabaseReference emergency_ref_state = database.getReference("emergencies/" + keyToUpdate + "/state");
+                                                                emergency_ref_state.setValue("1.5");
+                                                                endButton.setVisibility(View.VISIBLE);
+                                                                endButton.setText("End Emergency");
+                                                                endButton.setOnClickListener(new View.OnClickListener() {
+                                                                    @Override
+                                                                    public void onClick(View view) {
+                                                                        SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                                                                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                                                                        editor.putString("finished_emergency_key", key);
+                                                                        editor.putString("finished_emergency_date", time);
+                                                                        editor.commit();
+                                                                        launchEfarWriteUpScreen();
+                                                                    }
+                                                                });
+                                                            }
+                                                        });
+
+                                                        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                                            public void onClick(DialogInterface dialog, int whichButton) {
+                                                            }
+                                                        });
+                                                        alert.show();
+
+                                                    }
+                                                });
+                                            }
+
                                         }
                                         @Override
                                         public void onCancelled(DatabaseError databaseError) {
@@ -244,19 +340,75 @@ public class EmergencyInfoActivity extends AppCompatActivity {
                     launchMessagingScreen();
                 }
             });
-            endButton.setVisibility(View.VISIBLE);
-            endButton.setText("End Emergency");
-            endButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("finished_emergency_key", key);
-                    editor.putString("finished_emergency_date", time);
-                    editor.commit();
-                    launchEfarWriteUpScreen();
-                }
-            });
+            if(state.equals("1.5")){
+                endButton.setVisibility(View.VISIBLE);
+                endButton.setText("End Emergency");
+                endButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString("finished_emergency_key", key);
+                        editor.putString("finished_emergency_date", time);
+                        editor.commit();
+                        launchEfarWriteUpScreen();
+                    }
+                });
+            }else{
+                endButton.setVisibility(View.VISIBLE);
+                endButton.setText("On Scene");
+                endButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        AlertDialog.Builder alert = new AlertDialog.Builder(EmergencyInfoActivity.this);
+                        final EditText edittext = new EditText(EmergencyInfoActivity.this);
+                        alert.setMessage("What do you see?");
+                        alert.setTitle("You are on scene");
+                        alert.setCancelable(false);
+                        alert.setView(edittext);
+
+                        alert.setPositiveButton("Submit", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+
+                                String comment = edittext.getText().toString();
+
+                                Date currentTime = Calendar.getInstance().getTime();
+                                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                                String timestamp = simpleDateFormat.format(currentTime);
+                                final FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                final String keyToUpdate = key;
+                                DatabaseReference emergency_ref_comment = database.getReference("emergencies/" + keyToUpdate + "/on_scene_first_impression");
+                                emergency_ref_comment.setValue(comment);
+                                DatabaseReference emergency_ref_time = database.getReference("emergencies/" + keyToUpdate + "/on_scene_time");
+                                emergency_ref_time.setValue(timestamp);
+                                DatabaseReference emergency_ref_state = database.getReference("emergencies/" + keyToUpdate + "/state");
+                                emergency_ref_state.setValue("1.5");
+                                endButton.setVisibility(View.VISIBLE);
+                                endButton.setText("End Emergency");
+                                endButton.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                                        editor.putString("finished_emergency_key", key);
+                                        editor.putString("finished_emergency_date", time);
+                                        editor.commit();
+                                        launchEfarWriteUpScreen();
+                                    }
+                                });
+                            }
+                        });
+
+                        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                            }
+                        });
+                        alert.show();
+
+                    }
+                });
+            }
         }
     }
 
