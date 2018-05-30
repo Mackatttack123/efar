@@ -10,12 +10,16 @@
     <ImageView
         android:id="@+id/imageView5"
         android:layout_width="0dp"
-        android:layout_height="350dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="0dp"
         android:layout_marginTop="8dp"
         android:background="#eeeeee"
+        app:layout_constraintBottom_toBottomOf="@+id/spacer"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"/>
 
     <ImageView
         android:id="@+id/imageView21"
@@ -61,35 +65,29 @@
         android:layout_marginTop="16dp"
         app:layout_constraintTop_toBottomOf="@+id/titleTextView"
         android:layout_marginLeft="16dp"
-        app:layout_constraintLeft_toLeftOf="parent"/>
-
-    <TextView
-        android:id="@+id/locationTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:text="Location:"
-        android:textColor="#333"
-        android:textColorLink="#0000FF"
-        android:textSize="14dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@+id/createdTextView"
-        android:layout_marginLeft="16dp"
-        app:layout_constraintLeft_toLeftOf="parent"/>
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginRight="16dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        android:layout_marginEnd="16dp"/>
 
     <TextView
         android:id="@+id/AddressTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:text="Address: "
         android:textColor="#333"
         android:textColorLink="#0000FF"
         android:textSize="14dp"
-        android:layout_marginLeft="16dp"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@+id/locationTextView"/>
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/createdTextView"/>
 
     <TextView
         android:id="@+id/numberTextView"
@@ -100,39 +98,82 @@
         android:textColor="#333"
         android:textColorLink="#0000FF"
         android:textSize="14dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@+id/AddressTextView"
-        android:layout_marginLeft="16dp"
-        app:layout_constraintLeft_toLeftOf="parent"/>
-
-    <TextView
-        android:id="@+id/infoTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:text="Information Given:"
-        android:textColor="#333"
-        android:textSize="14dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@+id/numberTextView"
         android:layout_marginLeft="16dp"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginRight="16dp"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/to_maps_button"
         android:layout_marginEnd="16dp"/>
 
     <TextView
-        android:id="@+id/IdTextView"
-        android:layout_width="wrap_content"
+        android:id="@+id/infoTextView"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Information Given:"
+        android:textColor="#333"
+        android:textSize="14dp"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/call_button"/>
+
+    <TextView
+        android:id="@+id/IdTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:text="Redponder ID:"
         android:textColor="#333"
         android:textSize="14dp"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/infoTextView"/>
+
+    <ImageButton
+        android:id="@+id/to_maps_button"
+        style="@style/Widget.AppCompat.Button"
+        android:layout_width="105dp"
+        android:layout_height="23dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/go_to_maps_formater"
+        android:elevation="0dp"
+        android:minHeight="0dp"
+        android:minWidth="0dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/AddressTextView"/>
+
+    <ImageButton
+        android:id="@+id/call_button"
+        android:layout_width="60dp"
+        android:layout_height="23dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/call_pressed_formater"
+        android:minHeight="0dp"
+        android:minWidth="0dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/numberTextView"/>
+
+    <TextView
+        android:id="@+id/spacer"
+        android:layout_width="8dp"
+        android:layout_height="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginLeft="50dp"
         android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@+id/infoTextView"
-        android:layout_marginLeft="16dp"
-        app:layout_constraintLeft_toLeftOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@+id/IdTextView"/>
 
 </android.support.constraint.ConstraintLayout>

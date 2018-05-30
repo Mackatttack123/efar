@@ -234,8 +234,17 @@ public class PatientInfoActivity extends AppCompatActivity {
         GPSTracker gps = new GPSTracker(this);
 
         Map<String, String> data = new HashMap<String, String>();
-        data.put("phone_number",phone_number);
-        data.put("other_info",other_info);
+        if(!phone_number.equals("")){
+            data.put("phone_number",phone_number);
+        }else{
+            data.put("phone_number","N/A");
+        }
+        if(!other_info.equals("")){
+            data.put("other_info",other_info);
+        }else{
+            data.put("other_info","N/A");
+        }
+
         data.put("latitude",Double.toString(gps.getLatitude()));
         data.put("longitude",Double.toString(gps.getLongitude()));
         Date currentTime = Calendar.getInstance().getTime();

@@ -75,7 +75,7 @@ exports.sendPushAdded = functions.database.ref('/emergencies/{id}').onCreate((sn
 					console.log(tokens_to_send_to.length);
 					if(tokens_to_send_to.length < 1){
 						//no efars avalible
-						return admin.database().ref("/emergencies/"+snap.key+"/state").set(-3);
+						return admin.database().ref("/emergencies/"+snap.key+"/state").set("-3");
 					}else{
 						return admin.messaging().sendToDevice(tokens_to_send_to, payload).then(response => {
 							return
@@ -83,11 +83,11 @@ exports.sendPushAdded = functions.database.ref('/emergencies/{id}').onCreate((sn
 					}
 			}else{
 				//no efars in range
-				return admin.database().ref("/emergencies/"+snap.key+"/state").set(-2);
+				return admin.database().ref("/emergencies/"+snap.key+"/state").set("-2");
 			}
 		}else{
 			//no efars avalible
-			return admin.database().ref("/emergencies/"+snap.key+"/state").set(-3);
+			return admin.database().ref("/emergencies/"+snap.key+"/state").set("-3");
 		}
 	});
 });
@@ -215,9 +215,20 @@ function distance(lat1, lon1, lat2, lon2) {
 	return dist;
 }
 
+/*
 function moveFbRecord(oldRef, newRef) {    
      oldRef.once('value', function(snap)  {
           newRef.push( snap.val(), function(error) {
+               if( !error ) {  oldRef.remove(); }
+               else if( typeof(console) !== 'undefined' && console.error ) {  console.error(error); }
+          });
+     });
+}
+*/
+
+function moveFbRecord(oldRef, newRef) {    
+     oldRef.once('value', function(snap)  {
+          newRef.set( snap.val(), function(error) {
                if( !error ) {  oldRef.remove(); }
                else if( typeof(console) !== 'undefined' && console.error ) {  console.error(error); }
           });
@@ -230,7 +241,7 @@ exports.checkStates = functions.database.ref('/emergencies').onWrite((snap, cont
 			console.log(childSnapshot.child("state").val().toString());
 			var state = childSnapshot.child("state").val().toString().trim();
 	    	if(state === "-2" || state === "-3" || state === "-4"){
-	    		moveFbRecord(childSnapshot.ref, admin.database().ref('/canceled'));
+	    		moveFbRecord(childSnapshot.ref, admin.database().ref('/canceled/' + snapshot.val()));
 	    	}
     	});
     	return;

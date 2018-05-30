@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.PhoneNumberUtils;
 import android.text.Editable;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
@@ -22,6 +23,7 @@ import android.widget.Adapter;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.RadioButton;
@@ -70,6 +72,7 @@ import java.util.Locale;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
 
 class Emergency {
     private String key;
@@ -275,6 +278,7 @@ public class EmergencyInfoActivity extends AppCompatActivity {
 
             }
         });
+
     }
 
     private void setUpButtons(final String key, final String time, final String state) {
@@ -567,16 +571,41 @@ public class EmergencyInfoActivity extends AppCompatActivity {
             final String latitude = bundle.getString("lat");
             final String longitude = bundle.getString("long");
             final String address = bundle.getString("address");
-            final String phoneNumber = bundle.getString("phoneNumber");
+            String phoneNumber = bundle.getString("phoneNumber");
             final String info = bundle.getString("info");
             final String id = bundle.getString("id");
 
             TextView timeText = (TextView) cell.findViewById(R.id.createdTextView);
-            TextView locationText = (TextView) cell.findViewById(R.id.locationTextView);
             TextView addressText = (TextView) cell.findViewById(R.id.AddressTextView);
             TextView phoneNumberText = (TextView) cell.findViewById(R.id.numberTextView);
             TextView infoText = (TextView) cell.findViewById(R.id.infoTextView);
             TextView idText = (TextView) cell.findViewById(R.id.IdTextView);
+            final ImageButton call_button = (ImageButton) cell.findViewById(R.id.call_button);
+            final ImageButton to_maps_button = (ImageButton) cell.findViewById(R.id.to_maps_button);
+
+            final String phoneLink = "tel:" + phoneNumber.replaceAll("[^\\d.]", "");
+
+            call_button.setOnClickListener(
+                    new Button.OnClickListener() {
+                        public void onClick(View v) {
+                            Intent intent = new Intent();
+                            intent.setAction(Intent.ACTION_VIEW);
+                            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                            intent.setData(Uri.parse(phoneLink));
+                            startActivity(intent);
+                        }
+                    });
+
+            to_maps_button.setOnClickListener(
+                    new Button.OnClickListener() {
+                        public void onClick(View v) {
+                            Intent intent = new Intent();
+                            intent.setAction(Intent.ACTION_VIEW);
+                            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                            intent.setData(Uri.parse("http://maps.google.com/?q=" + latitude + "," + longitude));
+                            startActivity(intent);
+                        }
+                    });
 
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             Date timeCreated = null;
@@ -588,44 +617,66 @@ public class EmergencyInfoActivity extends AppCompatActivity {
             SimpleDateFormat displayTimeFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");
             String dipslayTime = displayTimeFormat.format(timeCreated);
 
-            String phoneLink = "tel:" + phoneNumber.replaceAll("[^\\d.]", "");
+            SpannableString infoTextSpan = new SpannableString("<strong>Information Given: </strong><br>" + info);
 
-            SpannableString locationTextSpan = new SpannableString("Incident Geo Location: <br><a href=" + "http://maps.google.com/?q=" + latitude + "," + longitude + ">("
-                    + String.format("%.2f", Float.parseFloat(latitude)) + ", " + String.format("%.2f", Float.parseFloat(longitude)) + ")</a>");
+            SpannableString responderTextSpan = new SpannableString("<strong>Responder ID(s): </strong><br>" + id);
 
-            SpannableString addressTextSpan = new SpannableString("Incident Address: <br><a href=" + "http://maps.google.com/?q=" + latitude + "," + longitude + ">" + address + "</a>");
+            SpannableString createdTextSpan = new SpannableString("<strong>Created: </strong><br>" + dipslayTime);
 
-            SpannableString phoneTextSpan = new SpannableString("Contact Number: <br><a href=" + phoneLink + ">" + phoneNumber + "</a>");
+            SpannableString addressTextSpan = new SpannableString("<strong>Incident Address: </strong><br>" + address);
+
+            String formattedNumber = phoneNumber;
+
+            if(phoneNumber.startsWith("27")){
+                phoneNumber = phoneNumber.substring(2, phoneNumber.length());
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    formattedNumber = "+27 " + PhoneNumberUtils.formatNumber(phoneNumber,Locale.getDefault().getCountry());
+                } else {
+                    //Deprecated method
+                    formattedNumber = "+27 " + PhoneNumberUtils.formatNumber(phoneNumber);
+                }
+            }else{
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    formattedNumber = PhoneNumberUtils.formatNumber(phoneNumber,Locale.getDefault().getCountry());
+                } else {
+                    //Deprecated method
+                    formattedNumber = PhoneNumberUtils.formatNumber(phoneNumber);
+                }
+            }
+
+
+            SpannableString phoneTextSpan = new SpannableString("<strong>Contact Number: </strong><br>" + formattedNumber);
 
             if (Build.VERSION.SDK_INT >= 24) {
                 // for 24 api and more
-                locationTextSpan = SpannableString.valueOf(Html.fromHtml(String.valueOf(locationTextSpan), 0));
                 addressTextSpan = SpannableString.valueOf(Html.fromHtml(String.valueOf(addressTextSpan), 0));
                 phoneTextSpan = SpannableString.valueOf(Html.fromHtml(String.valueOf(phoneTextSpan), 0));
+                createdTextSpan = SpannableString.valueOf(Html.fromHtml(String.valueOf(createdTextSpan), 0));
+                responderTextSpan = SpannableString.valueOf(Html.fromHtml(String.valueOf(responderTextSpan), 0));
+                infoTextSpan = SpannableString.valueOf(Html.fromHtml(String.valueOf(infoTextSpan), 0));
             } else {
                 // or for older api
-                locationTextSpan = SpannableString.valueOf(Html.fromHtml(String.valueOf(locationTextSpan)));
                 addressTextSpan = SpannableString.valueOf(Html.fromHtml(String.valueOf(addressTextSpan)));
                 phoneTextSpan = SpannableString.valueOf(Html.fromHtml(String.valueOf(phoneTextSpan)));
+                createdTextSpan = SpannableString.valueOf(Html.fromHtml(String.valueOf(createdTextSpan)));
+                responderTextSpan = SpannableString.valueOf(Html.fromHtml(String.valueOf(responderTextSpan)));
+                infoTextSpan = SpannableString.valueOf(Html.fromHtml(String.valueOf(infoTextSpan)));
             }
 
-            timeText.setText("Created: " + dipslayTime);
-            locationText.setText(locationTextSpan);
+            timeText.setText(createdTextSpan);
             //to make the link clickable in the textview
-            locationText.setMovementMethod(LinkMovementMethod.getInstance());
             addressText.setText(addressTextSpan);
-            addressText.setMovementMethod(LinkMovementMethod.getInstance());
             phoneNumberText.setText(phoneTextSpan);
-            phoneNumberText.setMovementMethod(LinkMovementMethod.getInstance());
-            infoText.setText("Info Given: \n" + info);
+            infoText.setText(infoTextSpan);
             if(!id.equals("") && !id.equals("N/A")) {
-                idText.setText("Responder ID(s): " + id);
+                idText.setText(responderTextSpan);
             }else{
                 idText.setText("");
             }
 
             return cell;
         }
+
     }
 
     // Goes to patient info tab to send more to EFARs
