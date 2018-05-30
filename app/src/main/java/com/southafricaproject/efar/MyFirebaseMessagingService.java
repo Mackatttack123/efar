@@ -59,12 +59,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                 long[] pattern = {0, 1000, 300, 1000, 300, 1000, 300, 1000, 300};
                 v.vibrate(pattern, -1);
-
                 notificationBuilder.setVibrate(new long[] {0, 1000, 300, 1000, 300 });
                 notificationBuilder.setLights(0xff00ff00, 3000, 3000);
             }else if(remoteMessage.getData().get("title").equals("Emergency Canceled:")){
                 vibrate(100);
             }else if(remoteMessage.getData().get("title").equals("Emergency Over:")){
+                vibrate(100);
+            }else if(remoteMessage.getData().get("title").contains("Message")){
                 vibrate(100);
             }
 
@@ -85,6 +86,32 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
                 am.setStreamVolume(AudioManager.STREAM_RING,am.getStreamMaxVolume(AudioManager.STREAM_RING),0);
             }
+
+            Notification note = notificationBuilder.build();
+            note.flags = Notification.FLAG_INSISTENT;
+            note.defaults |= Notification.DEFAULT_SOUND;
+            // clear the notification after its selected
+            note.flags |= Notification.FLAG_AUTO_CANCEL;
+            notificationManager.notify(0, note);
+        }else if(remoteMessage.getData().get("title").equals("EFAR Verification Code")){
+            // If the application is in the foreground handle both data and notification messages here.
+            // Also if you intend on generating your own notifications as a result of a received FCM
+            // message, here is where that should be initiated.
+            Log.d(TAG, "From: " + remoteMessage.getFrom());
+            Log.d(TAG, "Notification Message Body: " + remoteMessage.getData().get("body"));
+            Intent intent = new Intent(this, EFARMainActivityTabbed.class);
+            //intent.putExtra("NotiClick",true);
+            //intent.putExtra("NotiMesssage",remoteMessage.getData().get("body").replace("Patient Message: ", ""));
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this);
+            notificationBuilder.setContentTitle(remoteMessage.getData().get("title"));
+            vibrate(100);
+            notificationBuilder.setContentText(remoteMessage.getData().get("body"));
+            notificationBuilder.setAutoCancel(true);
+            notificationBuilder.setSmallIcon(R.mipmap.ic_launcher);
+            notificationBuilder.setContentIntent(pendingIntent);
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
             Notification note = notificationBuilder.build();
             note.flags = Notification.FLAG_INSISTENT;

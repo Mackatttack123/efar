@@ -233,3 +233,22 @@ exports.checkNewTokens = functions.database.ref('/tokens/{token_id}').onCreate((
 	}
 	return;
 });
+
+exports.sendVerificationPin = functions.database.ref('/users/{id}/verification_pin').onWrite((snap, context) => {
+	const payload = {
+		data: {
+			title: "EFAR Verification Code",
+			body: snap.after.child("pin").val(),
+			//badge: '1',
+			sound: 'default',
+		}
+	};
+	return admin.database().ref("/users/" + snap.after.child("efar_id").val()).once('value').then((snapshot) => {
+			token = snapshot.child("token").val();
+			console.log(token);
+			//send notifications with pin to efar
+			return admin.messaging().sendToDevice(token, payload).then(response => {
+				return
+			});
+		});	
+});

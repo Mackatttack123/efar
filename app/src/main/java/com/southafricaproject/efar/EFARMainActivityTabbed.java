@@ -221,7 +221,9 @@ public class EFARMainActivityTabbed extends AppCompatActivity {
                                 DatabaseReference token_ref = database.getReference("tokens/" + refreshedToken);
                                 token_ref.removeValue();
 
-                                mAuth.getCurrentUser().delete();
+                                if(mAuth.getCurrentUser() != null){
+                                    mAuth.getCurrentUser().delete();
+                                }
                                 launchPatientMainScreen();
                                 finish();
                             }
