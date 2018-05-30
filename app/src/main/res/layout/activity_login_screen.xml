@@ -63,26 +63,7 @@
         app:layout_constraintTop_toBottomOf="@+id/imageView13"/>
 
     <EditText
-        android:id="@+id/login_id_field"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="25dp"
-        android:background="#FFFFFF"
-        android:ems="10"
-        android:hint="ID"
-        android:inputType="textPassword"
-        android:padding="10px"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/login_name_field"/>
-
-    <EditText
-        android:id="@+id/login_name_field"
+        android:id="@+id/login_password_field"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
@@ -93,6 +74,25 @@
         android:layout_marginTop="16dp"
         android:background="#FFFFFF"
         android:ems="10"
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:padding="10px"
+        app:layout_constraintHorizontal_bias="0.503"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/login_id_field"/>
+
+    <EditText
+        android:id="@+id/login_name_field"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:background="#FFFFFF"
+        android:ems="10"
         android:hint="@string/login_name_field"
         android:inputType="textPersonName"
         android:padding="10px"
@@ -100,7 +100,29 @@
         app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/errorLoginText"/>
+        android:layout_marginTop="50dp"
+        app:layout_constraintTop_toBottomOf="@+id/imageView14"/>
+
+    <EditText
+        android:id="@+id/login_id_field"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:background="#FFFFFF"
+        android:ems="10"
+        android:hint="ID"
+        android:inputType="textPersonName"
+        android:padding="10px"
+        android:textSize="18dp"
+        app:layout_constraintHorizontal_bias="0.503"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/login_name_field"/>
 
     <Button
         android:id="@+id/login_back_button"
@@ -123,7 +145,7 @@
         android:layout_marginLeft="0dp"
         android:layout_marginTop="9dp"
         android:text="Show Password"
-        app:layout_constraintLeft_toLeftOf="@+id/login_id_field"
-        app:layout_constraintTop_toBottomOf="@+id/login_id_field"/>
+        app:layout_constraintLeft_toLeftOf="@+id/login_password_field"
+        app:layout_constraintTop_toBottomOf="@+id/login_password_field"/>
 
 </android.support.constraint.ConstraintLayout>
