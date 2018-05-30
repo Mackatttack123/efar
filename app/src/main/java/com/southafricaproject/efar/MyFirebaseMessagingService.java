@@ -54,6 +54,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this);
             notificationBuilder.setContentTitle(remoteMessage.getData().get("title"));
 
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
             //make the phone vibrate when notification is received
             if(remoteMessage.getData().get("title").equals("NEW EMERGANCY!")){
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
@@ -61,6 +63,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 v.vibrate(pattern, -1);
                 notificationBuilder.setVibrate(new long[] {0, 1000, 300, 1000, 300 });
                 notificationBuilder.setLights(0xff00ff00, 3000, 3000);
+
+                //Turn on Sound Normal mode if do not disturp isn't on
+                AudioManager am;
+                am = (AudioManager) getBaseContext().getSystemService(Context.AUDIO_SERVICE);
+                if(am.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE){
+                    am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+                    am.setStreamVolume(AudioManager.STREAM_RING,am.getStreamMaxVolume(AudioManager.STREAM_RING),0);
+                }
+                if(notificationManager.isNotificationPolicyAccessGranted()) {
+                    am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+                    am.setStreamVolume(AudioManager.STREAM_RING,am.getStreamMaxVolume(AudioManager.STREAM_RING),0);
+                }
             }else if(remoteMessage.getData().get("title").equals("Emergency Canceled:")){
                 vibrate(100);
             }else if(remoteMessage.getData().get("title").equals("Emergency Over:")){
@@ -73,19 +87,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             notificationBuilder.setAutoCancel(true);
             notificationBuilder.setSmallIcon(R.mipmap.ic_launcher);
             notificationBuilder.setContentIntent(pendingIntent);
-            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-            //Turn on Sound Normal mode if do not disturp isn't on
-            AudioManager am;
-            am = (AudioManager) getBaseContext().getSystemService(Context.AUDIO_SERVICE);
-            if(am.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE){
-                am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-                am.setStreamVolume(AudioManager.STREAM_RING,am.getStreamMaxVolume(AudioManager.STREAM_RING),0);
-            }
-            if(notificationManager.isNotificationPolicyAccessGranted()) {
-                am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-                am.setStreamVolume(AudioManager.STREAM_RING,am.getStreamMaxVolume(AudioManager.STREAM_RING),0);
-            }
 
             Notification note = notificationBuilder.build();
             note.flags = Notification.FLAG_INSISTENT;

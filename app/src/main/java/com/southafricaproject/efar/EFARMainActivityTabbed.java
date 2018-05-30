@@ -48,7 +48,6 @@ import static com.google.android.gms.cast.CastRemoteDisplayLocalService.startSer
 
 public class EFARMainActivityTabbed extends AppCompatActivity {
 
-    String VERSION_NUMBER = "beta";
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -91,27 +90,6 @@ public class EFARMainActivityTabbed extends AppCompatActivity {
         tabLayout.setupWithViewPager(mViewPager);
         tabLayout.setSelectedTabIndicatorHeight((int) (4 * getResources().getDisplayMetrics().density));
 
-        //check database connection
-        /*DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
-        connectedRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                boolean connected = snapshot.getValue(Boolean.class);
-                if (!connected) {
-                    new AlertDialog.Builder(EFARMainActivityTabbed.this)
-                            .setTitle("Connection Error:")
-                            .setMessage("Your device is currently unable connect to our services. " +
-                                    "Please check your connection or try again later.")
-                            .show();
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                System.err.println("Listener was cancelled");
-            }
-        });*/
-
         //check connection
         try {
             ConnectivityManager cm = (ConnectivityManager) this
@@ -142,7 +120,7 @@ public class EFARMainActivityTabbed extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 String current_version = snapshot.child("version_number").getValue().toString();
-                if(!current_version.equals(VERSION_NUMBER)){
+                if(!current_version.equals(BuildConfig.VERSION_NAME)){
                     android.app.AlertDialog.Builder alert = new android.app.AlertDialog.Builder(EFARMainActivityTabbed.this)
                             .setTitle("Update Needed:")
                             .setMessage("Please updated to the the latest version of our app.").setPositiveButton("Update", new DialogInterface.OnClickListener() {
@@ -176,16 +154,67 @@ public class EFARMainActivityTabbed extends AppCompatActivity {
             }
         });
 
+        SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+        String id = sharedPreferences.getString("id", "");
+        final String token = FirebaseInstanceId.getInstance().getToken();
+        //check if an logged in on another phone
+        FirebaseDatabase.getInstance().getReference().child("users/" + id).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                String current_token= snapshot.child("token").getValue().toString();
+                if(!token.equals(current_token)){
+                    android.app.AlertDialog.Builder alert = new android.app.AlertDialog.Builder(EFARMainActivityTabbed.this)
+                            .setTitle("Oops!")
+                            .setMessage("Looks liked you're logged in on another device. You will now be logged out but you can log back onto this device if you'd like.").setPositiveButton("Logout", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    //to get rid of stored password and username
+                                    SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                                    SharedPreferences.Editor editor = sharedPreferences.edit();
+
+                                    // say that user has logged off
+                                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                    DatabaseReference userRef = database.getReference("users");
+                                    userRef.child(sharedPreferences.getString("id", "") + "/logged_in").setValue(false);
+                                    editor.putString("id", "");
+                                    editor.putString("name", "");
+                                    editor.putBoolean("logged_in", false);
+                                    stopService(new Intent(EFARMainActivityTabbed.this, MyService.class));
+                                    editor.apply();
+
+                                    //clear the phones token for the database
+                                    String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+                                    DatabaseReference token_ref = database.getReference("tokens/" + refreshedToken);
+                                    token_ref.removeValue();
+
+                                    if(mAuth.getCurrentUser() != null){
+                                        mAuth.getCurrentUser().delete();
+                                    }
+                                    launchPatientMainScreen();
+                                    finish();
+                                }
+                            }).setCancelable(false);
+                    if(!((Activity) EFARMainActivityTabbed.this).isFinishing())
+                    {
+                        alert.show();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
         // start tracking efar
         startService(new Intent(this, MyService.class));
 
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference userRef = database.getReference("users");
-        SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        final String id = sharedPreferences.getString("id", "");
-        userRef.child(id + "/token").setValue(refreshedToken);
+        //userRef.child(id + "/token").setValue(refreshedToken);
 
         //button to get back to patient screen
         Button logoutButton = (Button) findViewById(R.id.logout_button);

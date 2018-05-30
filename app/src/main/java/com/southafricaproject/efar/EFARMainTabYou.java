@@ -85,7 +85,7 @@ public class EFARMainTabYou extends Fragment{
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyData", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         final String id = sharedPreferences.getString("id", "");
-        userRef.child(id + "/token").setValue(refreshedToken);
+        //userRef.child(id + "/token").setValue(refreshedToken);
 
         adapter = new ArrayAdapter<String>(getActivity(), R.layout.activity_listview, distanceArray){
             @Override

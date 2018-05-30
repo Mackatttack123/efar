@@ -52,8 +52,6 @@ import java.util.Random;
 
 public class PatientMainActivity extends AppCompatActivity {
 
-    String VERSION_NUMBER = "beta";
-
     boolean calling_efar = false;
     String responding_efar_id = null;
     String phone_token = "";
@@ -87,27 +85,6 @@ public class PatientMainActivity extends AppCompatActivity {
                     }
                 });
 
-        //check database connection
-        /*DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
-        connectedRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                boolean connected = snapshot.getValue(Boolean.class);
-                if (!connected) {
-                    new AlertDialog.Builder(PatientMainActivity.this)
-                            .setTitle("Connection Error:")
-                            .setMessage("Your device is currently unable connect to our services. " +
-                                    "Please check your connection or try again later.")
-                            .show();
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                System.err.println("Listener was cancelled");
-            }
-        });*/
-
         //check connection
         try {
             ConnectivityManager cm = (ConnectivityManager) this
@@ -138,7 +115,7 @@ public class PatientMainActivity extends AppCompatActivity {
              @Override
              public void onDataChange(DataSnapshot snapshot) {
                  String current_version = snapshot.child("version_number").getValue().toString();
-                 if(!current_version.equals(VERSION_NUMBER)){
+                 if(!current_version.equals(BuildConfig.VERSION_NAME)){
                      AlertDialog.Builder alert = new AlertDialog.Builder(PatientMainActivity.this)
                              .setTitle("Update Needed:")
                              .setMessage("Please updated to the the latest version of our app.").setPositiveButton("Update", new DialogInterface.OnClickListener() {
@@ -172,6 +149,63 @@ public class PatientMainActivity extends AppCompatActivity {
             }
         });
 
+        final SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+        String id = sharedPreferences.getString("id", "");
+        boolean efar_logged_in = sharedPreferences.getBoolean("logged_in", false);
+        final String token = FirebaseInstanceId.getInstance().getToken();
+        //check if an logged in on another phone
+        if(efar_logged_in){
+            FirebaseDatabase.getInstance().getReference().child("users/" + id).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    String current_token= snapshot.child("token").getValue().toString();
+                    if(!token.equals(current_token)){
+                        android.app.AlertDialog.Builder alert = new android.app.AlertDialog.Builder(PatientMainActivity.this)
+                                .setTitle("Oops!")
+                                .setMessage("Looks liked you're logged in on another device. You will now be logged out but you can log back onto this device if you'd like.").setPositiveButton("Logout", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        //to get rid of stored password and username
+                                        SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                                        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+                                        // say that user has logged off
+                                        FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                        DatabaseReference userRef = database.getReference("users");
+                                        userRef.child(sharedPreferences.getString("id", "") + "/logged_in").setValue(false);
+                                        editor.putString("id", "");
+                                        editor.putString("name", "");
+                                        editor.putBoolean("logged_in", false);
+                                        stopService(new Intent(PatientMainActivity.this, MyService.class));
+                                        editor.apply();
+
+                                        //clear the phones token for the database
+                                        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+                                        DatabaseReference token_ref = database.getReference("tokens/" + refreshedToken);
+                                        token_ref.removeValue();
+
+                                        if(mAuth.getCurrentUser() != null){
+                                            mAuth.getCurrentUser().delete();
+                                        }
+                                        finish();
+                                        startActivity(getIntent());
+                                    }
+                                }).setCancelable(false);
+                        if(!((Activity) PatientMainActivity.this).isFinishing())
+                        {
+                            alert.show();
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+
+
         //TODO: show the patient approximatly how far away the efar is via the progress bar
         final ProgressBar distance_progress = (ProgressBar) findViewById(R.id.patient_progress_bar);
         //distance_progress.setProgressTintList(ColorStateList.valueOf(Color.BLUE));
@@ -181,11 +215,8 @@ public class PatientMainActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
         // to auto login if possible
-        final SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
-        String id = sharedPreferences.getString("id", "");
         String name = sharedPreferences.getString("name", "");
         String last_screen = sharedPreferences.getString("last_screen", "");
-        final boolean efar_logged_in = sharedPreferences.getBoolean("logged_in", false);
         //to skip past the patient screen if efar opens the app and is loggd in
         boolean screen_bypass = sharedPreferences.getBoolean("screen_bypass", true);
         final SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -532,7 +563,9 @@ public class PatientMainActivity extends AppCompatActivity {
                                             String refreshedToken = FirebaseInstanceId.getInstance().getToken();
                                             DatabaseReference token_ref = database.getReference("tokens/" + refreshedToken);
                                             token_ref.removeValue();
-                                            mAuth.getCurrentUser().delete();
+                                            if(mAuth.getCurrentUser() != null){
+                                                mAuth.getCurrentUser().delete();
+                                            }
                                             finish();
                                             startActivity(getIntent());
                                         }
@@ -573,17 +606,31 @@ public class PatientMainActivity extends AppCompatActivity {
 
         handler.postDelayed(new Runnable(){
             public void run(){
-                String userEmergencyKey = sharedPreferences.getString("emergency_key", "");
+                final String userEmergencyKey = sharedPreferences.getString("emergency_key", "");
                 if(!userEmergencyKey.equals("")){
                     String userEmergencyState = sharedPreferences.getString("user_emergency_state", "");
                     Log.wtf("KEY ------------->", userEmergencyKey + " STATE -------->: " + userEmergencyState);
-                    FirebaseDatabase database = FirebaseDatabase.getInstance();
-                    DatabaseReference emergency_ping_ref = database.getReference("emergencies/" + userEmergencyKey + "/ping");
-                    final int min = 0;
-                    final int max = 10000;
-                    Random r = new Random();
-                    int random = r.nextInt((max - min) + 1) + min;
-                    emergency_ping_ref.setValue(random);
+                    final FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    DatabaseReference emergencies_ref = database.getReference("emergencies/");
+                    emergencies_ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot snapshot) {
+                            if (snapshot.hasChild("userEmergencyKey")) {
+                                DatabaseReference emergency_ping_ref = database.getReference("emergencies/" + userEmergencyKey + "/ping");
+                                final int min = 0;
+                                final int max = 10000;
+                                Random r = new Random();
+                                int random = r.nextInt((max - min) + 1) + min;
+                                emergency_ping_ref.setValue(random);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
                 }else{
                     handler.postDelayed(this, delay);
                 }

@@ -1,10 +1,14 @@
 package com.southafricaproject.efar;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -65,6 +69,70 @@ public class loginScreen extends AppCompatActivity {
         });
 
         mAuth = FirebaseAuth.getInstance();
+
+        //check connection
+        try {
+            ConnectivityManager cm = (ConnectivityManager) this
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+            NetworkInfo mWifi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
+            if ((networkInfo != null && networkInfo.isConnected()) || mWifi.isConnected()) {
+
+            }else{
+                new AlertDialog.Builder(loginScreen.this)
+                        .setTitle("Connection Error:")
+                        .setMessage("Your device is currently unable connect to our services. " +
+                                "Please check your connection or try again later.")
+                        .show();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            new AlertDialog.Builder(loginScreen.this)
+                    .setTitle("Connection Error:")
+                    .setMessage("Your device is currently unable connect to our services. " +
+                            "Please check your connection or try again later.")
+                    .show();
+        }
+
+        //check if an update is needed
+        FirebaseDatabase.getInstance().getReference().child("version").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                String current_version = snapshot.child("version_number").getValue().toString();
+                if(!current_version.equals(BuildConfig.VERSION_NAME)){
+                    AlertDialog.Builder alert = new AlertDialog.Builder(loginScreen.this)
+                            .setTitle("Update Needed:")
+                            .setMessage("Please updated to the the latest version of our app.").setPositiveButton("Update", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    final String appPackageName = getPackageName(); // getPackageName() from Context or Activity object
+                                    try {
+                                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+                                    } catch (android.content.ActivityNotFoundException anfe) {
+                                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+                                    }
+                                    finish();
+                                    startActivity(getIntent());
+                                }
+                            }).setNegativeButton("Exit App", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    finishAndRemoveTask();
+                                }
+                            }).setCancelable(false);
+                    if(!((Activity) loginScreen.this).isFinishing())
+                    {
+                        alert.show();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         submitButton = (Button) findViewById(R.id.login_submit_button);
 
@@ -173,12 +241,12 @@ public class loginScreen extends AppCompatActivity {
                             setPassword(id);
                         }
                    } else {
-                   errorText.setText("ERROR: name or id is incorrect");
+                   errorText.setText("ERROR: Name or ID is incorrect");
                        errorText.setTextColor(Color.RED);
                    }
                } else {
                     Log.wtf("Login", "FAILURE!");
-                    errorText.setText("ERROR: name or id is incorrect");
+                    errorText.setText("ERROR: Name or ID is incorrect");
                    errorText.setTextColor(Color.RED);
                 }
 
@@ -232,19 +300,6 @@ public class loginScreen extends AppCompatActivity {
                                     editor.putBoolean("logged_in", true);
                                     editor.commit();
 
-                                    // update users info
-                                    String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-                                    FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                    DatabaseReference userRef = database.getReference("users");
-                                    GPSTracker gps = new GPSTracker(loginScreen.this);
-                                    double my_lat = gps.getLatitude(); // latitude
-                                    double my_long = gps.getLongitude(); // longitude
-                                    userRef.child(id + "/name").setValue(name);
-                                    userRef.child(id + "/token").setValue(refreshedToken);
-                                    userRef.child(id + "/latitude").setValue(my_lat);
-                                    userRef.child(id + "/longitude").setValue(my_long);
-                                    userRef.child(id + "/logged_in").setValue(true);
-
                                     mAuth = FirebaseAuth.getInstance();
                                     FirebaseUser currentUser = mAuth.getCurrentUser();
                                     if(currentUser != null){
@@ -261,6 +316,18 @@ public class loginScreen extends AppCompatActivity {
                                                         Log.d("LOGIN", "signInAnonymously:success");
                                                         FirebaseUser user = mAuth.getCurrentUser();
                                                         errorText.setText("");
+                                                        // update users info
+                                                        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+                                                        FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                                        DatabaseReference userRef = database.getReference("users");
+                                                        GPSTracker gps = new GPSTracker(loginScreen.this);
+                                                        double my_lat = gps.getLatitude(); // latitude
+                                                        double my_long = gps.getLongitude(); // longitude
+                                                        userRef.child(id + "/name").setValue(name);
+                                                        userRef.child(id + "/token").setValue(refreshedToken);
+                                                        userRef.child(id + "/latitude").setValue(my_lat);
+                                                        userRef.child(id + "/longitude").setValue(my_long);
+                                                        userRef.child(id + "/logged_in").setValue(true);
                                                         finish();
                                                         launchEfarScreen();
                                                     } else {
@@ -278,7 +345,7 @@ public class loginScreen extends AppCompatActivity {
                             .setNegativeButton("Cancel", null)
                             .show();
                 } else {
-                    errorText.setText("ERROR: password is incorrect");
+                    errorText.setText("ERROR: Password is incorrect");
                     errorText.setTextColor(Color.RED);
                 }
 
@@ -326,7 +393,7 @@ public class loginScreen extends AppCompatActivity {
                     continue_on = false;
                     submitButton.setText("LOGIN");
                 }else{
-                    errorText.setText("Passwords didn't match. Try again.");
+                    errorText.setText("Passwords didn't match. Please try again.");
                     errorText.setTextColor(Color.RED);
                 }
             }
