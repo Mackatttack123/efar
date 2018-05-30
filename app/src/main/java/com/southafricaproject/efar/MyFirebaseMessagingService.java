@@ -56,6 +56,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
+            notificationBuilder.setContentText(remoteMessage.getData().get("body"));
+            notificationBuilder.setAutoCancel(true);
+            notificationBuilder.setSmallIcon(R.mipmap.ic_launcher);
+            notificationBuilder.setContentIntent(pendingIntent);
+
+            Notification note = notificationBuilder.build();
+
             //make the phone vibrate when notification is received
             if(remoteMessage.getData().get("title").equals("NEW EMERGANCY!")){
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
@@ -63,6 +70,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 v.vibrate(pattern, -1);
                 notificationBuilder.setVibrate(new long[] {0, 1000, 300, 1000, 300 });
                 notificationBuilder.setLights(0xff00ff00, 3000, 3000);
+
+                note.flags = Notification.FLAG_INSISTENT;
 
                 //Turn on Sound Normal mode if do not disturp isn't on
                 AudioManager am;
@@ -83,13 +92,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 vibrate(100);
             }
 
-            notificationBuilder.setContentText(remoteMessage.getData().get("body"));
-            notificationBuilder.setAutoCancel(true);
-            notificationBuilder.setSmallIcon(R.mipmap.ic_launcher);
-            notificationBuilder.setContentIntent(pendingIntent);
-
-            Notification note = notificationBuilder.build();
-            note.flags = Notification.FLAG_INSISTENT;
             note.defaults |= Notification.DEFAULT_SOUND;
             // clear the notification after its selected
             note.flags |= Notification.FLAG_AUTO_CANCEL;

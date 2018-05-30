@@ -271,80 +271,101 @@ public class loginScreen extends AppCompatActivity {
                 String check_password = snapshot.child(id + "/password").getValue().toString();
 
                 if (check_password.equals(password)) {
-                    if(check_password.length() <= 6){
+                    if(check_password.length() >= 6){
                         new AlertDialog.Builder(loginScreen.this)
                                 .setIcon(android.R.drawable.ic_dialog_alert)
-                                .setTitle("Waiver of Liability")
-                                .setMessage("I, " + name + ", will be participating in the Emergency First Aid Responder (“EFAR”) programme. Being at least eighteen years of age, I do hereby agree to this waiver and release. \n\n" +
-                                        "I recognize that participation in EFAR will involve physical labour and may carry a risk of personal injury. I further recognize that there are natural and manmade hazards, environmental conditions, diseases, and other risks, which in combination with my actions can cause injury to me. I hereby agree to assume all risks which may be associated with or may result from my participation in the programme, including, but not limited to, transportation to and from sites, providing emergency medical care, (e.g. controlling bleeding, treating shock, treating sprains and fractures, opening airways, transporting patients, etc.) and other similar activities. \n\n" +
-                                        "I recognize that these programme activities will involve physical activity and may cause physical and emotional discomfort. \n\n" +
-                                        "I recognize that my involvement in the EFAR programme is as a volunteer and not as an employee of either EFAR or Western Cape Health Emergency Medical Services and I have no expectations to any form of remuneration or permanent appointment for the assistance rendered to the patient or EFAR Programme. Any and all participation is voluntary. Notification of an emergency situation by EMS dispatch does not obligate me to respond but I will communicate my inability well in advance. \n\n" +
-                                        "I recognize that if I am accepted for the programme, I will be covered by the provisions of the \"Reasonable Mans Test” and other applicable laws during the time that I am performing approved volunteer activities. I specifically recognize that in accordance with this Test, workers compensation and medical benefits from my personal provider (job etc.) shall be the exclusive remedy for any injury that I sustain in the course and scope of my approved participation in the program. In addition: \n\n" +
-                                        "I agree to release EFAR and Western Cape Health Emergency Services, its departments, officers, employees, agents, and all sponsors and/or officials and staff from any said entity or person, their representatives, agents, affiliates, directors, servants, volunteers, and employees from the cost of any medical care that I receive while participating in this programme or as a result of it.\n\n" +
-                                        "Furthermore I agree that according to Circular NO H148/2002, as a volunteer I am not eligible for benefits outlined in the Compensation for Occupational Injuries and Diseases Act. 130 Of 1993. However, I understand that should I have an injury during EFAR activities, the Department will allow me to visit the nearest Provincial Hospital for free medical assistance.  I also note that should I decide to seek medical assistance at a private medical practitioner, this consultation and treatment shall not be paid from state funds. \n\n" +
-                                        "I further agree to release EFAR and Western Cape Health Emergency Services, its departments, officers, employees, agents, (entity and persons as appropriate) and all sponsors and/or officials and staff of any said entity or person, their representatives, agents, affiliates, directors, servants, volunteers and employees from any and all liability, claims, demands, actions, and causes of actions whatsoever for any loss claim, damage, injury, illness, attorney's fees or harm of any kind or nature to me arising out of any and all activities associated with the aforementioned activities.\n" +
-                                        "\u2028I further agree to hold harmless, and hereby release the above mentioned entities and persons from all liability, negligence, or breach of warranty associated with injuries or damages from any claim by me, my family, estate, heirs, or assigns from or in any way connected with the aforementioned activities. \n\n" +
+                                .setTitle("Non-Disclosure Agreement")
+                                .setMessage("I, " + name +  ", understand that the Provincial Government of the Western Cape: Emergency Medical Services provides services to patients that are private and confidential and that I am a crucial step in respecting the privacy rights of Emergency Medical Services’ patients. I understand that it is necessary, in the rendering of Emergency Care, that patients provide personal information and that such information may exist in a variety of forms such as electronic, oral, written or photographic and that all such information is strictly confidential and protected from improper use and disclosure by national law and internal policies.\n" +
                                         "\n" +
-                                        "I further agree not to communicate or disclose to any person, or to publish either during the currency of this Agreement or after the termination thereof, any private, confidential or privileged information and/or documentation obtained by him/her in the course of rendering assistance, without the prior written consent of the Department to such communication, disclosure or publication.\n\n"
+                                        "I agree that I will comply with all confidentiality and security policies and procedures put in place by the Emergency Medical Services during my experience as an Emergency First Aid Responder/guest/student/trainee. If at any time I knowingly or inadvertently breach the patient confidentiality or security policies and procedures, I agree to notify the Directorate of Emergency Medical Services immediately.\n" +
+                                        "\n" +
+                                        "I also understand that I may be exposed to other confidential or proprietary information on the Emergency Medical Services and I agree not to reveal this information to anyone and any time.\n" +
+                                        "\n" +
+                                        "In addition, I understand that a breach of patient confidentiality may result in immediate suspension or termination of the privilege to gain clinical experience or observe the activities of the Emergency Medical Services. Upon termination of this privilege for any reason, or at any time upon request, I agree to return any and all patient confidential information in my possession.\n" +
+                                        "\n" +
+                                        "I agree to abide by all policies or my privilege to participate in clinical activities or to otherwise observe Emergency Medical Services activities will be terminated.\n\n"
                                         + "BY HITTING ACCEPT I AFFIRM THAT I HAVE CAREFULLY READ AND UNDERSTAND THE CONTENTS OF THE FOREGOING LANGUAGE AND I SPECIFICALLY INTEND IT TO COVER ANY PARTICIPATION IN THE EMERGENCY FIRST AID RESPONDER (“EFAR”) TRAINING.\n\n")
                                 .setPositiveButton("Accept", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-
-                                        // store password and username for auto login
-                                        SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
-                                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                                        editor.putString("id", id);
-                                        editor.putString("name", name);
-                                        editor.putString("old_id", id);
-                                        editor.putString("old_name", name);
-                                        editor.putBoolean("logged_in", true);
-                                        editor.commit();
-
-                                        mAuth = FirebaseAuth.getInstance();
-                                        FirebaseUser currentUser = mAuth.getCurrentUser();
-                                        if(currentUser != null){
-                                            mAuth.getCurrentUser().delete();
-                                        }
-
-                                        //if all matches then go onto the efar screen
-                                        mAuth.signInAnonymously()
-                                                .addOnCompleteListener(loginScreen.this, new OnCompleteListener<AuthResult>() {
+                                        new AlertDialog.Builder(loginScreen.this)
+                                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                                .setTitle("Waiver of Liability")
+                                                .setMessage("I, " + name + ", will be participating in the Emergency First Aid Responder (“EFAR”) programme. Being at least eighteen years of age, I do hereby agree to this waiver and release. \n\n" +
+                                                        "I recognize that participation in EFAR will involve physical labour and may carry a risk of personal injury. I further recognize that there are natural and manmade hazards, environmental conditions, diseases, and other risks, which in combination with my actions can cause injury to me. I hereby agree to assume all risks which may be associated with or may result from my participation in the programme, including, but not limited to, transportation to and from sites, providing emergency medical care, (e.g. controlling bleeding, treating shock, treating sprains and fractures, opening airways, transporting patients, etc.) and other similar activities. \n\n" +
+                                                        "I recognize that these programme activities will involve physical activity and may cause physical and emotional discomfort. \n\n" +
+                                                        "I recognize that my involvement in the EFAR programme is as a volunteer and not as an employee of either EFAR or Western Cape Health Emergency Medical Services and I have no expectations to any form of remuneration or permanent appointment for the assistance rendered to the patient or EFAR Programme. Any and all participation is voluntary. Notification of an emergency situation by EMS dispatch does not obligate me to respond but I will communicate my inability well in advance. \n\n" +
+                                                        "I recognize that if I am accepted for the programme, I will be covered by the provisions of the \"Reasonable Mans Test” and other applicable laws during the time that I am performing approved volunteer activities. I specifically recognize that in accordance with this Test, workers compensation and medical benefits from my personal provider (job etc.) shall be the exclusive remedy for any injury that I sustain in the course and scope of my approved participation in the program. In addition: \n\n" +
+                                                        "I agree to release EFAR and Western Cape Health Emergency Services, its departments, officers, employees, agents, and all sponsors and/or officials and staff from any said entity or person, their representatives, agents, affiliates, directors, servants, volunteers, and employees from the cost of any medical care that I receive while participating in this programme or as a result of it.\n\n" +
+                                                        "Furthermore I agree that according to Circular NO H148/2002, as a volunteer I am not eligible for benefits outlined in the Compensation for Occupational Injuries and Diseases Act. 130 Of 1993. However, I understand that should I have an injury during EFAR activities, the Department will allow me to visit the nearest Provincial Hospital for free medical assistance.  I also note that should I decide to seek medical assistance at a private medical practitioner, this consultation and treatment shall not be paid from state funds. \n\n" +
+                                                        "I further agree to release EFAR and Western Cape Health Emergency Services, its departments, officers, employees, agents, (entity and persons as appropriate) and all sponsors and/or officials and staff of any said entity or person, their representatives, agents, affiliates, directors, servants, volunteers and employees from any and all liability, claims, demands, actions, and causes of actions whatsoever for any loss claim, damage, injury, illness, attorney's fees or harm of any kind or nature to me arising out of any and all activities associated with the aforementioned activities.\n" +
+                                                        "\u2028I further agree to hold harmless, and hereby release the above mentioned entities and persons from all liability, negligence, or breach of warranty associated with injuries or damages from any claim by me, my family, estate, heirs, or assigns from or in any way connected with the aforementioned activities. \n\n" +
+                                                        "\n" +
+                                                        "I further agree not to communicate or disclose to any person, or to publish either during the currency of this Agreement or after the termination thereof, any private, confidential or privileged information and/or documentation obtained by him/her in the course of rendering assistance, without the prior written consent of the Department to such communication, disclosure or publication.\n\n"
+                                                        + "BY HITTING ACCEPT I AFFIRM THAT I HAVE CAREFULLY READ AND UNDERSTAND THE CONTENTS OF THE FOREGOING LANGUAGE AND I SPECIFICALLY INTEND IT TO COVER ANY PARTICIPATION IN THE EMERGENCY FIRST AID RESPONDER (“EFAR”) TRAINING.\n\n")
+                                                .setPositiveButton("Accept", new DialogInterface.OnClickListener() {
                                                     @Override
-                                                    public void onComplete(@NonNull Task<AuthResult> task) {
-                                                        if (task.isSuccessful()) {
-                                                            // Sign in success, update UI with the signed-in user's information
-                                                            Log.d("LOGIN", "signInAnonymously:success");
-                                                            FirebaseUser user = mAuth.getCurrentUser();
-                                                            errorText.setText("");
-                                                            // update users info
-                                                            String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-                                                            FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                                            DatabaseReference userRef = database.getReference("users");
-                                                            GPSTracker gps = new GPSTracker(loginScreen.this);
-                                                            double my_lat = gps.getLatitude(); // latitude
-                                                            double my_long = gps.getLongitude(); // longitude
-                                                            userRef.child(id + "/name").setValue(name);
-                                                            userRef.child(id + "/token").setValue(refreshedToken);
-                                                            userRef.child(id + "/latitude").setValue(my_lat);
-                                                            userRef.child(id + "/longitude").setValue(my_long);
-                                                            userRef.child(id + "/logged_in").setValue(true);
-                                                            finish();
-                                                            launchEfarScreen();
-                                                        } else {
-                                                            // If sign in fails, display a message to the user.
-                                                            Log.w("LOGIN", "signInAnonymously:failure", task.getException());
-                                                            Toast.makeText(loginScreen.this, "Authentication failed.",
-                                                                    Toast.LENGTH_SHORT).show();
-                                                            errorText.setText("ERROR: Authentication failed.");
-                                                        }
-                                                    }
-                                                });
-                                    }
+                                                    public void onClick(DialogInterface dialog, int which) {
 
+                                                        // store password and username for auto login
+                                                        SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                                                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                                                        editor.putString("id", id);
+                                                        editor.putString("name", name);
+                                                        editor.putString("old_id", id);
+                                                        editor.putString("old_name", name);
+                                                        editor.putBoolean("logged_in", true);
+                                                        editor.commit();
+
+                                                        mAuth = FirebaseAuth.getInstance();
+                                                        FirebaseUser currentUser = mAuth.getCurrentUser();
+                                                        if(currentUser != null){
+                                                            mAuth.getCurrentUser().delete();
+                                                        }
+
+                                                        //if all matches then go onto the efar screen
+                                                        mAuth.signInAnonymously()
+                                                                .addOnCompleteListener(loginScreen.this, new OnCompleteListener<AuthResult>() {
+                                                                    @Override
+                                                                    public void onComplete(@NonNull Task<AuthResult> task) {
+                                                                        if (task.isSuccessful()) {
+                                                                            // Sign in success, update UI with the signed-in user's information
+                                                                            Log.d("LOGIN", "signInAnonymously:success");
+                                                                            FirebaseUser user = mAuth.getCurrentUser();
+                                                                            errorText.setText("");
+                                                                            // update users info
+                                                                            String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+                                                                            FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                                                            DatabaseReference userRef = database.getReference("users");
+                                                                            GPSTracker gps = new GPSTracker(loginScreen.this);
+                                                                            double my_lat = gps.getLatitude(); // latitude
+                                                                            double my_long = gps.getLongitude(); // longitude
+                                                                            userRef.child(id + "/name").setValue(name);
+                                                                            userRef.child(id + "/token").setValue(refreshedToken);
+                                                                            userRef.child(id + "/latitude").setValue(my_lat);
+                                                                            userRef.child(id + "/longitude").setValue(my_long);
+                                                                            userRef.child(id + "/logged_in").setValue(true);
+                                                                            finish();
+                                                                            launchEfarScreen();
+                                                                        } else {
+                                                                            // If sign in fails, display a message to the user.
+                                                                            Log.w("LOGIN", "signInAnonymously:failure", task.getException());
+                                                                            Toast.makeText(loginScreen.this, "Authentication failed.",
+                                                                                    Toast.LENGTH_SHORT).show();
+                                                                            errorText.setText("ERROR: Authentication failed.");
+                                                                        }
+                                                                    }
+                                                                });
+                                                    }
+
+                                                })
+                                                .setNegativeButton("Cancel", null)
+                                                .show();
+                                    }
                                 })
                                 .setNegativeButton("Cancel", null)
                                 .show();
+
                     }else{
                         errorText.setText("ERROR: Password must be at least 6 characters long.");
                     }
