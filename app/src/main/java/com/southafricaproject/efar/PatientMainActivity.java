@@ -2,6 +2,7 @@ package com.southafricaproject.efar;
 
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
@@ -68,6 +69,10 @@ public class PatientMainActivity extends AppCompatActivity {
 
             ActivityCompat.requestPermissions( this, new String[] {  android.Manifest.permission.ACCESS_COARSE_LOCATION  }, 1 );
         }
+
+        //clear all notifications when app is opened
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancelAll();
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -172,7 +177,6 @@ public class PatientMainActivity extends AppCompatActivity {
                                         // say that user has logged off
                                         FirebaseDatabase database = FirebaseDatabase.getInstance();
                                         DatabaseReference userRef = database.getReference("users");
-                                        userRef.child(sharedPreferences.getString("id", "") + "/logged_in").setValue(false);
                                         editor.putString("id", "");
                                         editor.putString("name", "");
                                         editor.putBoolean("logged_in", false);
@@ -615,7 +619,7 @@ public class PatientMainActivity extends AppCompatActivity {
                     emergencies_ref.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot snapshot) {
-                            if (snapshot.hasChild("userEmergencyKey")) {
+                            if (snapshot.hasChild(userEmergencyKey)) {
                                 DatabaseReference emergency_ping_ref = database.getReference("emergencies/" + userEmergencyKey + "/ping");
                                 final int min = 0;
                                 final int max = 10000;

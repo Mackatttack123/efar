@@ -205,7 +205,6 @@ public class EmergencyInfoActivity extends AppCompatActivity {
                                         // say that user has logged off
                                         FirebaseDatabase database = FirebaseDatabase.getInstance();
                                         DatabaseReference userRef = database.getReference("users");
-                                        userRef.child(sharedPreferences.getString("id", "") + "/logged_in").setValue(false);
                                         editor.putString("id", "");
                                         editor.putString("name", "");
                                         editor.putBoolean("logged_in", false);

@@ -38,6 +38,7 @@ exports.sendPushAdded = functions.database.ref('/emergencies/{id}').onCreate((sn
 		if(efarArray.length > 0){
 			if(efarArray[0].distance < MAX_EFAR_TRAVEL_RADIUS){
 				tokens_to_send_to = [];
+					/*
 					if(efarArray.length >= MAX_NUMBER_OF_EFARS_TO_NOTIFY){
 						//only send to the 5 closest efars
 						for (var i = MAX_NUMBER_OF_EFARS_TO_NOTIFY-1; i >= 0; i--) {
@@ -54,6 +55,15 @@ exports.sendPushAdded = functions.database.ref('/emergencies/{id}').onCreate((sn
 								tokens_to_send_to.push(efarArray[j].token);
 								console.log(efarArray[j].token);
 							}
+						}
+					}
+					*/
+					//send to all efars within a MAX_EFAR_TRAVEL_RADIUS range
+					for (var j = efarArray.length - 1; j >= 0; j--) {
+						//only send to efars in range
+						if (efarArray[j].distance < MAX_EFAR_TRAVEL_RADIUS) {
+							tokens_to_send_to.push(efarArray[j].token);
+							console.log(efarArray[j].token);
 						}
 					}
 					// check if an efar created the emergency and if so don't send them a notification
@@ -232,23 +242,4 @@ exports.checkNewTokens = functions.database.ref('/tokens/{token_id}').onCreate((
 		snap.ref.remove();
 	}
 	return;
-});
-
-exports.sendVerificationPin = functions.database.ref('/users/{id}/verification_pin').onWrite((snap, context) => {
-	const payload = {
-		data: {
-			title: "EFAR Verification Code",
-			body: snap.after.child("pin").val(),
-			//badge: '1',
-			sound: 'default',
-		}
-	};
-	return admin.database().ref("/users/" + snap.after.child("efar_id").val()).once('value').then((snapshot) => {
-			token = snapshot.child("token").val();
-			console.log(token);
-			//send notifications with pin to efar
-			return admin.messaging().sendToDevice(token, payload).then(response => {
-				return
-			});
-		});	
 });

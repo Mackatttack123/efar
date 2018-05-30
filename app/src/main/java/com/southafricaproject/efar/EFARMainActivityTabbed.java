@@ -1,6 +1,7 @@
 package com.southafricaproject.efar;
 
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -75,6 +76,10 @@ public class EFARMainActivityTabbed extends AppCompatActivity {
         if(currentUser == null){
             launchPatientMainScreen();
         }
+
+        //clear all notifications when app is opened
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancelAll();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -175,7 +180,6 @@ public class EFARMainActivityTabbed extends AppCompatActivity {
                                     // say that user has logged off
                                     FirebaseDatabase database = FirebaseDatabase.getInstance();
                                     DatabaseReference userRef = database.getReference("users");
-                                    userRef.child(sharedPreferences.getString("id", "") + "/logged_in").setValue(false);
                                     editor.putString("id", "");
                                     editor.putString("name", "");
                                     editor.putBoolean("logged_in", false);
