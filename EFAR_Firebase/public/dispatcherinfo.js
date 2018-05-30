@@ -20,28 +20,19 @@ function add_emergency() {
     select("#call_efar_button").hide();
     select("#cancel_button").hide();
 
-    lat = document.getElementById("lat").value;
-    long = document.getElementById("long").value;
     var address = document.getElementById("address").value;
-    if(lat.length != 0 && long.length != 0 && !isNaN(lat) && !isNaN(long)){
+    //get the lat and long for address here via google
+    var geocoder = new google.maps.Geocoder();
+    geocoder.geocode( { 'address': address}, function(results, status) {
+      if (status == google.maps.GeocoderStatus.OK) {
+        lat = results[0].geometry.location.lat();
+        long = results[0].geometry.location.lng();
         location_ready = true;
-    }else if(address.length != 0){
-        //get the lat and long for address here via google
-        var geocoder = new google.maps.Geocoder();
-        geocoder.geocode( { 'address': address}, function(results, status) {
-          if (status == google.maps.GeocoderStatus.OK) {
-            lat = results[0].geometry.location.lat();
-            long = results[0].geometry.location.lng();
-            location_ready = true;
-          }else{
-            alert("Invalid address data!");
-            location.reload();
-          }
-        }); 
-    }else{
-        alert("Invalid location data!");
+      }else{
+        alert("Invalid address data!");
         location.reload();
-    } 
+      }
+    }); 
 }
 
 function setup() {
@@ -50,17 +41,22 @@ function setup() {
 
 function draw(){
 
-    if(frameCount % 60 === 0){
+    if(frameCount % 360 === 0){
         updateCurrentCalls();
     }
 
     if(location_ready){
         var other_info = document.getElementById("information").value;
+        var reference_number = document.getElementById("reference_number").value;
+        var call_received_time = document.getElementById("call_received_time").value;
         var date = new Date();
         var time = (date.getYear() + 1900) + "-" + (date.getMonth() + 1) + "-" + date.getDate() + "T" +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
 
         var package = {
-            phone_number: "N/A", 
+            emergency_made_by_dispatcher: user_id,
+            phone_number: "N/A",
+            reference_number: reference_number,
+            call_received_time: call_received_time,
             other_info: other_info,
             latitude: lat,
             longitude: long,
@@ -117,12 +113,28 @@ function updateCurrentCalls(){
                         if(emergencies_snapshot.hasChild(key)){
                             var creation_date = emergencies_snapshot.child(key).child("creation_date").val();
                             var other_info = emergencies_snapshot.child(key).child("other_info").val();
+                            var state = emergencies_snapshot.child(key).child("state").val();
 
                             newDiv = createDiv("<strong>Created at: </strong>" + creation_date.replace("T", " ~ "));
                             newDiv.parent("Current_calls_field");
 
                             newDiv2 = createDiv("<strong>Info Given: </strong>" + other_info);
                             newDiv2.parent("Current_calls_field");
+
+                            if(state == "0"){
+                                newDiv3 = createDiv("Contacting EFAR...");
+                                newDiv3.style("color", "#bb0000");
+                                newDiv3.parent("Current_calls_field");
+                            }else if(state == "1"){
+                                newDiv3 = createDiv("EFAR Contacted!");
+                                newDiv3.style("color", "#FF8C00");
+                                newDiv3.parent("Current_calls_field");
+                            }else if(state == "1.5"){
+                                newDiv3 = createDiv("EFAR on Scene!");
+                                newDiv3.style("color", "#00bb00");
+                                newDiv3.parent("Current_calls_field");
+                            }
+                            
 
                             if(emergencies_snapshot.child(key).hasChild("responding_efar")){
                                 var responding_efar = emergencies_snapshot.child(key).child("responding_efar").val().toString();

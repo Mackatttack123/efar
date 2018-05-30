@@ -241,7 +241,7 @@ exports.checkStates = functions.database.ref('/emergencies').onWrite((snap, cont
 			console.log(childSnapshot.child("state").val().toString());
 			var state = childSnapshot.child("state").val().toString().trim();
 	    	if(state === "-2" || state === "-3" || state === "-4"){
-	    		moveFbRecord(childSnapshot.ref, admin.database().ref('/canceled/' + snapshot.val()));
+	    		moveFbRecord(childSnapshot.ref, admin.database().ref('/canceled/' + childSnapshot.key));
 	    	}
     	});
     	return;

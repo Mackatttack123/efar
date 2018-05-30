@@ -141,18 +141,25 @@
                     <form>
                       <h1><hr>Emergency Location:<hr></h1>
                       <div class="form-group">
-                        <label for="address">Address:</label>
+                        <label for="address">Incident Address:</label>
                         <input type="address" class="form-control" id="address" aria-describedby="phoneHelp" placeholder="Enter Address">
                         <small id="addressHelp" class="form-text text-muted">Enter the address of where the emergency is happening.</small>
                       </div>
-                      <strong><h3>OR</h3></strong>
-                      <label for="lat">Cordinates:&nbsp;&nbsp;</label>
-                      <div class="input-group">
-                        <input type="lat" class="form-control" id="lat" aria-describedby="latHelp" placeholder="Latitude">
-                        <input type="long" class="form-control" id="long" aria-describedby="longHelp" placeholder="Longitude">
+                      <hr>
+
+                      <div class="form-group">
+                        <label for="reference_number">Call Reference Number:</label>
+                        <input type="reference_number" class="form-control" id="reference_number" placeholder="Enter Call Reference Number">
+                        <small id="referenceNumberHelp" class="form-text text-muted">Enter the EMS reference number for this call.</small>
                       </div>
-                      <small id="latHelp" class="form-text text-muted">Enter the latitude and longitude of where the emergency is happening.</small>
-                      <p><hr></p>
+                      <hr>
+                      <div class="form-group">
+                        <label for="call_received_time">Call Received Time:</label>
+                        <input type="call_received_time" class="form-control" id="call_received_time" placeholder="Enter Call Received Time">
+                        <small id="callReceivedTimeHelp" class="form-text text-muted">Enter The time that the emergency call was received.</small>
+                      </div>
+                      <hr>
+
                       <div class="form-group">
                         <label for="information">Other Information:</label>
                         <input type="information" class="form-control" id="information" placeholder="Enter Other Information">
@@ -171,7 +178,7 @@
                     <img src="assets/images/red_phone.png" alt="Phone-Image" title="" style="padding-top: 30px; height: auto; width: 60%">
                   </div>
                   <div class="card-box">
-                      <h4 class="card-title mbr-fonts-style display-1">
+                      <h4 style="font-size: 3em" class="card-title mbr-fonts-style display-1">
                           Contact EFAR</h4>
                   </div>
                 </div>

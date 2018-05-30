@@ -10,20 +10,49 @@ var efarDiv;
 var found_efar = false;
 
 function draw(){
-    var state; 
+    var state = 100;
+    var completed_state; 
+    var canceled_state;
     var efar_id;
     var efar_name;
     var efar_phone;
     firebase.database().ref("/emergencies/" + window.location.hash.substring(1)).on("value", function(snapshot) {
-      state = snapshot.child("state").val().toString();
+      if(snapshot.hasChild("state")){
+         state = snapshot.child("state").val().toString();
       efar_id = snapshot.child("responding_efar").val();
+      }
     }, function (errorObject) {
       console.log("The read failed: " + errorObject.code);
     });
-    if(state == "1"){
+
+    firebase.database().ref("/completed/" + window.location.hash.substring(1)).on("value", function(snapshot) {
+      if(snapshot.hasChild("state")){
+        completed_state = snapshot.child("state").val().toString();
+      }
+    }, function (errorObject) {
+      console.log("The read failed: " + errorObject.code);
+    });
+
+    firebase.database().ref("/canceled/" + window.location.hash.substring(1)).on("value", function(snapshot) {
+      if(snapshot.hasChild("state")){
+        canceled_state = snapshot.child("state").val().toString();
+      }
+    }, function (errorObject) {
+      console.log("The read failed: " + errorObject.code);
+    });
+
+    if(state == "1" || state == "1.5"){
         var text = select("#contacting_title");
-        text.html("<h2>EFAR Contacted!</h2>");
-        text.style("color", "#00bb00")
+        text.style("font-size", "0.5em")
+        if(state == "1.5"){
+          text.html("<h2>EFAR on Scene!</h2>");
+          text.style("color", "#00ff00")
+        }else{
+          text.html("<h2>EFAR Contacted!</h2>");
+          text.style("color", "#FF8C00")
+        }
+        
+        
 
         var names = "N/A";
         var phones = "N/A";
@@ -80,18 +109,28 @@ function draw(){
         var text = select("#contacting_title");
         text.html("Contacting EFAR...");
         text.style("color", "#bb0000")
+        text.style("font-size", "0.5em")
         var message_popup = select("#message_popup");
         message_popup.hide();
-    }else if(state == "-2" || state == "-3"){
+    }else if(canceled_state == "-2" || canceled_state == "-3"){
         var text = select("#contacting_title");
-        text.html("No EFARs Avalible");
+        text.html("No EFARs available near incident");
+        text.style("font-size", "0.5em")
         text.style("color", "#bb0000")
+        var message_popup = select("#message_popup");
+        message_popup.hide();
+    }else if(completed_state == "2"){
+        var text = select("#contacting_title");
+        text.html("Emergency Ended");
+        text.style("color", "#00bb00")
+        text.style("font-size", "0.5em")
         var message_popup = select("#message_popup");
         message_popup.hide();
     }else{
         var text = select("#contacting_title");
-        text.html("Signal lost.");
+        text.html("Looking for Signal...");
         text.style("color", "#0000bb")
+        text.style("font-size", "0.5em")
         var message_popup = select("#message_popup");
         message_popup.hide();
     }

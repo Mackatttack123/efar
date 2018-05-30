@@ -627,21 +627,26 @@ public class EmergencyInfoActivity extends AppCompatActivity {
 
             String formattedNumber = phoneNumber;
 
-            if(phoneNumber.startsWith("27")){
-                phoneNumber = phoneNumber.substring(2, phoneNumber.length());
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    formattedNumber = "+27 " + PhoneNumberUtils.formatNumber(phoneNumber,Locale.getDefault().getCountry());
-                } else {
-                    //Deprecated method
-                    formattedNumber = "+27 " + PhoneNumberUtils.formatNumber(phoneNumber);
+            if(!phoneNumber.equals("N/A")){
+                if(phoneNumber.startsWith("27")){
+                    phoneNumber = phoneNumber.substring(2, phoneNumber.length());
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        formattedNumber = "+27 " + PhoneNumberUtils.formatNumber(phoneNumber,Locale.getDefault().getCountry());
+                    } else {
+                        //Deprecated method
+                        formattedNumber = "+27 " + PhoneNumberUtils.formatNumber(phoneNumber);
+                    }
+                }else{
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        formattedNumber = PhoneNumberUtils.formatNumber(phoneNumber,Locale.getDefault().getCountry());
+                    } else {
+                        //Deprecated method
+                        formattedNumber = PhoneNumberUtils.formatNumber(phoneNumber);
+                    }
                 }
             }else{
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    formattedNumber = PhoneNumberUtils.formatNumber(phoneNumber,Locale.getDefault().getCountry());
-                } else {
-                    //Deprecated method
-                    formattedNumber = PhoneNumberUtils.formatNumber(phoneNumber);
-                }
+                call_button.setEnabled(false);
+                call_button.setBackgroundResource(R.drawable.call_disabled);
             }
 
 
