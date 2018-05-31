@@ -40,6 +40,7 @@ import android.widget.TextView;
 
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.vision.text.Text;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -89,6 +90,9 @@ public class EFARMainTabAll extends Fragment{
         SharedPreferences.Editor editor = sharedPreferences.edit();
         final String id = sharedPreferences.getString("id", "");
         //userRef.child(id + "/token").setValue(refreshedToken);
+
+        final TextView alertText = (TextView)rootView.findViewById(R.id.alert_text);
+        alertText.setText("Loading . . .");
 
         adapter = new ArrayAdapter<String>(getActivity(), R.layout.activity_listview, distanceArray){
             @Override
@@ -332,6 +336,7 @@ public class EFARMainTabAll extends Fragment{
             public void run() {
                 updateDistances();
                 adapter.notifyDataSetChanged();
+                alertText.setText("Emergencies within 10km of you will appear here");
                 handler.postDelayed( this, 30 * 1000 );
             }
         }, 30 * 1000 );

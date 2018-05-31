@@ -92,7 +92,7 @@ public class EFARInfoActivity extends AppCompatActivity {
                 if(!current_version.equals(BuildConfig.VERSION_NAME)){
                     AlertDialog.Builder alert = new AlertDialog.Builder(EFARInfoActivity.this)
                             .setTitle("Update Needed:")
-                            .setMessage("Please updated to the the latest version of our app.").setPositiveButton("Update", new DialogInterface.OnClickListener() {
+                            .setMessage("Please update to the the latest version of EFAR.").setPositiveButton("Update", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     final String appPackageName = getPackageName(); // getPackageName() from Context or Activity object

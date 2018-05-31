@@ -7,8 +7,8 @@ android {
         applicationId "com.southafricaproject.efar"
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 4
-        versionName "beta"
+        versionCode 6
+        versionName "beta 1.6"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }

@@ -87,6 +87,9 @@ public class EFARMainTabYou extends Fragment{
         final String id = sharedPreferences.getString("id", "");
         //userRef.child(id + "/token").setValue(refreshedToken);
 
+        final TextView alertText = (TextView)rootView.findViewById(R.id.alert_text);
+        alertText.setText("Loading . . .");
+
         adapter = new ArrayAdapter<String>(getActivity(), R.layout.activity_listview, distanceArray){
             @Override
             public View getView(int position, View convertView, ViewGroup parent)
@@ -312,8 +315,9 @@ public class EFARMainTabYou extends Fragment{
                 updateDistances();
                 adapter.notifyDataSetChanged();
                 handler.postDelayed( this, 30 * 1000 );
+                alertText.setText("Emergencies you are responding to will appear here");
             }
-        },30 * 1000 );
+        }, 30 * 1000);
 
         return rootView;
     }
