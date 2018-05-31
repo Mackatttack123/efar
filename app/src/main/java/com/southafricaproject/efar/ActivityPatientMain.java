@@ -1,18 +1,12 @@
 package com.southafricaproject.efar;
 
+import android.Manifest;
 import android.animation.ObjectAnimator;
-import android.app.Activity;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
-import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
@@ -23,8 +17,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.content.Intent;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -32,9 +24,7 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.content.SharedPreferences;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.google.android.gms.location.Geofence;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -46,12 +36,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.android.gms.location.LocationServices;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.Random;
 
-public class PatientMainActivity extends AppCompatActivity {
+public class ActivityPatientMain extends AppCompatActivity {
 
     boolean calling_efar = false;
     String responding_efar_id = null;
@@ -65,14 +54,12 @@ public class PatientMainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_patient_main);
 
-        if ( ContextCompat.checkSelfPermission( this, android.Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED ) {
-
-            ActivityCompat.requestPermissions( this, new String[] {  android.Manifest.permission.ACCESS_COARSE_LOCATION  }, 1 );
+        if (ContextCompat.checkSelfPermission( this, android.Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED ) {
+            ActivityCompat.requestPermissions( this, new String[] {  Manifest.permission.ACCESS_COARSE_LOCATION  }, 1 );
         }
-
-        //clear all notifications when app is opened
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.cancelAll();
+        if (ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        }
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -90,125 +77,10 @@ public class PatientMainActivity extends AppCompatActivity {
                     }
                 });
 
-        //check connection
-        try {
-            ConnectivityManager cm = (ConnectivityManager) this
-                    .getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-            NetworkInfo mWifi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-
-            if ((networkInfo != null && networkInfo.isConnected()) || mWifi.isConnected()) {
-
-            }else{
-                new AlertDialog.Builder(PatientMainActivity.this)
-                        .setTitle("Connection Error:")
-                        .setMessage("Your device is currently unable connect to our services. " +
-                                "Please check your connection or try again later.")
-                        .show();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            new AlertDialog.Builder(PatientMainActivity.this)
-                    .setTitle("Connection Error:")
-                    .setMessage("Your device is currently unable connect to our services. " +
-                            "Please check your connection or try again later.")
-                    .show();
-        }
-
-        //check if an update is needed
-        FirebaseDatabase.getInstance().getReference().child("version").addListenerForSingleValueEvent(new ValueEventListener() {
-             @Override
-             public void onDataChange(DataSnapshot snapshot) {
-                 String current_version = snapshot.child("version_number").getValue().toString();
-                 if(!current_version.equals(BuildConfig.VERSION_NAME)){
-                     AlertDialog.Builder alert = new AlertDialog.Builder(PatientMainActivity.this)
-                             .setTitle("Update Needed:")
-                             .setMessage("Please update to the the latest version of EFAR.").setPositiveButton("Update", new DialogInterface.OnClickListener() {
-                         @Override
-                         public void onClick(DialogInterface dialog, int which) {
-                             final String appPackageName = getPackageName(); // getPackageName() from Context or Activity object
-                             try {
-                                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
-                             } catch (android.content.ActivityNotFoundException anfe) {
-                                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
-                             }
-                             finish();
-                             startActivity(getIntent());
-                         }
-                     }).setNegativeButton("Exit App", new DialogInterface.OnClickListener() {
-                         @Override
-                         public void onClick(DialogInterface dialog, int which) {
-                             finishAndRemoveTask();
-                         }
-                     }).setCancelable(false);
-                     if(!((Activity) PatientMainActivity.this).isFinishing())
-                     {
-                         alert.show();
-                     }
-                 }
-             }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        final SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
-        String id = sharedPreferences.getString("id", "");
-        boolean efar_logged_in = sharedPreferences.getBoolean("logged_in", false);
-        final String token = FirebaseInstanceId.getInstance().getToken();
+        //check network connection
+        //check if a forced app update is needed
         //check if an logged in on another phone
-        if(efar_logged_in){
-            FirebaseDatabase.getInstance().getReference().child("users/" + id).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot snapshot) {
-                    String current_token= snapshot.child("token").getValue().toString();
-                    if(!token.equals(current_token)){
-                        android.app.AlertDialog.Builder alert = new android.app.AlertDialog.Builder(PatientMainActivity.this)
-                                .setTitle("Oops!")
-                                .setMessage("Looks liked you're logged in on another device. You will now be logged out but you can log back onto this device if you'd like.").setPositiveButton("Logout", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        //to get rid of stored password and username
-                                        SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
-                                        SharedPreferences.Editor editor = sharedPreferences.edit();
-
-                                        // say that user has logged off
-                                        FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                        DatabaseReference userRef = database.getReference("users");
-                                        editor.putString("id", "");
-                                        editor.putString("name", "");
-                                        editor.putBoolean("logged_in", false);
-                                        stopService(new Intent(PatientMainActivity.this, MyService.class));
-                                        editor.apply();
-
-                                        //clear the phones token for the database
-                                        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-                                        DatabaseReference token_ref = database.getReference("tokens/" + refreshedToken);
-                                        token_ref.removeValue();
-
-                                        if(mAuth.getCurrentUser() != null){
-                                            mAuth.getCurrentUser().delete();
-                                        }
-                                        finish();
-                                        startActivity(getIntent());
-                                    }
-                                }).setCancelable(false);
-                        if(!((Activity) PatientMainActivity.this).isFinishing())
-                        {
-                            alert.show();
-                        }
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-        }
-
+        CheckFunctions.runAllChecks(ActivityPatientMain.this, this);
 
         //TODO: show the patient approximatly how far away the efar is via the progress bar
         final ProgressBar distance_progress = (ProgressBar) findViewById(R.id.patient_progress_bar);
@@ -219,9 +91,11 @@ public class PatientMainActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
         // to auto login if possible
-        String name = sharedPreferences.getString("name", "");
-        String last_screen = sharedPreferences.getString("last_screen", "");
         //to skip past the patient screen if efar opens the app and is loggd in
+        final SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+        String id = sharedPreferences.getString("id", "");
+        boolean efar_logged_in = sharedPreferences.getBoolean("logged_in", false);
+        final String token = FirebaseInstanceId.getInstance().getToken();
         boolean screen_bypass = sharedPreferences.getBoolean("screen_bypass", true);
         final SharedPreferences.Editor editor = sharedPreferences.edit();
         if(efar_logged_in && screen_bypass && currentUser != null){
@@ -310,21 +184,7 @@ public class PatientMainActivity extends AppCompatActivity {
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                /*final TextView userUpdate = (TextView) findViewById(R.id.user_update );
-                String userEmergencyKey = sharedPreferences.getString("emergency_key", "");
-                if(dataSnapshot.getKey().toString().equals(userEmergencyKey)){
-                    userUpdate.setTextColor(Color.RED);
-                    helpMeButton.setText("Call for Help");
-                    helpMeButton.setBackgroundColor(Color.RED);
-                    userUpdate.setText("There are no EFARs in your area!");
-                    //clear the emergency key and state
-                    editor.remove("emergency_key");
-                    editor.putString("user_emergency_state", "100");
-                    editor.apply();
-                    // fade out text
-                    userUpdate.animate().alpha(0.0f).setDuration(10000);
-                    calling_efar = false;
-                }*/
+
             }
 
             @Override
@@ -344,22 +204,25 @@ public class PatientMainActivity extends AppCompatActivity {
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 String userEmergencyKey = sharedPreferences.getString("emergency_key", "");
                 String creation_date = sharedPreferences.getString("creation_date", "");
-                if(dataSnapshot.getKey().toString().equals(userEmergencyKey) || dataSnapshot.child("creation_date").getValue().toString().equals(creation_date)){
-                    TextView userUpdate = (TextView) findViewById(R.id.user_update );
-                    userUpdate.setTextColor(Color.GREEN);
-                    helpMeButton.setText("Call for Help");
-                    helpMeButton.setBackgroundColor(Color.RED);
-                    userUpdate.setText("Emergency has been ended.");
-                    // fade out text
-                    userUpdate.animate().alpha(0.0f).setDuration(10000);
-                    editor.putString("emergency_key", "");
-                    editor.putString("creation_date", "");
-                    editor.apply();
-                    calling_efar = false;
-                    distance_progress.setVisibility(View.INVISIBLE);
-                    distance_progress.setProgress(0);
+                if(dataSnapshot.exists() && dataSnapshot.child("creation_date").exists()){
+                    if(dataSnapshot.getKey().toString().equals(userEmergencyKey) || dataSnapshot.child("creation_date").getValue().toString().equals(creation_date)){
+                        TextView userUpdate = (TextView) findViewById(R.id.user_update );
+                        userUpdate.setTextColor(Color.GREEN);
+                        helpMeButton.setText("Call for Help");
+                        helpMeButton.setBackgroundColor(Color.RED);
+                        userUpdate.setText("Emergency has been ended.");
+                        // fade out text
+                        userUpdate.animate().alpha(0.0f).setDuration(10000);
+                        editor.putString("emergency_key", "");
+                        editor.putString("creation_date", "");
+                        editor.apply();
+                        calling_efar = false;
+                        distance_progress.setVisibility(View.INVISIBLE);
+                        distance_progress.setProgress(0);
+                    }
                 }
-                TextView userUpdate = (TextView) findViewById(R.id.user_update );
+
+                TextView userUpdate = (TextView) findViewById(R.id.user_update);
                 if(dataSnapshot.child("emergency_made_by_efar_token").exists() && !userUpdate.getText().toString().equals("")){
                     if(dataSnapshot.child("emergency_made_by_efar_token").getValue().toString().equals(FirebaseInstanceId.getInstance().getToken())){
                         userUpdate.setTextColor(Color.GREEN);
@@ -454,7 +317,7 @@ public class PatientMainActivity extends AppCompatActivity {
 
                         if(!(calling_efar)){
                             //send and alert asking if they are sure they want to call
-                            new AlertDialog.Builder(PatientMainActivity.this)
+                            new AlertDialog.Builder(ActivityPatientMain.this)
                                     .setIcon(android.R.drawable.ic_dialog_alert)
                                     .setTitle("Call EFAR")
                                     .setMessage("Are you sure you want to call an EFAR?")
@@ -481,7 +344,7 @@ public class PatientMainActivity extends AppCompatActivity {
                                     .show();
                         }else{
                             //send and alert asking if they are sure they want to cancel the efar
-                            new AlertDialog.Builder(PatientMainActivity.this)
+                            new AlertDialog.Builder(ActivityPatientMain.this)
                                     .setIcon(android.R.drawable.ic_dialog_alert)
                                     .setTitle("Cancel EFAR")
                                     .setMessage("Are you sure you want to cancel your EFAR?")
@@ -532,7 +395,7 @@ public class PatientMainActivity extends AppCompatActivity {
 
         if(logged_in){
             // start tracking efar
-            startService(new Intent(this, MyService.class));
+            startService(new Intent(this, GPSTrackingService.class));
 
             //change to logout button
             toLoginButton.setText("logout");
@@ -540,7 +403,7 @@ public class PatientMainActivity extends AppCompatActivity {
                     new Button.OnClickListener() {
                         public void onClick(View v) {
 
-                            new AlertDialog.Builder(PatientMainActivity.this)
+                            new AlertDialog.Builder(ActivityPatientMain.this)
                                     .setIcon(android.R.drawable.ic_dialog_alert)
                                     .setTitle("Logging Out")
                                     .setMessage("Are you sure you want to log out?")
@@ -560,7 +423,7 @@ public class PatientMainActivity extends AppCompatActivity {
                                             editor.putString("id", "");
                                             editor.putString("name", "");
                                             editor.putBoolean("logged_in", false);
-                                            stopService(new Intent(PatientMainActivity.this, MyService.class));
+                                            stopService(new Intent(ActivityPatientMain.this, GPSTrackingService.class));
                                             editor.commit();
 
                                             //clear the phones token for the database
@@ -647,14 +510,14 @@ public class PatientMainActivity extends AppCompatActivity {
 
     // Starts up login screen
     private void launchLoginScreen() {
-        Intent toLogin = new Intent(this, loginScreen.class);
+        Intent toLogin = new Intent(this, ActivityLoginScreen.class);
         startActivity(toLogin);
         finish();
     }
 
     // Goes to patient info tab to send more to EFARs
     private void launchPatientInfoScreen() {
-        Intent toPatientInfoScreen = new Intent(this, PatientInfoActivity.class);
+        Intent toPatientInfoScreen = new Intent(this, ActivityPatientInfo.class);
         startActivity(toPatientInfoScreen);
     }
 
@@ -672,7 +535,7 @@ public class PatientMainActivity extends AppCompatActivity {
 
     // Starts up launchEfarScreen screen
     private void launchEfarScreen() {
-        Intent toEfarScreen = new Intent(this, EFARMainActivityTabbed.class);
+        Intent toEfarScreen = new Intent(this, ActivityEFARMainTabbed.class);
         startActivity(toEfarScreen);
         finish();
     }

@@ -13,40 +13,26 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.os.Build;
 import android.os.Handler;
-import android.support.design.widget.TabLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.vision.text.Text;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -55,8 +41,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-
-import static com.google.android.gms.cast.CastRemoteDisplayLocalService.startService;
 
 public class EFARMainTabAll extends Fragment{
 
@@ -75,21 +59,13 @@ public class EFARMainTabAll extends Fragment{
     private double my_lat;
     private double my_long;
 
-    String alertButton_respond_end_option = "";
-    String alertButton_message_option = "";
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.efar_main_all_tab, container, false);
 
-        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference userRef = database.getReference("users");
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyData", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
         final String id = sharedPreferences.getString("id", "");
-        //userRef.child(id + "/token").setValue(refreshedToken);
 
         final TextView alertText = (TextView)rootView.findViewById(R.id.alert_text);
         alertText.setText("Loading . . .");
@@ -376,7 +352,7 @@ public class EFARMainTabAll extends Fragment{
 
     // Goes to emergency info tab to send more to EFARs
     private void launchEmergencyInfoScreen(String time, String latitude, String longitude, String address, String phoneNumber, String info, String id, String key, String state) {
-        Intent toEmergnecyInfoScreen = new Intent(getActivity(), EmergencyInfoActivity.class);
+        Intent toEmergnecyInfoScreen = new Intent(getActivity(), ActivityEmergencyInfo.class);
         toEmergnecyInfoScreen.putExtra("time", time);
         toEmergnecyInfoScreen.putExtra("lat", latitude);
         toEmergnecyInfoScreen.putExtra("long", longitude);

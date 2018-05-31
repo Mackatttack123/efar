@@ -1,247 +1,58 @@
 package com.southafricaproject.efar;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.media.RingtoneManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
-import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.PhoneNumberUtils;
-import android.text.Editable;
-import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.Adapter;
 import android.widget.BaseAdapter;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.ListAdapter;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import android.app.AlertDialog;
-import android.location.Address;
-import android.location.Geocoder;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.SpannableString;
-import android.text.util.Linkify;
-import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.os.Handler;
-import android.util.Log;
 import android.content.DialogInterface;
 
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.vision.text.Text;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.iid.FirebaseInstanceId;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.InputStream;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Locale;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Random;
 
-class Emergency {
-    private String key;
-    private String address;
-    private Double latitude;
-    private Double longitude;
-    private String phone_number;
-    private String info;
-    private String creationDate;
-    private String respondingEfar;
-    private String state;
-
-    // constructor
-    public Emergency(String key, String address, Double latitude, Double longitude,
-                     String phone_number, String info, String creationDate, String respondingEfar, String state) {
-        this.key = key;
-        this.address = address;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.phone_number = phone_number;
-        this.info = info;
-        this.creationDate = creationDate;
-        this.respondingEfar = respondingEfar;
-        this.state = state;
-    }
-
-    // getter
-    public String getKey() { return key; }
-    public String getAddress() { return address; }
-    public Double getLatitude() { return latitude; }
-    public Double getLongitude() { return longitude; }
-    public String getPhone() { return phone_number; }
-    public String getInfo() { return info; }
-    public String getCreationDate() { return creationDate; }
-    public String getRespondingEfar() { return respondingEfar; }
-    public String getState() { return state; }
-}
-
-public class EmergencyInfoActivity extends AppCompatActivity {
+public class ActivityEmergencyInfo extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_emergency_info);
 
-        final FirebaseAuth mAuth;
-        mAuth = FirebaseAuth.getInstance();
-
-        //check connection
-        try {
-            ConnectivityManager cm = (ConnectivityManager) this
-                    .getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-            NetworkInfo mWifi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-
-            if ((networkInfo != null && networkInfo.isConnected()) || mWifi.isConnected()) {
-
-            }else{
-                new AlertDialog.Builder(EmergencyInfoActivity.this)
-                        .setTitle("Connection Error:")
-                        .setMessage("Your device is currently unable connect to our services. " +
-                                "Please check your connection or try again later.")
-                        .show();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            new AlertDialog.Builder(EmergencyInfoActivity.this)
-                    .setTitle("Connection Error:")
-                    .setMessage("Your device is currently unable connect to our services. " +
-                            "Please check your connection or try again later.")
-                    .show();
-        }
-
-        //check if an update is needed
-        FirebaseDatabase.getInstance().getReference().child("version").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                String current_version = snapshot.child("version_number").getValue().toString();
-                if(!current_version.equals(BuildConfig.VERSION_NAME)){
-                    AlertDialog.Builder alert = new AlertDialog.Builder(EmergencyInfoActivity.this)
-                            .setTitle("Update Needed:")
-                            .setMessage("Please update to the the latest version of EFAR.").setPositiveButton("Update", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    final String appPackageName = getPackageName(); // getPackageName() from Context or Activity object
-                                    try {
-                                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
-                                    } catch (android.content.ActivityNotFoundException anfe) {
-                                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
-                                    }
-                                    finish();
-                                    startActivity(getIntent());
-                                }
-                            }).setNegativeButton("Exit App", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    finishAndRemoveTask();
-                                }
-                            }).setCancelable(false);
-                    if(!((Activity) EmergencyInfoActivity.this).isFinishing())
-                    {
-                        alert.show();
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        final SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
-        String id = sharedPreferences.getString("id", "");
-        boolean efar_logged_in = sharedPreferences.getBoolean("logged_in", false);
-        final String token = FirebaseInstanceId.getInstance().getToken();
+        //check network connection
+        //check if a forced app update is needed
         //check if an logged in on another phone
-        if(efar_logged_in){
-            FirebaseDatabase.getInstance().getReference().child("users/" + id).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot snapshot) {
-                    String current_token= snapshot.child("token").getValue().toString();
-                    if(!token.equals(current_token)){
-                        android.app.AlertDialog.Builder alert = new android.app.AlertDialog.Builder(EmergencyInfoActivity.this)
-                                .setTitle("Oops!")
-                                .setMessage("Looks liked you're logged in on another device. You will now be logged out but you can log back onto this device if you'd like.").setPositiveButton("Logout", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        //to get rid of stored password and username
-                                        SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
-                                        SharedPreferences.Editor editor = sharedPreferences.edit();
-
-                                        // say that user has logged off
-                                        FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                        DatabaseReference userRef = database.getReference("users");
-                                        editor.putString("id", "");
-                                        editor.putString("name", "");
-                                        editor.putBoolean("logged_in", false);
-                                        stopService(new Intent(EmergencyInfoActivity.this, MyService.class));
-                                        editor.apply();
-
-                                        //clear the phones token for the database
-                                        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-                                        DatabaseReference token_ref = database.getReference("tokens/" + refreshedToken);
-                                        token_ref.removeValue();
-
-                                        if(mAuth.getCurrentUser() != null){
-                                            mAuth.getCurrentUser().delete();
-                                        }
-                                        finish();
-                                        startActivity(getIntent());
-                                    }
-                                }).setCancelable(false);
-                        if(!((Activity) EmergencyInfoActivity.this).isFinishing())
-                        {
-                            alert.show();
-                        }
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-        }
+        CheckFunctions.runAllChecks(ActivityEmergencyInfo.this, this);
 
         ListView emergencyInfoListView = (ListView) findViewById(R.id.emergencyInfoListView);
-        Adapter emergencyInfoAdapter = new EmergencyInfoActivity.EmergnecyInfoCustomAdapter();
+        Adapter emergencyInfoAdapter = new ActivityEmergencyInfo.EmergnecyInfoCustomAdapter();
         emergencyInfoListView.setAdapter((ListAdapter) emergencyInfoAdapter);
 
         Bundle bundle = getIntent().getExtras();
@@ -323,7 +134,7 @@ public class EmergencyInfoActivity extends AppCompatActivity {
             respondButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    new AlertDialog.Builder(EmergencyInfoActivity.this)
+                    new AlertDialog.Builder(ActivityEmergencyInfo.this)
                             .setIcon(android.R.drawable.ic_dialog_alert)
                             .setTitle("Respond to Emergency:")
                             .setMessage("Are you able to respond to this emergency?")
@@ -385,8 +196,8 @@ public class EmergencyInfoActivity extends AppCompatActivity {
                                                     @Override
                                                     public void onClick(View view) {
 
-                                                        AlertDialog.Builder alert = new AlertDialog.Builder(EmergencyInfoActivity.this);
-                                                        final EditText edittext = new EditText(EmergencyInfoActivity.this);
+                                                        AlertDialog.Builder alert = new AlertDialog.Builder(ActivityEmergencyInfo.this);
+                                                        final EditText edittext = new EditText(ActivityEmergencyInfo.this);
                                                         final ViewGroup.LayoutParams lparams = new ViewGroup.LayoutParams(50, 30);
                                                         SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
                                                         final String efar_id = sharedPreferences.getString("id", "");
@@ -487,8 +298,8 @@ public class EmergencyInfoActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
 
-                        AlertDialog.Builder alert = new AlertDialog.Builder(EmergencyInfoActivity.this);
-                        final EditText edittext = new EditText(EmergencyInfoActivity.this);
+                        AlertDialog.Builder alert = new AlertDialog.Builder(ActivityEmergencyInfo.this);
+                        final EditText edittext = new EditText(ActivityEmergencyInfo.this);
                         final ViewGroup.LayoutParams lparams = new ViewGroup.LayoutParams(50, 30);
                         SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
                         final String efar_id = sharedPreferences.getString("id", "");
@@ -690,20 +501,20 @@ public class EmergencyInfoActivity extends AppCompatActivity {
 
     // Goes to patient info tab to send more to EFARs
     private void launchEfarMain() {
-        Intent tolaunchEfarMain = new Intent(this, EFARMainActivityTabbed.class);
+        Intent tolaunchEfarMain = new Intent(this, ActivityEFARMainTabbed.class);
         startActivity(tolaunchEfarMain);
         finish();
     }
 
     // Starts up launchEfarWriteUpScreen screen
     private void launchEfarWriteUpScreen() {
-        Intent toLaunchEfarWriteUPScreen = new Intent(this, EFARInfoActivity.class);
+        Intent toLaunchEfarWriteUPScreen = new Intent(this, ActivityEFARInfo.class);
         startActivity(toLaunchEfarWriteUPScreen);
     }
 
     // Goes to patient info tab to send more to EFARs
     private void launchMessagingScreen() {
-        Intent launchMessagingScreen = new Intent(this, MessagingScreenActivity.class);
+        Intent launchMessagingScreen = new Intent(this, ActivityMessagingScreen.class);
         startActivity(launchMessagingScreen);
     }
 }

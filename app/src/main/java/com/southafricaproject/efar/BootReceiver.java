@@ -18,7 +18,7 @@ public class BootReceiver extends BroadcastReceiver {
 
         if(logged_in) {
             // start tracking efar
-            context.startService(new Intent(context, MyService.class));
+            context.startService(new Intent(context, GPSTrackingService.class));
         }
     }
 

@@ -1,21 +1,16 @@
 package com.southafricaproject.efar;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.content.Intent;
@@ -38,11 +33,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-
-public class loginScreen extends AppCompatActivity {
+public class ActivityLoginScreen extends AppCompatActivity {
 
     FirebaseAuth mAuth;
     EditText user_name;
@@ -58,6 +49,11 @@ public class loginScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_screen);
 
+        //check network connection
+        //check if a forced app update is needed
+        //check if an logged in on another phone
+        CheckFunctions.runAllChecks(ActivityLoginScreen.this, this);
+
         //button to get back to patient screen
         Button backButton = (Button) findViewById(R.id.login_back_button);
 
@@ -66,72 +62,6 @@ public class loginScreen extends AppCompatActivity {
             public void onClick(View view) {
                 launchPatientScreen();
                 finish();
-            }
-        });
-
-        mAuth = FirebaseAuth.getInstance();
-
-        //check connection
-        try {
-            ConnectivityManager cm = (ConnectivityManager) this
-                    .getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-            NetworkInfo mWifi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-
-            if ((networkInfo != null && networkInfo.isConnected()) || mWifi.isConnected()) {
-
-            }else{
-                new AlertDialog.Builder(loginScreen.this)
-                        .setTitle("Connection Error:")
-                        .setMessage("Your device is currently unable connect to our services. " +
-                                "Please check your connection or try again later.")
-                        .show();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            new AlertDialog.Builder(loginScreen.this)
-                    .setTitle("Connection Error:")
-                    .setMessage("Your device is currently unable connect to our services. " +
-                            "Please check your connection or try again later.")
-                    .show();
-        }
-
-        //check if an update is needed
-        FirebaseDatabase.getInstance().getReference().child("version").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                String current_version = snapshot.child("version_number").getValue().toString();
-                if(!current_version.equals(BuildConfig.VERSION_NAME)){
-                    AlertDialog.Builder alert = new AlertDialog.Builder(loginScreen.this)
-                            .setTitle("Update Needed:")
-                            .setMessage("Please updated to the the latest version of our app.").setPositiveButton("Update", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    final String appPackageName = getPackageName(); // getPackageName() from Context or Activity object
-                                    try {
-                                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
-                                    } catch (android.content.ActivityNotFoundException anfe) {
-                                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
-                                    }
-                                    finish();
-                                    startActivity(getIntent());
-                                }
-                            }).setNegativeButton("Exit App", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    finishAndRemoveTask();
-                                }
-                            }).setCancelable(false);
-                    if(!((Activity) loginScreen.this).isFinishing())
-                    {
-                        alert.show();
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
             }
         });
 
@@ -169,8 +99,8 @@ public class loginScreen extends AppCompatActivity {
                         user_id.clearFocus();
                         user_password.clearFocus();
                         if(continue_on){
-                            final String name = user_name.getText().toString();
-                            final String id = user_id.getText().toString();
+                            final String name = user_name.getText().toString().toLowerCase();
+                            final String id = user_id.getText().toString().toLowerCase();
                             // make sure there is some data so app doesn't crash
                             if (name.equals("") || id.equals("")) {
                                 Log.wtf("Login", "No data input. Cannot attempt login");
@@ -183,9 +113,9 @@ public class loginScreen extends AppCompatActivity {
                             }
 
                         }else{
-                            final String name = user_name.getText().toString();
-                            final String id = user_id.getText().toString();
-                            final String password = user_password.getText().toString();
+                            final String name = user_name.getText().toString().toLowerCase();
+                            final String id = user_id.getText().toString().toLowerCase();
+                            final String password = user_password.getText().toString().toLowerCase();
                             submitButton.setEnabled(false);
                             checkpassword(password, id, name);
                         }
@@ -211,14 +141,14 @@ public class loginScreen extends AppCompatActivity {
     // Starts up launchEfarScreen screen
     private void launchEfarScreen() {
 
-        Intent toEfarScreen = new Intent(this, EFARMainActivityTabbed.class);
+        Intent toEfarScreen = new Intent(this, ActivityEFARMainTabbed.class);
         finish();
         startActivity(toEfarScreen);
     }
 
     // Starts up launchEfarScreen screen
     private void launchPatientScreen() {
-        Intent toPatientScreen = new Intent(this, PatientMainActivity.class);
+        Intent toPatientScreen = new Intent(this, ActivityPatientMain.class);
         startActivity(toPatientScreen);
         finish();
     }
@@ -237,7 +167,7 @@ public class loginScreen extends AppCompatActivity {
            public void onDataChange (DataSnapshot snapshot){
                if (snapshot.hasChild(id)) {
                    // check if name matches id in database
-                   String check_name = snapshot.child(id + "/name").getValue().toString();
+                   String check_name = snapshot.child(id + "/name").getValue().toString().toLowerCase();
 
                    if (check_name.equals(name)) {
                         if(snapshot.hasChild(id + "/password")){
@@ -285,7 +215,7 @@ public class loginScreen extends AppCompatActivity {
 
                 if (check_password.equals(password)) {
                     errorText.setText("");
-                    new AlertDialog.Builder(loginScreen.this)
+                    new AlertDialog.Builder(ActivityLoginScreen.this)
                             .setIcon(android.R.drawable.ic_dialog_alert)
                             .setTitle("Non-Disclosure Agreement")
                             .setMessage("I, " + name +  ", understand that the Provincial Government of the Western Cape: Emergency Medical Services provides services to patients that are private and confidential and that I am a crucial step in respecting the privacy rights of Emergency Medical Services’ patients. I understand that it is necessary, in the rendering of Emergency Care, that patients provide personal information and that such information may exist in a variety of forms such as electronic, oral, written or photographic and that all such information is strictly confidential and protected from improper use and disclosure by national law and internal policies.\n" +
@@ -301,7 +231,7 @@ public class loginScreen extends AppCompatActivity {
                             .setPositiveButton("Accept", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    new AlertDialog.Builder(loginScreen.this)
+                                    new AlertDialog.Builder(ActivityLoginScreen.this)
                                             .setIcon(android.R.drawable.ic_dialog_alert)
                                             .setTitle("Patient Information Protection Agreement")
                                             .setMessage("I, " + name +  ", by tapping accept, pledge to adhere to the before accepted confidentiality agreement, noting specifically that while using the communication features on this app I will not send any unique patient identification information such as name, name of relations or any person's national identification number. Furthermore any information I pass through this app will be the minimum amount necessary to provide emergency care, only discussing locations and health information that is strictly necessary for adequate care. \n" +
@@ -310,7 +240,7 @@ public class loginScreen extends AppCompatActivity {
                                             .setPositiveButton("Accept", new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
-                                                    new AlertDialog.Builder(loginScreen.this)
+                                                    new AlertDialog.Builder(ActivityLoginScreen.this)
                                                             .setIcon(android.R.drawable.ic_dialog_alert)
                                                             .setTitle("Waiver of Liability")
                                                             .setMessage("I, " + name + ", will be participating in the Emergency First Aid Responder (“EFAR”) programme. Being at least eighteen years of age, I do hereby agree to this waiver and release. \n\n" +
@@ -347,7 +277,7 @@ public class loginScreen extends AppCompatActivity {
 
                                                                     //if all matches then go onto the efar screen
                                                                     mAuth.signInAnonymously()
-                                                                            .addOnCompleteListener(loginScreen.this, new OnCompleteListener<AuthResult>() {
+                                                                            .addOnCompleteListener(ActivityLoginScreen.this, new OnCompleteListener<AuthResult>() {
                                                                                 @Override
                                                                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                                                                     if (task.isSuccessful()) {
@@ -359,7 +289,7 @@ public class loginScreen extends AppCompatActivity {
                                                                                         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
                                                                                         FirebaseDatabase database = FirebaseDatabase.getInstance();
                                                                                         DatabaseReference userRef = database.getReference("users");
-                                                                                        GPSTracker gps = new GPSTracker(loginScreen.this);
+                                                                                        GPSTracker gps = new GPSTracker(ActivityLoginScreen.this);
                                                                                         double my_lat = gps.getLatitude(); // latitude
                                                                                         double my_long = gps.getLongitude(); // longitude
                                                                                         userRef.child(id + "/name").setValue(name);
@@ -372,7 +302,7 @@ public class loginScreen extends AppCompatActivity {
                                                                                     } else {
                                                                                         // If sign in fails, display a message to the user.
                                                                                         Log.w("LOGIN", "signInAnonymously:failure", task.getException());
-                                                                                        Toast.makeText(loginScreen.this, "Authentication failed.",
+                                                                                        Toast.makeText(ActivityLoginScreen.this, "Authentication failed.",
                                                                                                 Toast.LENGTH_SHORT).show();
                                                                                         errorText.setText("Authentication failed.");
                                                                                     }
@@ -410,17 +340,17 @@ public class loginScreen extends AppCompatActivity {
     private void setPassword(final String id){
         final TextView errorText = (TextView) findViewById(R.id.errorLoginText);
 
-        LinearLayout layout = new LinearLayout(loginScreen.this);
+        LinearLayout layout = new LinearLayout(ActivityLoginScreen.this);
         layout.setOrientation(LinearLayout.VERTICAL);
 
-        AlertDialog.Builder alert = new AlertDialog.Builder(loginScreen.this);
-        final EditText edittext = new EditText(loginScreen.this);
-        final EditText edittext2 = new EditText(loginScreen.this);
+        AlertDialog.Builder alert = new AlertDialog.Builder(ActivityLoginScreen.this);
+        final EditText edittext = new EditText(ActivityLoginScreen.this);
+        final EditText edittext2 = new EditText(ActivityLoginScreen.this);
         SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
         final String efar_id = sharedPreferences.getString("id", "");
         edittext.setHint("Password");
         edittext2.setHint("Re-enter Password");
-        alert.setMessage("This is the first time you had logged on. Please choose a secure password.");
+        alert.setMessage("This is the first time you had logged on. Please choose a secure password of 6 or more characters.");
         alert.setTitle("Set Password");
         alert.setCancelable(false);
         layout.addView(edittext);

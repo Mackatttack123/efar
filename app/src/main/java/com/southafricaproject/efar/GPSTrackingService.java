@@ -3,31 +3,17 @@ package com.southafricaproject.efar;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.*;
-import android.graphics.Color;
 import android.os.*;
-import android.widget.Toast;
-import android.app.IntentService;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
 import android.content.Intent;
-import android.widget.EditText;
-import android.preference.PreferenceManager;
 
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 
-public class MyService extends Service {
+public class GPSTrackingService extends Service {
 
     public Context context = this;
     public Handler handler = null;
@@ -46,7 +32,7 @@ public class MyService extends Service {
         runnable = new Runnable() {
             public void run() {
                 Log.wtf("location updater:", "so far so good...");
-                GPSTracker gps = new GPSTracker(MyService.this);
+                GPSTracker gps = new GPSTracker(GPSTrackingService.this);
                 double my_lat = gps.getLatitude(); // latitude
                 double my_long = gps.getLongitude(); // longitude
 

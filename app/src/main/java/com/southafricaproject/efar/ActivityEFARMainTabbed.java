@@ -1,19 +1,11 @@
 package com.southafricaproject.efar;
 
 import android.app.Activity;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.Uri;
-import android.os.Handler;
 import android.support.design.widget.TabLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -22,18 +14,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 
 import android.widget.Button;
-import android.widget.TextView;
 
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -43,11 +29,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 
-import java.util.Random;
-
-import static com.google.android.gms.cast.CastRemoteDisplayLocalService.startService;
-
-public class EFARMainActivityTabbed extends AppCompatActivity {
+public class ActivityEFARMainTabbed extends AppCompatActivity {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -77,9 +59,10 @@ public class EFARMainActivityTabbed extends AppCompatActivity {
             launchPatientMainScreen();
         }
 
-        //clear all notifications when app is opened
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.cancelAll();
+        //check network connection
+        //check if a forced app update is needed
+        //check if an logged in on another phone
+        CheckFunctions.runAllChecks(ActivityEFARMainTabbed.this, this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -95,70 +78,6 @@ public class EFARMainActivityTabbed extends AppCompatActivity {
         tabLayout.setupWithViewPager(mViewPager);
         tabLayout.setSelectedTabIndicatorHeight((int) (4 * getResources().getDisplayMetrics().density));
 
-        //check connection
-        try {
-            ConnectivityManager cm = (ConnectivityManager) this
-                    .getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-            NetworkInfo mWifi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-
-            if ((networkInfo != null && networkInfo.isConnected()) || mWifi.isConnected()) {
-
-            }else{
-                new android.app.AlertDialog.Builder(EFARMainActivityTabbed.this)
-                        .setTitle("Connection Error:")
-                        .setMessage("Your device is currently unable connect to our services. " +
-                                "Please check your connection or try again later.")
-                        .show();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            new android.app.AlertDialog.Builder(EFARMainActivityTabbed.this)
-                    .setTitle("Connection Error:")
-                    .setMessage("Your device is currently unable connect to our services. " +
-                            "Please check your connection or try again later.")
-                    .show();
-        }
-
-        //check if an update is needed
-        FirebaseDatabase.getInstance().getReference().child("version").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                String current_version = snapshot.child("version_number").getValue().toString();
-                if(!current_version.equals(BuildConfig.VERSION_NAME)){
-                    android.app.AlertDialog.Builder alert = new android.app.AlertDialog.Builder(EFARMainActivityTabbed.this)
-                            .setTitle("Update Needed:")
-                            .setMessage("Please update to the the latest version of EFAR.").setPositiveButton("Update", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    final String appPackageName = getPackageName(); // getPackageName() from Context or Activity object
-                                    try {
-                                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
-                                    } catch (android.content.ActivityNotFoundException anfe) {
-                                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
-                                    }
-                                    finish();
-                                    //startActivity(getIntent());
-                                }
-                            }).setNegativeButton("Exit App", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    finishAndRemoveTask();
-                                }
-                            }).setCancelable(false);
-                    if(!((Activity) EFARMainActivityTabbed.this).isFinishing())
-                    {
-                        alert.show();
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
         SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
         String id = sharedPreferences.getString("id", "");
         final String token = FirebaseInstanceId.getInstance().getToken();
@@ -168,7 +87,7 @@ public class EFARMainActivityTabbed extends AppCompatActivity {
             public void onDataChange(DataSnapshot snapshot) {
                 String current_token= snapshot.child("token").getValue().toString();
                 if(!token.equals(current_token)){
-                    android.app.AlertDialog.Builder alert = new android.app.AlertDialog.Builder(EFARMainActivityTabbed.this)
+                    android.app.AlertDialog.Builder alert = new android.app.AlertDialog.Builder(ActivityEFARMainTabbed.this)
                             .setTitle("Oops!")
                             .setMessage("Looks liked you're logged in on another device. You will now be logged out but you can log back onto this device if you'd like.").setPositiveButton("Logout", new DialogInterface.OnClickListener() {
                                 @Override
@@ -183,7 +102,7 @@ public class EFARMainActivityTabbed extends AppCompatActivity {
                                     editor.putString("id", "");
                                     editor.putString("name", "");
                                     editor.putBoolean("logged_in", false);
-                                    stopService(new Intent(EFARMainActivityTabbed.this, MyService.class));
+                                    stopService(new Intent(ActivityEFARMainTabbed.this, GPSTrackingService.class));
                                     editor.apply();
 
                                     //clear the phones token for the database
@@ -198,7 +117,7 @@ public class EFARMainActivityTabbed extends AppCompatActivity {
                                     finish();
                                 }
                             }).setCancelable(false);
-                    if(!((Activity) EFARMainActivityTabbed.this).isFinishing())
+                    if(!((Activity) ActivityEFARMainTabbed.this).isFinishing())
                     {
                         alert.show();
                     }
@@ -212,7 +131,7 @@ public class EFARMainActivityTabbed extends AppCompatActivity {
         });
 
         // start tracking efar
-        startService(new Intent(this, MyService.class));
+        startService(new Intent(this, GPSTrackingService.class));
 
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -226,7 +145,7 @@ public class EFARMainActivityTabbed extends AppCompatActivity {
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new android.app.AlertDialog.Builder(EFARMainActivityTabbed.this)
+                new android.app.AlertDialog.Builder(ActivityEFARMainTabbed.this)
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .setTitle("Logging Out")
                         .setMessage("Are you sure you want to log out?")
@@ -246,7 +165,7 @@ public class EFARMainActivityTabbed extends AppCompatActivity {
                                 editor.putString("id", "");
                                 editor.putString("name", "");
                                 editor.putBoolean("logged_in", false);
-                                stopService(new Intent(EFARMainActivityTabbed.this, MyService.class));
+                                stopService(new Intent(ActivityEFARMainTabbed.this, GPSTrackingService.class));
                                 editor.apply();
 
                                 //clear the phones token for the database
@@ -285,7 +204,7 @@ public class EFARMainActivityTabbed extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean("screen_bypass", false);
         editor.apply();
-        Intent toPatientMainScreen = new Intent(this, PatientMainActivity.class);
+        Intent toPatientMainScreen = new Intent(this, ActivityPatientMain.class);
         startActivity(toPatientMainScreen);
         finish();
     }

@@ -24,7 +24,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".PatientMainActivity"
+            android:name=".ActivityPatientMain"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -33,10 +33,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".loginScreen"
+            android:name=".ActivityLoginScreen"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".PatientInfoActivity"
+            android:name=".ActivityPatientInfo"
             android:screenOrientation="portrait"/>
         <!--
  ATTENTION: This was auto-generated to add Google Play services to your project for
@@ -46,7 +46,7 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version"/>
 
-        <service android:name=".MyFirebaseMessagingService">
+        <service android:name=".EFARFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
@@ -56,28 +56,28 @@
      no need for explicit permissions despite exported="true"
         -->
         <service
-            android:name=".MyFirebaseInstanceIdService"
+            android:name=".EFARFirebaseInstanceIdService"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>
         </service>
-        <service android:name=".MyService"/>
+        <service android:name=".GPSTrackingService"/>
 
         <activity
-            android:name=".EFARInfoActivity"
+            android:name=".ActivityEFARInfo"
             android:screenOrientation="portrait">
         </activity>
         <activity
-            android:name=".MessagingScreenActivity"
+            android:name=".ActivityMessagingScreen"
             android:screenOrientation="portrait">
         </activity>
         <activity
-            android:name=".EmergencyInfoActivity"
+            android:name=".ActivityEmergencyInfo"
             android:screenOrientation="portrait">
         </activity>
         <activity
-            android:name=".EFARMainActivityTabbed"
+            android:name=".ActivityEFARMainTabbed"
             android:label="@string/title_activity_efarmain_tabbed"
             android:theme="@style/AppTheme"
             android:screenOrientation="portrait">

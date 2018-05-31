@@ -1,14 +1,10 @@
 package com.southafricaproject.efar;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -28,23 +24,20 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-public class EFARInfoActivity extends AppCompatActivity {
+public class ActivityEFARInfo extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,131 +45,14 @@ public class EFARInfoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_efarinfo);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
+        //check network connection
+        //check if a forced app update is needed
+        //check if an logged in on another phone
+        CheckFunctions.runAllChecks(ActivityEFARInfo.this, this);
+
         ListView writeUpListView = (ListView) findViewById(R.id.writeUpListView);
         Adapter writeUpAdapter = new WriteUpCustomAdapter();
         writeUpListView.setAdapter((ListAdapter) writeUpAdapter);
-
-        final FirebaseAuth mAuth;
-        mAuth = FirebaseAuth.getInstance();
-
-        //check connection
-        try {
-            ConnectivityManager cm = (ConnectivityManager) this
-                    .getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-            NetworkInfo mWifi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-
-            if ((networkInfo != null && networkInfo.isConnected()) || mWifi.isConnected()) {
-
-            }else{
-                new AlertDialog.Builder(EFARInfoActivity.this)
-                        .setTitle("Connection Error:")
-                        .setMessage("Your device is currently unable connect to our services. " +
-                                "Please check your connection or try again later.")
-                        .show();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            new AlertDialog.Builder(EFARInfoActivity.this)
-                    .setTitle("Connection Error:")
-                    .setMessage("Your device is currently unable connect to our services. " +
-                            "Please check your connection or try again later.")
-                    .show();
-        }
-
-        //check if an update is needed
-        FirebaseDatabase.getInstance().getReference().child("version").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                String current_version = snapshot.child("version_number").getValue().toString();
-                if(!current_version.equals(BuildConfig.VERSION_NAME)){
-                    AlertDialog.Builder alert = new AlertDialog.Builder(EFARInfoActivity.this)
-                            .setTitle("Update Needed:")
-                            .setMessage("Please update to the the latest version of EFAR.").setPositiveButton("Update", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    final String appPackageName = getPackageName(); // getPackageName() from Context or Activity object
-                                    try {
-                                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
-                                    } catch (android.content.ActivityNotFoundException anfe) {
-                                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
-                                    }
-                                    finish();
-                                    startActivity(getIntent());
-                                }
-                            }).setNegativeButton("Exit App", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    finishAndRemoveTask();
-                                }
-                            }).setCancelable(false);
-                    if(!((Activity) EFARInfoActivity.this).isFinishing())
-                    {
-                        alert.show();
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        final SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
-        String id = sharedPreferences.getString("id", "");
-        boolean efar_logged_in = sharedPreferences.getBoolean("logged_in", false);
-        final String token = FirebaseInstanceId.getInstance().getToken();
-        //check if an logged in on another phone
-        if(efar_logged_in){
-            FirebaseDatabase.getInstance().getReference().child("users/" + id).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot snapshot) {
-                    String current_token= snapshot.child("token").getValue().toString();
-                    if(!token.equals(current_token)){
-                        android.app.AlertDialog.Builder alert = new android.app.AlertDialog.Builder(EFARInfoActivity.this)
-                                .setTitle("Oops!")
-                                .setMessage("Looks liked you're logged in on another device. You will now be logged out but you can log back onto this device if you'd like.").setPositiveButton("Logout", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        //to get rid of stored password and username
-                                        SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
-                                        SharedPreferences.Editor editor = sharedPreferences.edit();
-
-                                        // say that user has logged off
-                                        FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                        DatabaseReference userRef = database.getReference("users");
-                                        editor.putString("id", "");
-                                        editor.putString("name", "");
-                                        editor.putBoolean("logged_in", false);
-                                        stopService(new Intent(EFARInfoActivity.this, MyService.class));
-                                        editor.apply();
-
-                                        //clear the phones token for the database
-                                        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-                                        DatabaseReference token_ref = database.getReference("tokens/" + refreshedToken);
-                                        token_ref.removeValue();
-
-                                        if(mAuth.getCurrentUser() != null){
-                                            mAuth.getCurrentUser().delete();
-                                        }
-                                        finish();
-                                        startActivity(getIntent());
-                                    }
-                                }).setCancelable(false);
-                        if(!((Activity) EFARInfoActivity.this).isFinishing())
-                        {
-                            alert.show();
-                        }
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-        }
 
         Button backButton = (Button) findViewById(R.id.back_button);
 
@@ -316,7 +192,7 @@ public class EFARInfoActivity extends AppCompatActivity {
             submitReportButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    new AlertDialog.Builder(EFARInfoActivity.this)
+                    new AlertDialog.Builder(ActivityEFARInfo.this)
                             .setIcon(android.R.drawable.ic_dialog_alert)
                             .setTitle("Submit Report")
                             .setMessage("Are you sure you want to submit this report? Sending all the information to database may take a few minutes.")
@@ -543,7 +419,7 @@ public class EFARInfoActivity extends AppCompatActivity {
     }
 
     private void launchEfarMainScreen() {
-        Intent toEfarMainScreen = new Intent(this, EFARMainActivityTabbed.class);
+        Intent toEfarMainScreen = new Intent(this, ActivityEFARMainTabbed.class);
         startActivity(toEfarMainScreen);
         finish();
     }

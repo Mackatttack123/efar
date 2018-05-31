@@ -6,7 +6,7 @@
     android:background="#d3dee7"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.southafricaproject.efar.EmergencyInfoActivity">
+    tools:context="com.southafricaproject.efar.ActivityEmergencyInfo">
 
     <ImageView
         android:id="@+id/imageView11"

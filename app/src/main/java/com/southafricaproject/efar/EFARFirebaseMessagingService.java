@@ -3,18 +3,10 @@ package com.southafricaproject.efar;
 import android.app.Notification;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.media.AudioManager;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Vibrator;
-import android.speech.tts.TextToSpeech;
 import android.support.annotation.RequiresApi;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.WakefulBroadcastReceiver;
 import android.util.Log;
 
 import android.app.PendingIntent;
@@ -25,9 +17,7 @@ import android.app.NotificationManager;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-import java.util.Locale;
-
-public class MyFirebaseMessagingService extends FirebaseMessagingService {
+public class EFARFirebaseMessagingService extends FirebaseMessagingService {
     private static final String TAG = "FCM Service";
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -46,7 +36,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             // message, here is where that should be initiated.
             Log.d(TAG, "From: " + remoteMessage.getFrom());
             Log.d(TAG, "Notification Message Body: " + remoteMessage.getData().get("body"));
-            Intent intent = new Intent(this, EFARMainActivityTabbed.class);
+            Intent intent = new Intent(this, ActivityEFARMainTabbed.class);
             //intent.putExtra("NotiClick",true);
             //intent.putExtra("NotiMesssage",remoteMessage.getData().get("body").replace("Patient Message: ", ""));
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -102,7 +92,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             // message, here is where that should be initiated.
             Log.d(TAG, "From: " + remoteMessage.getFrom());
             Log.d(TAG, "Notification Message Body: " + remoteMessage.getData().get("body"));
-            Intent intent = new Intent(this, EFARMainActivityTabbed.class);
+            Intent intent = new Intent(this, ActivityEFARMainTabbed.class);
             //intent.putExtra("NotiClick",true);
             //intent.putExtra("NotiMesssage",remoteMessage.getData().get("body").replace("Patient Message: ", ""));
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

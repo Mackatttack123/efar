@@ -9,7 +9,7 @@ import com.google.firebase.messaging.RemoteMessage;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 
-public class MyFirebaseInstanceIdService extends FirebaseInstanceIdService {
+public class EFARFirebaseInstanceIdService extends FirebaseInstanceIdService {
     private static final String TAG = "FirebaseIDService";
 
     @Override
