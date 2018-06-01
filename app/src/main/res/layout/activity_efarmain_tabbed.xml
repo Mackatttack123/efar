@@ -56,7 +56,7 @@
             app:layout_constraintTop_toTopOf="parent"/>
 
         <Button
-            android:id="@+id/back_button"
+            android:id="@+id/to_call_efar_button"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -88,7 +88,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:backgroundTint="#ffffff"
-            app:tabIndicatorColor="@color/navy"/>
+            app:tabIndicatorColor="@color/EFAR_blue"/>
 
     </android.support.design.widget.AppBarLayout>
 

@@ -43,7 +43,7 @@ public class ActivityPatientInfo extends AppCompatActivity {
         //check network connection
         //check if a forced app update is needed
         //check if an logged in on another phone
-        CheckFunctions.runAllChecks(ActivityPatientInfo.this, this);
+        CheckFunctions.runAllAppChecks(ActivityPatientInfo.this, this);
 
         GPSTracker gps = new GPSTracker(this);
         // check if GPS is avalible
@@ -123,14 +123,6 @@ public class ActivityPatientInfo extends AppCompatActivity {
             data.put("emergency_made_by_efar_token",token);
         }
         emergency_ref.child(emergency_key.getKey()).setValue(data);
-
-        /*
-        emergency_key.child("phone_number").setValue(phone_number);
-        emergency_key.child("other_info").setValue(other_info);
-
-        emergency_key.child("latitude").setValue(gps.getLatitude()); // latitude
-        emergency_key.child("longitude").setValue(gps.getLongitude()); // longitude
-        */
 
         // put emergency key into the users phone to store for later if needed
         SharedPreferences.Editor editor = sharedPreferences.edit();

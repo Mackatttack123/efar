@@ -1,5 +1,6 @@
 package com.southafricaproject.efar;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -48,14 +49,14 @@ public class ActivityEFARInfo extends AppCompatActivity {
         //check network connection
         //check if a forced app update is needed
         //check if an logged in on another phone
-        CheckFunctions.runAllChecks(ActivityEFARInfo.this, this);
+        CheckFunctions.runAllAppChecks(ActivityEFARInfo.this, this);
 
-        ListView writeUpListView = (ListView) findViewById(R.id.writeUpListView);
-        Adapter writeUpAdapter = new WriteUpCustomAdapter();
-        writeUpListView.setAdapter((ListAdapter) writeUpAdapter);
+        //check if the emergency is still in the database and kick efar out of activity and back to main if it is not
+        Bundle bundle = getIntent().getExtras();
+        final String key = bundle.getString("key");
+        CheckFunctions.checkIfEmergencyInDatabase(ActivityEFARInfo.this, this, key);
 
         Button backButton = (Button) findViewById(R.id.back_button);
-
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -63,34 +64,9 @@ public class ActivityEFARInfo extends AppCompatActivity {
             }
         });
 
-        //check if the emergency is still in the database
-        FirebaseDatabase.getInstance().getReference().child("emergencies/").addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-                launchEfarMainScreen();
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
+        ListView writeUpListView = (ListView) findViewById(R.id.writeUpListView);
+        Adapter writeUpAdapter = new WriteUpCustomAdapter();
+        writeUpListView.setAdapter((ListAdapter) writeUpAdapter);
 
     }
 
@@ -109,7 +85,7 @@ public class ActivityEFARInfo extends AppCompatActivity {
 
         @Override
         public Object getItem(int position) {
-            return "test String";
+            return "";
         }
 
         @Override //renders out each row
@@ -117,7 +93,9 @@ public class ActivityEFARInfo extends AppCompatActivity {
             LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             final View cell = inflater.inflate(R.layout.writeup_full, parent, false);
 
-            //TODO: make it so you can either select a radio button or type other.
+            //*****************************************************************************************************************
+            //************ settting up radio groups with other categories so that users can only choose one *******************
+            //*****************************************************************************************************************
 
             //for Violent Injury section in Box 3
             final EditText weaponTextView = (EditText) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.editTextWeponOther);
@@ -153,7 +131,7 @@ public class ActivityEFARInfo extends AppCompatActivity {
                 }
             });
 
-            //for motor vehicle acident section in Box 3
+            //for motor vehicle accident section in Box 3
             final EditText motorVehicleTextView = (EditText) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.editTextMotorVehicleOther);
             final RadioGroup motorVehicleRadioGroup = (RadioGroup) cell.findViewById(R.id.injury_details_writeup).findViewById(R.id.radioGroupMotorVehicle);
             motorVehicleTextView.addTextChangedListener(new TextWatcher() {
@@ -187,6 +165,10 @@ public class ActivityEFARInfo extends AppCompatActivity {
                 }
             });
 
+            //*****************************************************************************************************************
+            //************ end set up of radio groups with other categories so that users can only choose one *****************
+            //*****************************************************************************************************************
+
             Button submitReportButton = (Button) cell.findViewById(R.id.comments_writeup).findViewById(R.id.submit_report_button);
 
             submitReportButton.setOnClickListener(new View.OnClickListener() {
@@ -195,7 +177,7 @@ public class ActivityEFARInfo extends AppCompatActivity {
                     new AlertDialog.Builder(ActivityEFARInfo.this)
                             .setIcon(android.R.drawable.ic_dialog_alert)
                             .setTitle("Submit Report")
-                            .setMessage("Are you sure you want to submit this report? Sending all the information to database may take a few minutes.")
+                            .setMessage("Are you sure you want to submit this report?")
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {

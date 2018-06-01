@@ -92,7 +92,6 @@ public class EFARMainTabYou extends Fragment{
 
                 TextView activeStateText =  (TextView) cell.findViewById(R.id.stateTextView);
                 if(emergenecyArray.get(position).getRespondingEfar().contains(id)){
-                    //cell.setBackgroundColor(Color.argb(150, 0, 255, 0));
                     activeStateText.setText("Responded to by you");
                     activeStateText.setTextColor(Color.rgb(2, 55, 98));
 
@@ -115,21 +114,6 @@ public class EFARMainTabYou extends Fragment{
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         distance_progress.setProgressTintList(ColorStateList.valueOf(Color.rgb(2, 55, 98)));
                     }
-                    /*
-                    if(100 - Total_progress >= 75){
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            distance_progress.setProgressTintList(ColorStateList.valueOf(Color.GREEN));
-                        }
-                    }else if(100 - Total_progress >= 50){
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            distance_progress.setProgressTintList(ColorStateList.valueOf(Color.YELLOW));
-                        }
-                    }else{
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            distance_progress.setProgressTintList(ColorStateList.valueOf(Color.RED));
-                        }
-                    }
-                    */
                 }
 
                 if(position % 2 == 0){

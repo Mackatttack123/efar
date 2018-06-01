@@ -16,6 +16,7 @@ import android.os.Handler;
 
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +34,7 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -58,6 +60,7 @@ public class EFARMainTabAll extends Fragment{
     public ListView listView;
     private double my_lat;
     private double my_long;
+    int responding_to_counter = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -90,7 +93,6 @@ public class EFARMainTabAll extends Fragment{
                 TextView distanceText =  (TextView) cell.findViewById(R.id.distanceTextView);
                 distanceText.setText(distanceArray.get(position).toString() + " away");
 
-
                 GPSTracker gps = new GPSTracker(getActivity());
                 my_lat = gps.getLatitude(); // latitude
                 my_long = gps.getLongitude(); // longitude
@@ -108,22 +110,6 @@ public class EFARMainTabAll extends Fragment{
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         distance_progress.setProgressTintList(ColorStateList.valueOf(Color.rgb(2, 55, 98)));
                     }
-
-                    /*
-                    if(100 - Total_progress >= 75){
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            distance_progress.setProgressTintList(ColorStateList.valueOf(Color.rgb(81, 150, 80)));
-                        }
-                    }else if(100 - Total_progress >= 50){
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            distance_progress.setProgressTintList(ColorStateList.valueOf(Color.rgb(225, 200, 0)));
-                        }
-                    }else{
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            distance_progress.setProgressTintList(ColorStateList.valueOf(Color.rgb(200, 0, 0)));
-                        }
-                    }
-                    */
                 }
 
                 TextView activeStateText =  (TextView) cell.findViewById(R.id.stateTextView);
@@ -135,6 +121,7 @@ public class EFARMainTabAll extends Fragment{
                     //cell.setBackgroundColor(Color.argb(150, 0, 255, 0));
                     activeStateText.setText("Responded to by you");
                     activeStateText.setTextColor(Color.rgb(2, 55, 98));
+                    responding_to_counter += 1;
                 }else{
                     String[] responders = emergenecyArray.get(position).getRespondingEfar().split(",");
                     int num = responders.length;
@@ -153,9 +140,17 @@ public class EFARMainTabAll extends Fragment{
         };
 
         listView = (ListView) rootView.findViewById(R.id.patient_list_view);
+        final SwipeRefreshLayout pullToRefresh = (SwipeRefreshLayout) rootView.findViewById(R.id.pullToRefresh);
         listView.setAdapter(adapter);
-        listView.setClickable(true);
+        pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 
+            @Override
+            public void onRefresh() {
+                refreshContent(pullToRefresh);
+            }
+        });
+
+        listView.setClickable(true);
         listView.setBackgroundColor(Color.TRANSPARENT);
 
         GPSTracker gps = new GPSTracker(getActivity());
@@ -272,6 +267,25 @@ public class EFARMainTabAll extends Fragment{
             }
         });
 
+        FirebaseDatabase.getInstance().getReference().child("emergencies").addListenerForSingleValueEvent(new ValueEventListener() {
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                final Handler handler = new Handler();
+                handler.postDelayed( new Runnable() {
+
+                    @Override
+                    public void run() {
+                        updateDistances();
+                        adapter.notifyDataSetChanged();
+                        alertText.setText("Emergencies within 10km of you will appear here");
+                        handler.postDelayed( this, 30 * 1000 );
+                    }
+                }, 0);
+            }
+            public void onCancelled(DatabaseError databaseError) {
+                alertText.setText("Error: Could not load data");
+            }
+        });
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
@@ -304,48 +318,6 @@ public class EFARMainTabAll extends Fragment{
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client2 = new GoogleApiClient.Builder(getActivity()).addApi(AppIndex.API).build();
-
-        final Handler handler = new Handler();
-        handler.postDelayed( new Runnable() {
-
-            @Override
-            public void run() {
-                updateDistances();
-                adapter.notifyDataSetChanged();
-                alertText.setText("Emergencies within 10km of you will appear here");
-                handler.postDelayed( this, 30 * 1000 );
-            }
-        }, 30 * 1000 );
-
-        /*if (savedInstanceState == null) {
-            Bundle extras = getActivity().getIntent().getExtras();
-            if(extras == null)
-            {
-                //Cry about not being clicked on
-            }
-            //notification sent them here
-            else if (extras.getBoolean("NotiClick"))
-            {
-                String notificationMessage = extras.getString("NotiMesssage");
-                Log.wtf("NOTIFICATION MESSAGE", notificationMessage);
-                for(int i = 0; i < emergenecyArray.size(); i++){
-                    Emergency emergency = emergenecyArray.get(i);
-                    Log.wtf("E MESSAGE", emergency.getInfo().toString());
-                    if(notificationMessage.equals(emergency.getInfo().toString())){
-                        launchEmergencyInfoScreen(emergency.getCreationDate(),
-                                emergency.getLatitude().toString(),
-                                emergency.getLongitude().toString(),
-                                emergency.getAddress(),
-                                emergency.getPhone(),
-                                emergency.getInfo(),
-                                emergency.getRespondingEfar(),
-                                emergency.getKey(),
-                                emergency.getState());
-                    }
-                }
-            }
-
-        }*/
 
         return rootView;
     }
@@ -400,7 +372,6 @@ public class EFARMainTabAll extends Fragment{
             e.printStackTrace();
             return "N/A";
         }
-
     }
 
     private void updateDistances(){
@@ -411,5 +382,26 @@ public class EFARMainTabAll extends Fragment{
         for (int i = 0; i < emergenecyArray.size(); i++) {
             distanceArray.add(String.format("%.2f", distance(emergenecyArray.get(i).getLatitude(), emergenecyArray.get(i).getLongitude(), my_lat, my_long)) + " km");
         }
+        if(getActivity() != null){
+            SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyData", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            if(responding_to_counter > 0){
+                editor.putBoolean("responding_to_other", true);
+            }else{
+                editor.putBoolean("responding_to_other", false);
+            }
+            editor.commit();
+        }
+    }
+
+    private void refreshContent(final SwipeRefreshLayout pullToRefresh){
+        new Handler().postDelayed(new Runnable() {
+            @Override public void run() {
+                updateDistances();
+                adapter.notifyDataSetChanged();
+                pullToRefresh.setRefreshing(false);
+            }
+        }, 1000);
+
     }
 }

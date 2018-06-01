@@ -82,7 +82,7 @@
             android:theme="@style/AppTheme"
             android:screenOrientation="portrait">
         </activity>
-        <receiver android:name=".BootReceiver">
+        <receiver android:name=".PhoneRebootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <category android:name="android.intent.category.HOME" />

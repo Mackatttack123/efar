@@ -10,7 +10,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.content.Intent;
@@ -52,7 +55,7 @@ public class ActivityLoginScreen extends AppCompatActivity {
         //check network connection
         //check if a forced app update is needed
         //check if an logged in on another phone
-        CheckFunctions.runAllChecks(ActivityLoginScreen.this, this);
+        CheckFunctions.runAllAppChecks(ActivityLoginScreen.this, this);
 
         //button to get back to patient screen
         Button backButton = (Button) findViewById(R.id.login_back_button);
@@ -142,7 +145,7 @@ public class ActivityLoginScreen extends AppCompatActivity {
     private void checkUser(String user_name, String user_id) {
         final TextView errorText = (TextView) findViewById(R.id.errorLoginText);
 
-        final String name = user_name;
+        final String name = user_name.replace(" ", "");
         final String id = user_id;
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference userRef = database.getReference("users");
@@ -152,7 +155,7 @@ public class ActivityLoginScreen extends AppCompatActivity {
            public void onDataChange (DataSnapshot snapshot){
                if (snapshot.hasChild(id)) {
                    // check if name matches id in database
-                   String check_name = snapshot.child(id + "/name").getValue().toString().toLowerCase();
+                   String check_name = snapshot.child(id + "/name").getValue().toString().toLowerCase().replace(" ", "");
 
                    if (check_name.equals(name)) {
                         if(snapshot.hasChild(id + "/password")){
@@ -221,39 +224,36 @@ public class ActivityLoginScreen extends AppCompatActivity {
     private void setPassword(final String id){
         final TextView errorText = (TextView) findViewById(R.id.errorLoginText);
 
-        LinearLayout layout = new LinearLayout(ActivityLoginScreen.this);
-        layout.setOrientation(LinearLayout.VERTICAL);
-
         AlertDialog.Builder alert = new AlertDialog.Builder(ActivityLoginScreen.this);
-        final EditText edittext = new EditText(ActivityLoginScreen.this);
-        final EditText edittext2 = new EditText(ActivityLoginScreen.this);
-        SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
-        final String efar_id = sharedPreferences.getString("id", "");
-        edittext.setHint("Password");
-        edittext2.setHint("Re-enter Password");
+
+        LayoutInflater inflater = this.getLayoutInflater();
+        View passwordView = inflater.inflate(R.layout.password_maker, null);
+
+        final EditText passwordEditText = (EditText) passwordView.findViewById(R.id.passwordEditText);
+        final EditText rePasswrodEditText = (EditText) passwordView.findViewById(R.id.rePasswrodEditText);
+
         alert.setMessage("This is the first time you had logged on. Please choose a secure password of 6 or more characters.");
         alert.setTitle("Set Password");
+        alert.setView(passwordView);
         alert.setCancelable(false);
-        layout.addView(edittext);
-        layout.addView(edittext2);
-        alert.setView(layout);
 
         alert.setPositiveButton("Set Password", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                String set_password = edittext.getText().toString();
-                String re_enter_set_password = edittext2.getText().toString();
+                String set_password = passwordEditText.getText().toString();
+                String re_enter_set_password = rePasswrodEditText.getText().toString();
                 if(set_password.equals(re_enter_set_password) && set_password.length() >= 6){
                     FirebaseDatabase database = FirebaseDatabase.getInstance();
                     DatabaseReference userRef = database.getReference("users");
                     userRef.child(id + "/password").setValue(set_password);
-                    errorText.setText("Password set. Please enter it and log in.");
+                    errorText.setText("Password set. Please tap login.");
                     errorText.setTextColor(Color.BLACK);
                     user_password.setVisibility(View.VISIBLE);
+                    user_password.setText(set_password);
                     showPasswordCheckBox.setVisibility(View.VISIBLE);
                     submitButton.setEnabled(true);
                     continue_on = false;
                     submitButton.setText("LOGIN");
-                }else if(set_password.length() < 6){
+                }else if(set_password.length() < 6 && re_enter_set_password.length() < 6){
                     submitButton.setEnabled(true);
                     errorText.setText("Password must be at least 6 characters long.");
                     errorText.setTextColor(Color.RED);
@@ -267,10 +267,13 @@ public class ActivityLoginScreen extends AppCompatActivity {
 
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-
+                errorText.setText("");
+                submitButton.setEnabled(true);
             }
         });
-        alert.show();
+        AlertDialog dialog = alert.create();
+        dialog.show();
+        dialog.getWindow().setBackgroundDrawableResource(R.color.light_grey);
     }
 
     private void showNonDisclosureAgreement(final String name, final String id){
@@ -367,7 +370,6 @@ public class ActivityLoginScreen extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("LOGIN", "signInAnonymously:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
                             errorText.setText("");
                             // update users info
                             String refreshedToken = FirebaseInstanceId.getInstance().getToken();

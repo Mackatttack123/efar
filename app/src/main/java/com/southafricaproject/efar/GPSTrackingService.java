@@ -99,7 +99,6 @@ public class GPSTrackingService extends Service {
                 AlarmManager.ELAPSED_REALTIME,
                 SystemClock.elapsedRealtime() + 1000,
                 restartPendingIntent);
-
         super.onTaskRemoved(rootIntent);
     }
 }

@@ -54,6 +54,7 @@ public class ActivityPatientMain extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_patient_main);
 
+        //check location permissions for user and ask for permission if not granted
         if (ContextCompat.checkSelfPermission( this, android.Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED ) {
             ActivityCompat.requestPermissions( this, new String[] {  Manifest.permission.ACCESS_COARSE_LOCATION  }, 1 );
         }
@@ -61,55 +62,7 @@ public class ActivityPatientMain extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         }
 
-        mAuth = FirebaseAuth.getInstance();
-
-        mAuth.signInAnonymously()
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d("LOGIN", "signInAnonymously:success");
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w("LOGIN", "signInAnonymously:failure", task.getException());
-                        }
-                    }
-                });
-
-        //check network connection
-        //check if a forced app update is needed
-        //check if an logged in on another phone
-        CheckFunctions.runAllChecks(ActivityPatientMain.this, this);
-
-        //TODO: show the patient approximatly how far away the efar is via the progress bar
-        final ProgressBar distance_progress = (ProgressBar) findViewById(R.id.patient_progress_bar);
-        //distance_progress.setProgressTintList(ColorStateList.valueOf(Color.BLUE));
-        distance_progress.setVisibility(View.INVISIBLE);
-        distance_progress.setProgress(0);
-
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-
-        // to auto login if possible
-        //to skip past the patient screen if efar opens the app and is loggd in
-        final SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
-        String id = sharedPreferences.getString("id", "");
-        boolean efar_logged_in = sharedPreferences.getBoolean("logged_in", false);
-        final String token = FirebaseInstanceId.getInstance().getToken();
-        boolean screen_bypass = sharedPreferences.getBoolean("screen_bypass", true);
-        final SharedPreferences.Editor editor = sharedPreferences.edit();
-        if(efar_logged_in && screen_bypass && currentUser != null){
-            editor.putBoolean("screen_bypass", false);
-            editor.apply();
-            launchEfarScreen();
-        }else {
-            editor.putBoolean("screen_bypass", true);
-            editor.apply();
-        }
-
-        final Button helpMeButton = (Button)findViewById(R.id.help_me_button);
-
-        // check if GPS is avalible
+        // check if GPS is available
         GPSTracker gps = new GPSTracker(this);
         if(!gps.canGetLocation()){
             gps.showSettingsAlert();
@@ -117,6 +70,49 @@ public class ActivityPatientMain extends AppCompatActivity {
             Double lat =  gps.getLatitude();
             Log.wtf("Patient Main", lat.toString());
         }
+
+        //check network connection
+        //check if a forced app update is needed
+        //check if an logged in on another phone
+        CheckFunctions.runAllAppChecks(ActivityPatientMain.this, this);
+
+        //sign in anonymously if they are not an efar or bypass to efar home if they are
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        final SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+        boolean efar_logged_in = sharedPreferences.getBoolean("logged_in", false);
+        boolean screen_bypass = sharedPreferences.getBoolean("screen_bypass", true);
+        final SharedPreferences.Editor editor = sharedPreferences.edit();
+        if(currentUser == null){
+            mAuth.signInAnonymously()
+                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                // Sign in success, update UI with the signed-in user's information
+                                Log.d("LOGIN", "signInAnonymously:success");
+                            } else {
+                                // If sign in fails, display a message to the user.
+                                Log.w("LOGIN", "signInAnonymously:failure", task.getException());
+                            }
+                        }
+
+                    });
+        }else if(efar_logged_in && screen_bypass && currentUser != null){
+            editor.putBoolean("screen_bypass", false);
+            editor.apply();
+            launchEfarScreen();
+        }else{
+            editor.putBoolean("screen_bypass", true);
+            editor.apply();
+        }
+
+        final Button helpMeButton = (Button)findViewById(R.id.help_me_button);
+
+        //TODO: show the patient approximatly how far away the efar is via the progress bar
+        final ProgressBar distance_progress = (ProgressBar) findViewById(R.id.patient_progress_bar);
+        distance_progress.setVisibility(View.INVISIBLE);
+        distance_progress.setProgress(0);
 
         FirebaseDatabase.getInstance().getReference().child("emergencies").addChildEventListener(new ChildEventListener() {
             @Override
@@ -402,50 +398,12 @@ public class ActivityPatientMain extends AppCompatActivity {
             toLoginButton.setOnClickListener(
                     new Button.OnClickListener() {
                         public void onClick(View v) {
-
-                            new AlertDialog.Builder(ActivityPatientMain.this)
-                                    .setIcon(android.R.drawable.ic_dialog_alert)
-                                    .setTitle("Logging Out")
-                                    .setMessage("Are you sure you want to log out?")
-                                    .setPositiveButton("Yes", new DialogInterface.OnClickListener()
-                                    {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            //to get rid of stored password and username
-                                            SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
-                                            SharedPreferences.Editor editor = sharedPreferences.edit();
-
-                                            // say that user has logged off
-                                            FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                            DatabaseReference userRef = database.getReference("users");
-                                            userRef.child(sharedPreferences.getString("id", "") + "/logged_in").setValue(false);
-                                            userRef.child(sharedPreferences.getString("id", "") + "/token").setValue("null");
-                                            editor.putString("id", "");
-                                            editor.putString("name", "");
-                                            editor.putBoolean("logged_in", false);
-                                            stopService(new Intent(ActivityPatientMain.this, GPSTrackingService.class));
-                                            editor.commit();
-
-                                            //clear the phones token for the database
-                                            String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-                                            DatabaseReference token_ref = database.getReference("tokens/" + refreshedToken);
-                                            token_ref.removeValue();
-                                            if(mAuth.getCurrentUser() != null){
-                                                mAuth.getCurrentUser().delete();
-                                            }
-                                            finish();
-                                            startActivity(getIntent());
-                                        }
-
-                                    })
-                                    .setNegativeButton("No", null)
-                                    .show();
-
+                            LogoutProcedure.logout(ActivityPatientMain.this, ActivityPatientMain.this);
                         }
                     }
             );
 
-            //add in button to take EFAR back to emergenecy screen
+            //add in button to take EFAR back to emergency screen
             toEmergencyListButton.setVisibility(View.VISIBLE);
             toEmergencyListButton.setOnClickListener(
                     new Button.OnClickListener() {
@@ -504,8 +462,6 @@ public class ActivityPatientMain extends AppCompatActivity {
 
             }
         }, delay);
-
-
     }
 
     // Starts up login screen
@@ -521,62 +477,11 @@ public class ActivityPatientMain extends AppCompatActivity {
         startActivity(toPatientInfoScreen);
     }
 
-    // blinking text animation
-    public void blinkText(){
-        TextView userUpdate = (TextView) findViewById(R.id.user_update );
-
-        Animation anim = new AlphaAnimation(1.0f, 0.3f);
-        anim.setDuration(800); //manage the time of the blink with this parameter
-        anim.setStartOffset(20);
-        anim.setRepeatMode(Animation.REVERSE);
-        anim.setRepeatCount(Animation.INFINITE);
-        userUpdate.startAnimation(anim);
-    }
-
     // Starts up launchEfarScreen screen
     private void launchEfarScreen() {
         Intent toEfarScreen = new Intent(this, ActivityEFARMainTabbed.class);
         startActivity(toEfarScreen);
         finish();
-    }
-
-    // checks to see if  a user exists in the database for auto login
-    private void checkUser(String user_name, String user_id) {
-
-        final String name = user_name;
-        final String id = user_id;
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference userRef = database.getReference("users");
-
-        userRef.addListenerForSingleValueEvent(new
-
-           ValueEventListener() {
-               @Override
-               public void onDataChange (DataSnapshot snapshot){
-                   // Check if id number is in database
-                   if (snapshot.hasChild(id)) {
-
-                       // check if name matches id in database
-                       String check_name = snapshot.child(id + "/name").getValue().toString();
-
-                       if (check_name.equals(name)) {
-                           //if all matches then go onto the efar screen
-                           finish();
-                           launchEfarScreen();
-                       } else {
-                           Log.wtf("AutoLogin", "FAILURE!");
-                       }
-                   } else {
-                       Log.wtf("AutoLogin", "FAILURE!");
-                   }
-               }
-
-               @Override
-               public void onCancelled (DatabaseError firebaseError){
-               }
-           }
-
-        );
     }
 
     public void moveFirebaseRecord(DatabaseReference fromPath, final DatabaseReference toPath) {
@@ -610,36 +515,23 @@ public class ActivityPatientMain extends AppCompatActivity {
         });
     }
 
+    // blinking text animation
+    public void blinkText(){
+        TextView userUpdate = (TextView) findViewById(R.id.user_update );
+
+        Animation anim = new AlphaAnimation(1.0f, 0.3f);
+        anim.setDuration(800); //manage the time of the blink with this parameter
+        anim.setStartOffset(20);
+        anim.setRepeatMode(Animation.REVERSE);
+        anim.setRepeatCount(Animation.INFINITE);
+        userUpdate.startAnimation(anim);
+    }
+
     //disables the werid transition beteen activities
     @Override
     public void onPause() {
         super.onPause();
         overridePendingTransition(0, 0);
-    }
-
-    //distance functions via: http://www.geodatasource.com/developers/java
-    private static double distance(double lat1, double lon1, double lat2, double lon2) {
-        double theta = lon1 - lon2;
-        double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
-        dist = Math.acos(dist);
-        dist = rad2deg(dist);
-        dist = dist * 60 * 1.1515;
-        dist = dist * 1.609344;
-        return (dist);
-    }
-
-    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
-	/*::	This function converts decimal degrees to radians						 :*/
-	/*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
-    private static double deg2rad(double deg) {
-        return (deg * Math.PI / 180.0);
-    }
-
-    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
-	/*::	This function converts radians to decimal degrees						 :*/
-	/*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
-    private static double rad2deg(double rad) {
-        return (rad * 180 / Math.PI);
     }
 
 }

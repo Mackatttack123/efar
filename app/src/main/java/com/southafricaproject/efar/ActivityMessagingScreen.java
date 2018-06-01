@@ -55,10 +55,12 @@ public class ActivityMessagingScreen extends AppCompatActivity {
         //check network connection
         //check if a forced app update is needed
         //check if an logged in on another phone
-        CheckFunctions.runAllChecks(ActivityMessagingScreen.this, this);
+        CheckFunctions.runAllAppChecks(ActivityMessagingScreen.this, this);
 
-        final SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
-        key = sharedPreferences.getString("messaging_key", "");
+        //check if the emergency is still in the database and kick efar out of activity and back to main if it is not
+        Bundle bundle = getIntent().getExtras();
+        final String key = bundle.getString("key");
+        CheckFunctions.checkIfEmergencyInDatabase(ActivityMessagingScreen.this, this, key);
 
         adapter = new ArrayAdapter<SpannableString>(this, R.layout.activity_listview, messageArray){
             @Override
@@ -70,7 +72,6 @@ public class ActivityMessagingScreen extends AppCompatActivity {
                 View itemView = super.getView(position, convertView, parent);
                 if (messageArray.get(position).toString().startsWith(name)){
                     itemView.setBackgroundColor(Color.argb(100, 0, 200, 0));
-                    //itemView.setBackgroundResource(R.drawable.efar_logo_white);
                 }else{
                     itemView.setBackgroundColor(Color.argb(100, 0, 80, 250));
                 }
@@ -154,34 +155,6 @@ public class ActivityMessagingScreen extends AppCompatActivity {
             }
         });
 
-        //check if the emergency is still in the database
-        FirebaseDatabase.getInstance().getReference().child("emergencies/").addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-                launchEfarMain();
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
     }
 
     private void add_message(String name, String message) throws JSONException {
@@ -189,7 +162,6 @@ public class ActivityMessagingScreen extends AppCompatActivity {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference messsage_ref = database.getReference("emergencies/" + key + "/messages");
         DatabaseReference message_key = messsage_ref.push();
-
 
         Map<String, String> data = new HashMap<String, String>();
         data.put("user",name);
@@ -235,12 +207,5 @@ public class ActivityMessagingScreen extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         overridePendingTransition(0, 0);
-    }
-
-    // Goes to patient info tab to send more to EFARs
-    private void launchEfarMain() {
-        Intent tolaunchEfarMain = new Intent(this, ActivityEFARMainTabbed.class);
-        startActivity(tolaunchEfarMain);
-        finish();
     }
 }

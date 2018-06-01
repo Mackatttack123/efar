@@ -14,6 +14,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -62,10 +63,11 @@ public class ActivityEFARMainTabbed extends AppCompatActivity {
         //check network connection
         //check if a forced app update is needed
         //check if an logged in on another phone
-        CheckFunctions.runAllChecks(ActivityEFARMainTabbed.this, this);
+        CheckFunctions.runAllAppChecks(ActivityEFARMainTabbed.this, this);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        //start tracking EFAR
+        startService(new Intent(this, GPSTrackingService.class));
+
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -78,119 +80,23 @@ public class ActivityEFARMainTabbed extends AppCompatActivity {
         tabLayout.setupWithViewPager(mViewPager);
         tabLayout.setSelectedTabIndicatorHeight((int) (4 * getResources().getDisplayMetrics().density));
 
-        SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
-        String id = sharedPreferences.getString("id", "");
-        final String token = FirebaseInstanceId.getInstance().getToken();
-        //check if an logged in on another phone
-        FirebaseDatabase.getInstance().getReference().child("users/" + id).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                String current_token= snapshot.child("token").getValue().toString();
-                if(!token.equals(current_token)){
-                    android.app.AlertDialog.Builder alert = new android.app.AlertDialog.Builder(ActivityEFARMainTabbed.this)
-                            .setTitle("Oops!")
-                            .setMessage("Looks liked you're logged in on another device. You will now be logged out but you can log back onto this device if you'd like.").setPositiveButton("Logout", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    //to get rid of stored password and username
-                                    SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
-                                    SharedPreferences.Editor editor = sharedPreferences.edit();
-
-                                    // say that user has logged off
-                                    FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                    DatabaseReference userRef = database.getReference("users");
-                                    editor.putString("id", "");
-                                    editor.putString("name", "");
-                                    editor.putBoolean("logged_in", false);
-                                    stopService(new Intent(ActivityEFARMainTabbed.this, GPSTrackingService.class));
-                                    editor.apply();
-
-                                    //clear the phones token for the database
-                                    String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-                                    DatabaseReference token_ref = database.getReference("tokens/" + refreshedToken);
-                                    token_ref.removeValue();
-
-                                    if(mAuth.getCurrentUser() != null){
-                                        mAuth.getCurrentUser().delete();
-                                    }
-                                    launchPatientMainScreen();
-                                    finish();
-                                }
-                            }).setCancelable(false);
-                    if(!((Activity) ActivityEFARMainTabbed.this).isFinishing())
-                    {
-                        alert.show();
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        // start tracking efar
-        startService(new Intent(this, GPSTrackingService.class));
-
-        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference userRef = database.getReference("users");
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        //userRef.child(id + "/token").setValue(refreshedToken);
-
         //button to get back to patient screen
         Button logoutButton = (Button) findViewById(R.id.logout_button);
-
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new android.app.AlertDialog.Builder(ActivityEFARMainTabbed.this)
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .setTitle("Logging Out")
-                        .setMessage("Are you sure you want to log out?")
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                //to get rid of stored password and username
-                                SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
-                                SharedPreferences.Editor editor = sharedPreferences.edit();
-
-                                // say that user has logged off
-                                FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                DatabaseReference userRef = database.getReference("users");
-                                userRef.child(sharedPreferences.getString("id", "") + "/logged_in").setValue(false);
-                                userRef.child(sharedPreferences.getString("id", "") + "/token").setValue("null");
-                                editor.putString("id", "");
-                                editor.putString("name", "");
-                                editor.putBoolean("logged_in", false);
-                                stopService(new Intent(ActivityEFARMainTabbed.this, GPSTrackingService.class));
-                                editor.apply();
-
-                                //clear the phones token for the database
-                                String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-                                DatabaseReference token_ref = database.getReference("tokens/" + refreshedToken);
-                                token_ref.removeValue();
-
-                                if(mAuth.getCurrentUser() != null){
-                                    mAuth.getCurrentUser().delete();
-                                }
-                                launchPatientMainScreen();
-                                finish();
-                            }
-
-                        })
-                        .setNegativeButton("No", null)
-                        .show();
+                LogoutProcedure.logout(ActivityEFARMainTabbed.this, ActivityEFARMainTabbed.this);
             }
         });
 
-        Button backButton = (Button) findViewById(R.id.back_button);
-
-        backButton.setOnClickListener(new View.OnClickListener() {
+        Button toCAllButton = (Button) findViewById(R.id.to_call_efar_button);
+        toCAllButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                final SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                final SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean("screen_bypass", false);
+                editor.apply();
                 launchPatientMainScreen();
                 finish();
             }
@@ -202,14 +108,14 @@ public class ActivityEFARMainTabbed extends AppCompatActivity {
     private void launchPatientMainScreen() {
         SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean("screen_bypass", false);
+        //editor.putBoolean("screen_bypass", false);
         editor.apply();
         Intent toPatientMainScreen = new Intent(this, ActivityPatientMain.class);
         startActivity(toPatientMainScreen);
         finish();
     }
 
-    //disables the werid transition beteen activities
+    //disables the weird transition between activities
     @Override
     public void onPause() {
         super.onPause();

@@ -9,7 +9,7 @@ import android.content.SharedPreferences;
  * Created by mackfitzpatrick on 5/21/18.
  */
 
-public class BootReceiver extends BroadcastReceiver {
+public class PhoneRebootReceiver extends BroadcastReceiver {
 
     public void onReceive(Context context, Intent intent) {
         //start tracking activity back up again

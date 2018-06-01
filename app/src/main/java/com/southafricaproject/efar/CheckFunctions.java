@@ -12,12 +12,16 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
+
+import java.lang.reflect.Method;
+import java.util.function.Function;
 
 /**
  * Created by mackfitzpatrick on 5/31/18.
@@ -28,7 +32,7 @@ public class CheckFunctions {
     //check network connection
     //check if a forced app update is needed
     //check if an logged in on another phone
-    public static void runAllChecks(final Context context, final Activity activity){
+    public static void runAllAppChecks(final Context context, final Activity activity){
         checkConnection(context);
         checkForUpdates(context, activity);
         checkOtherDeviceLogin(context, activity);
@@ -185,6 +189,41 @@ public class CheckFunctions {
         }
     }
 
+    public static void checkIfEmergencyInDatabase(final Context context, final Activity activity, final String key){
+        //check if the emergency is still in the database
+        FirebaseDatabase.getInstance().getReference().child("emergencies/").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    if(dataSnapshot.getKey().equals(key)){
+                        //return to main EFAR screen if keys match
+                        Intent toEfarMainScreen = new Intent(context, ActivityEFARMainTabbed.class);
+                        context.startActivity(toEfarMainScreen);
+                        activity.finish();
+                    }
+                }
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
 
 }
