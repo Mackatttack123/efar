@@ -46,12 +46,6 @@ public class LogoutProcedure {
                         DatabaseReference token_ref = database.getReference("tokens/" + refreshedToken);
                         token_ref.removeValue();
 
-                        FirebaseAuth mAuth;
-                        mAuth = FirebaseAuth.getInstance();
-                        if(mAuth.getCurrentUser() != null){
-                            mAuth.getCurrentUser().delete();
-                        }
-
                         //launch patient main screen
                         editor.putBoolean("screen_bypass", false);
                         editor.apply();

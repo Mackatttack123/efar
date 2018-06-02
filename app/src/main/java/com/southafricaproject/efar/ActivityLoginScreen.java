@@ -86,69 +86,56 @@ public class ActivityLoginScreen extends AppCompatActivity {
         final String old_id = sharedPreferences.getString("old_id", "");
         final String old_name = sharedPreferences.getString("old_name", "");
 
-        mAuth = FirebaseAuth.getInstance();
-        mAuth.signInAnonymously()
-                .addOnCompleteListener(ActivityLoginScreen.this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
+        if(old_id != "" && old_name != ""){
+            user_name.setText(old_name);
+            //user_id.setText(old_id);
+        }
 
-                            if(old_id != "" && old_name != ""){
-                                user_name.setText(old_name);
-                                //user_id.setText(old_id);
+        // logic for the login submit button
+        submitButton.setOnClickListener(
+                new Button.OnClickListener() {
+                    public void onClick(View v) {
+                        closeKeyboard();
+                        errorText.setText("Loading...");
+                        errorText.setTextColor(Color.BLACK);
+                        user_name.clearFocus();
+                        user_id.clearFocus();
+                        user_password.clearFocus();
+                        if(continue_on){
+                            final String name = user_name.getText().toString().toLowerCase();
+                            final String id = user_id.getText().toString().toLowerCase();
+                            // make sure there is some data so app doesn't crash
+                            if (name.equals("") || id.equals("")) {
+                                Log.wtf("Login", "No data input. Cannot attempt login");
+                                errorText.setText("Missing Name or ID");
+                                submitButton.setEnabled(true);
+                            } else {
+                                // check and validate the user
+                                submitButton.setEnabled(false);
+                                checkUser(name, id);
                             }
-
-                            // logic for the login submit button
-                            submitButton.setOnClickListener(
-                                    new Button.OnClickListener() {
-                                        public void onClick(View v) {
-                                            closeKeyboard();
-                                            errorText.setText("Loading...");
-                                            errorText.setTextColor(Color.BLACK);
-                                            user_name.clearFocus();
-                                            user_id.clearFocus();
-                                            user_password.clearFocus();
-                                            if(continue_on){
-                                                final String name = user_name.getText().toString().toLowerCase();
-                                                final String id = user_id.getText().toString().toLowerCase();
-                                                // make sure there is some data so app doesn't crash
-                                                if (name.equals("") || id.equals("")) {
-                                                    Log.wtf("Login", "No data input. Cannot attempt login");
-                                                    errorText.setText("Missing Name or ID");
-                                                    submitButton.setEnabled(true);
-                                                } else {
-                                                    // check and validate the user
-                                                    submitButton.setEnabled(false);
-                                                    checkUser(name, id);
-                                                }
-                                            }else{
-                                                final String id = user_id.getText().toString().toLowerCase();
-                                                final String password = user_password.getText().toString().toLowerCase();
-                                                submitButton.setEnabled(false);
-                                                checkpassword(password, id, name_on_database);
-                                            }
-                                        }
-                                    }
-                            );
-
-                            showPasswordCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-
-                                                                                @Override
-                                                                                public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
-                                                                                    if(isChecked){
-                                                                                        user_password.setTransformationMethod(null);
-                                                                                    }else{
-                                                                                        user_password.setTransformationMethod(new PasswordTransformationMethod());
-                                                                                    }
-                                                                                }
-                                                                            }
-                            );
-                        } else {
-                            TextView errorText = (TextView) findViewById(R.id.errorLoginText);
-                            errorText.setText("Login not available at this time.");
+                        }else{
+                            final String id = user_id.getText().toString().toLowerCase();
+                            final String password = user_password.getText().toString().toLowerCase();
+                            submitButton.setEnabled(false);
+                            checkpassword(password, id, name_on_database);
                         }
                     }
-                });
+                }
+        );
+
+        showPasswordCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+                                                            @Override
+                                                            public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+                                                                if(isChecked){
+                                                                    user_password.setTransformationMethod(null);
+                                                                }else{
+                                                                    user_password.setTransformationMethod(new PasswordTransformationMethod());
+                                                                }
+                                                            }
+                                                        }
+        );
 
     }
 
@@ -372,12 +359,12 @@ public class ActivityLoginScreen extends AppCompatActivity {
         editor.putString("old_id", id);
         editor.putString("old_name", name);
         editor.putBoolean("logged_in", true);
+        editor.putBoolean("reload_patient_main", true);
         editor.commit();
 
         final TextView errorText = (TextView) findViewById(R.id.errorLoginText);
         backButton.setEnabled(false);
-        // Sign in success, update UI with the signed-in user's information
-        Log.d("LOGIN", "signInAnonymously:success");
+
         errorText.setText("");
         // update users info
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();

@@ -46,9 +46,6 @@ public class ActivityPatientInfo extends AppCompatActivity {
         setContentView(R.layout.activity_patient_info);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
-        final FirebaseAuth mAuth;
-        mAuth = FirebaseAuth.getInstance();
-
         //check network connection
         //check if a forced app update is needed
         //check if an logged in on another phone
@@ -88,46 +85,14 @@ public class ActivityPatientInfo extends AppCompatActivity {
                         final String other_info = patient_other_info.getText().toString();
                         infoSumbitButton.setEnabled(false);
                         backButton.setEnabled(false);
-                        if(mAuth.getCurrentUser() != null){
-                            // Sign in success, update UI with the signed-in user's information
-                            try {
-                                add_emergency(phone_number, other_info);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                            // go to main screen
-                            finish();
-                        }else{
-                            mAuth.signInAnonymously()
-                                    .addOnCompleteListener(ActivityPatientInfo.this, new OnCompleteListener<AuthResult>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<AuthResult> task) {
-                                            if (task.isSuccessful()) {
-                                                // Sign in success, update UI with the signed-in user's information
-                                                Log.d("LOGIN", "signInAnonymously:success");
-                                                try {
-                                                    add_emergency(phone_number, other_info);
-                                                } catch (JSONException e) {
-                                                    e.printStackTrace();
-                                                }
-
-                                                if (mAuth.getCurrentUser() != null) {
-                                                    mAuth.getCurrentUser().delete();
-                                                }
-                                                // go to main screen
-                                                finish();
-                                            } else {
-                                                // If sign in fails, display a message to the user.
-                                                infoSumbitButton.setEnabled(true);
-                                                Log.w("LOGIN", "signInAnonymously:failure", task.getException());
-                                                loadingTextView.setTextColor(Color.argb(255, 200, 0, 0));
-                                                loadingTextView.setText("Failed to call EFARs!");
-                                                backButton.setEnabled(true);
-                                            }
-                                        }
-
-                                    });
+                        try {
+                            add_emergency(phone_number, other_info);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
+
+                        // go to main screen
+                        finish();
                     }
                 }
         );
