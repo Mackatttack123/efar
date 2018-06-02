@@ -83,60 +83,72 @@ public class ActivityLoginScreen extends AppCompatActivity {
         final TextView errorText = (TextView) findViewById(R.id.errorLoginText);
 
         SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
-        String old_id = sharedPreferences.getString("old_id", "");
-        String old_name = sharedPreferences.getString("old_name", "");
+        final String old_id = sharedPreferences.getString("old_id", "");
+        final String old_name = sharedPreferences.getString("old_name", "");
 
-        if(old_id != "" && old_name != ""){
-            user_name.setText(old_name);
-            //user_id.setText(old_id);
-        }
+        mAuth = FirebaseAuth.getInstance();
+        mAuth.signInAnonymously()
+                .addOnCompleteListener(ActivityLoginScreen.this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
 
-        // logic for the login submit button
-        submitButton.setOnClickListener(
-                new Button.OnClickListener() {
-                    public void onClick(View v) {
-                        closeKeyboard();
-                        errorText.setText("Loading...");
-                        errorText.setTextColor(Color.BLACK);
-                        user_name.clearFocus();
-                        user_id.clearFocus();
-                        user_password.clearFocus();
-                        if(continue_on){
-                            final String name = user_name.getText().toString().toLowerCase();
-                            final String id = user_id.getText().toString().toLowerCase();
-                            // make sure there is some data so app doesn't crash
-                            if (name.equals("") || id.equals("")) {
-                                Log.wtf("Login", "No data input. Cannot attempt login");
-                                errorText.setText("Missing Name or ID");
-                                submitButton.setEnabled(true);
-                            } else {
-                                // check and validate the user
-                                submitButton.setEnabled(false);
-                                checkUser(name, id);
+                            if(old_id != "" && old_name != ""){
+                                user_name.setText(old_name);
+                                //user_id.setText(old_id);
                             }
 
-                        }else{
-                            final String id = user_id.getText().toString().toLowerCase();
-                            final String password = user_password.getText().toString().toLowerCase();
-                            submitButton.setEnabled(false);
-                            checkpassword(password, id, name_on_database);
+                            // logic for the login submit button
+                            submitButton.setOnClickListener(
+                                    new Button.OnClickListener() {
+                                        public void onClick(View v) {
+                                            closeKeyboard();
+                                            errorText.setText("Loading...");
+                                            errorText.setTextColor(Color.BLACK);
+                                            user_name.clearFocus();
+                                            user_id.clearFocus();
+                                            user_password.clearFocus();
+                                            if(continue_on){
+                                                final String name = user_name.getText().toString().toLowerCase();
+                                                final String id = user_id.getText().toString().toLowerCase();
+                                                // make sure there is some data so app doesn't crash
+                                                if (name.equals("") || id.equals("")) {
+                                                    Log.wtf("Login", "No data input. Cannot attempt login");
+                                                    errorText.setText("Missing Name or ID");
+                                                    submitButton.setEnabled(true);
+                                                } else {
+                                                    // check and validate the user
+                                                    submitButton.setEnabled(false);
+                                                    checkUser(name, id);
+                                                }
+                                            }else{
+                                                final String id = user_id.getText().toString().toLowerCase();
+                                                final String password = user_password.getText().toString().toLowerCase();
+                                                submitButton.setEnabled(false);
+                                                checkpassword(password, id, name_on_database);
+                                            }
+                                        }
+                                    }
+                            );
+
+                            showPasswordCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+                                                                                @Override
+                                                                                public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+                                                                                    if(isChecked){
+                                                                                        user_password.setTransformationMethod(null);
+                                                                                    }else{
+                                                                                        user_password.setTransformationMethod(new PasswordTransformationMethod());
+                                                                                    }
+                                                                                }
+                                                                            }
+                            );
+                        } else {
+                            TextView errorText = (TextView) findViewById(R.id.errorLoginText);
+                            errorText.setText("Login not available at this time.");
                         }
                     }
-                }
-        );
-
-        showPasswordCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
-                    if(isChecked){
-                        user_password.setTransformationMethod(null);
-                    }else{
-                        user_password.setTransformationMethod(new PasswordTransformationMethod());
-                    }
-                }
-            }
-        );
+                });
 
     }
 
@@ -200,7 +212,12 @@ public class ActivityLoginScreen extends AppCompatActivity {
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange (DataSnapshot snapshot){
-                String check_password = snapshot.child(id + "/password").getValue().toString();
+                String check_password;
+                if(snapshot.child(id + "/password").exists()){
+                    check_password = snapshot.child(id + "/password").getValue().toString();
+                }else{
+                    check_password = "!@#LSKF%)D:}{WKDL{WER_";
+                }
 
                 if (check_password.equals(password)) {
                     errorText.setText("");
@@ -357,48 +374,30 @@ public class ActivityLoginScreen extends AppCompatActivity {
         editor.putBoolean("logged_in", true);
         editor.commit();
 
+        final TextView errorText = (TextView) findViewById(R.id.errorLoginText);
+        backButton.setEnabled(false);
+        // Sign in success, update UI with the signed-in user's information
+        Log.d("LOGIN", "signInAnonymously:success");
+        errorText.setText("");
+        // update users info
+        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference userRef = database.getReference("users");
+        GPSTracker gps = new GPSTracker(ActivityLoginScreen.this);
+        double my_lat = gps.getLatitude(); // latitude
+        double my_long = gps.getLongitude(); // longitude
+        userRef.child(id + "/name").setValue(name);
+        userRef.child(id + "/token").setValue(refreshedToken);
+        userRef.child(id + "/latitude").setValue(my_lat);
+        userRef.child(id + "/longitude").setValue(my_long);
+        userRef.child(id + "/logged_in").setValue(true);
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if(currentUser != null){
             mAuth.getCurrentUser().delete();
         }
-
-        final TextView errorText = (TextView) findViewById(R.id.errorLoginText);
-        backButton.setEnabled(false);
-        //if all matches then go onto the efar screen
-        mAuth.signInAnonymously()
-                .addOnCompleteListener(ActivityLoginScreen.this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d("LOGIN", "signInAnonymously:success");
-                            errorText.setText("");
-                            // update users info
-                            String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-                            FirebaseDatabase database = FirebaseDatabase.getInstance();
-                            DatabaseReference userRef = database.getReference("users");
-                            GPSTracker gps = new GPSTracker(ActivityLoginScreen.this);
-                            double my_lat = gps.getLatitude(); // latitude
-                            double my_long = gps.getLongitude(); // longitude
-                            userRef.child(id + "/name").setValue(name);
-                            userRef.child(id + "/token").setValue(refreshedToken);
-                            userRef.child(id + "/latitude").setValue(my_lat);
-                            userRef.child(id + "/longitude").setValue(my_long);
-                            userRef.child(id + "/logged_in").setValue(true);
-                            finish();
-                            launchEfarScreen();
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w("LOGIN", "signInAnonymously:failure", task.getException());
-                            Toast.makeText(ActivityLoginScreen.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                            errorText.setText("Authentication failed.");
-                            submitButton.setEnabled(true);
-                            backButton.setEnabled(true);
-                        }
-                    }
-                });
+        finish();
+        launchEfarScreen();
     }
 
     // Starts up launchEfarScreen screen

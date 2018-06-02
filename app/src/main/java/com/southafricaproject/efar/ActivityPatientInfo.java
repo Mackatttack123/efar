@@ -1,6 +1,7 @@
 package com.southafricaproject.efar;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.content.Context;
 
@@ -13,6 +14,7 @@ import android.widget.EditText;
 import android.util.Log;
 import android.content.SharedPreferences;
 import android.telephony.PhoneNumberFormattingTextWatcher;
+import android.widget.TextView;
 
 import org.json.JSONException;
 
@@ -35,6 +37,9 @@ import java.util.Date;
 
 public class ActivityPatientInfo extends AppCompatActivity {
 
+    TextView loadingTextView;
+    Button backButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,8 +60,10 @@ public class ActivityPatientInfo extends AppCompatActivity {
             gps.showSettingsAlert();
         }
 
+        loadingTextView = (TextView) findViewById(R.id.LoadingTextView);
+
         //button to get back to patient screen
-        Button backButton = (Button) findViewById(R.id.info_back_button);
+        backButton = (Button) findViewById(R.id.info_back_button);
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,12 +82,14 @@ public class ActivityPatientInfo extends AppCompatActivity {
                 new Button.OnClickListener() {
                     public void onClick(View v) {
 
+                        loadingTextView.setText("Loading . . .");
+                        loadingTextView.setTextColor(Color.argb(255, 0, 0, 0));
                         final String phone_number = patient_phone_number.getText().toString();
                         final String other_info = patient_other_info.getText().toString();
                         infoSumbitButton.setEnabled(false);
+                        backButton.setEnabled(false);
                         if(mAuth.getCurrentUser() != null){
                             // Sign in success, update UI with the signed-in user's information
-                            Log.d("LOGIN", "signInAnonymously:success");
                             try {
                                 add_emergency(phone_number, other_info);
                             } catch (JSONException e) {
@@ -111,6 +120,9 @@ public class ActivityPatientInfo extends AppCompatActivity {
                                                 // If sign in fails, display a message to the user.
                                                 infoSumbitButton.setEnabled(true);
                                                 Log.w("LOGIN", "signInAnonymously:failure", task.getException());
+                                                loadingTextView.setTextColor(Color.argb(255, 200, 0, 0));
+                                                loadingTextView.setText("Failed to call EFARs!");
+                                                backButton.setEnabled(true);
                                             }
                                         }
 

@@ -72,9 +72,7 @@ public class EFARMainTabYou extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.efar_main_you_tab, container, false);
-
         final ListView emergencyInfoListView = (ListView) rootView.findViewById(R.id.emergencyInfoListView);
-
         final SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyData", Context.MODE_PRIVATE);
 
         all_tab_done_loading = sharedPreferences.getBoolean("all_tab_done_loading", false);
@@ -87,6 +85,10 @@ public class EFARMainTabYou extends Fragment{
         phoneNumber = sharedPreferences.getString("responding_to_phone", "");
         info = sharedPreferences.getString("responding_to_info", "");
         state = sharedPreferences.getString("responding_to_state", "");
+
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("responding_to_other", false);
+        editor.commit();
 
         final TextView messageTextView = (TextView)rootView.findViewById(R.id.messageTextView);
         messageTextView.setText("Loading . . .");
@@ -109,6 +111,15 @@ public class EFARMainTabYou extends Fragment{
         FirebaseDatabase.getInstance().getReference().child("emergencies").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                if(getActivity() != null && dataSnapshot.exists()){
+                    SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                    String responding_to_key = sharedPreferences.getString("responding_to_key", "");
+                    if(dataSnapshot.getKey().equals(responding_to_key)){
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putBoolean("responding_to_other", true);
+                        editor.commit();
+                    }
+                }
             }
 
             @Override
@@ -117,14 +128,13 @@ public class EFARMainTabYou extends Fragment{
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                if(getActivity() != null){
+                if(getActivity() != null && dataSnapshot.exists()){
                     SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyData", Context.MODE_PRIVATE);
                     String responding_to_key = sharedPreferences.getString("responding_to_key", "");
-                    if(key.equals(responding_to_key)){
+                    if(dataSnapshot.getKey().equals(responding_to_key)){
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.putBoolean("responding_to_other", false);
                         editor.putString("responding_to_key", "");
-                        editor.commit();
                         editor.commit();
                     }
                 }

@@ -368,6 +368,7 @@ public class ActivityPatientMain extends AppCompatActivity {
                                                 helpMeButton.setBackgroundColor(Color.RED);
                                                 distance_progress.setVisibility(View.INVISIBLE);
                                                 distance_progress.setProgress(0);
+                                                helpMeButton.setEnabled(true);
                                             }else{
                                                 mAuth.signInAnonymously()
                                                         .addOnCompleteListener(ActivityPatientMain.this, new OnCompleteListener<AuthResult>() {
@@ -450,7 +451,21 @@ public class ActivityPatientMain extends AppCompatActivity {
                     new Button.OnClickListener() {
                         public void onClick(View v) {
                             // go to login screen
-                            launchEFARScreen();
+                            if (mAuth.getCurrentUser() == null) {
+                                mAuth.signInAnonymously()
+                                        .addOnCompleteListener(ActivityPatientMain.this, new OnCompleteListener<AuthResult>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                                if (task.isSuccessful()) {
+                                                    launchEfarScreen();
+                                                } else {
+
+                                                }
+                                            }
+                                        });
+                            }else {
+                                launchEfarScreen();
+                            }
                         }
                     }
             );
@@ -514,7 +529,7 @@ public class ActivityPatientMain extends AppCompatActivity {
     }
 
     // Starts up login screen
-    private void launchEFARScreen() {
+    private void launchEfarScreen() {
         Intent toEFARScreen = new Intent(this, ActivityEFARMainTabbed.class);
         startActivity(toEFARScreen);
         finish();
@@ -524,48 +539,6 @@ public class ActivityPatientMain extends AppCompatActivity {
     private void launchPatientInfoScreen() {
         Intent toPatientInfoScreen = new Intent(this, ActivityPatientInfo.class);
         startActivity(toPatientInfoScreen);
-    }
-
-    // Starts up launchEfarScreen screen
-    private void launchEfarScreen() {
-        runOnUiThread(new Runnable(){
-            public void run() {
-                // This runs on the UI thread
-                Log.wtf("TEST", "asdfghjklsdfghjkzxcvbnm");
-                Log.wtf("TEST", "asdfghjklsdfghjkzxcvbnm");
-                Log.wtf("TEST", "asdfghjklsdfghjkzxcvbnm");
-                Log.wtf("TEST", "asdfghjklsdfghjkzxcvbnm");
-                Log.wtf("TEST", "asdfghjklsdfghjkzxcvbnm");
-                Log.wtf("TEST", "asdfghjklsdfghjkzxcvbnm");
-                Log.wtf("TEST", "asdfghjklsdfghjkzxcvbnm");
-                Intent toEfarScreen = new Intent(ActivityPatientMain.this, ActivityEFARMainTabbed.class);
-                Log.wtf("Intent", "asdfghjklsdfghjkzxcvbnm");
-                Log.wtf("Intent", "asdfghjklsdfghjkzxcvbnm");
-                Log.wtf("Intent", "asdfghjklsdfghjkzxcvbnm");
-                Log.wtf("Intent", "asdfghjklsdfghjkzxcvbnm");
-                Log.wtf("Intent", "asdfghjklsdfghjkzxcvbnm");
-                Log.wtf("Intent", "asdfghjklsdfghjkzxcvbnm");
-                Log.wtf("Intent", "asdfghjklsdfghjkzxcvbnm");
-                toEfarScreen.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(toEfarScreen);
-                Log.wtf("startActivity", "asdfghjklsdfghjkzxcvbnm");
-                Log.wtf("startActivity", "asdfghjklsdfghjkzxcvbnm");
-                Log.wtf("startActivity", "asdfghjklsdfghjkzxcvbnm");
-                Log.wtf("startActivity", "asdfghjklsdfghjkzxcvbnm");
-                Log.wtf("startActivity", "asdfghjklsdfghjkzxcvbnm");
-                Log.wtf("startActivity", "asdfghjklsdfghjkzxcvbnm");
-                Log.wtf("startActivity", "asdfghjklsdfghjkzxcvbnm");
-                killActivity();
-                Log.wtf("killActivity", "asdfghjklsdfghjkzxcvbnm");
-                Log.wtf("killActivity", "asdfghjklsdfghjkzxcvbnm");
-                Log.wtf("killActivity", "asdfghjklsdfghjkzxcvbnm");
-                Log.wtf("killActivity", "asdfghjklsdfghjkzxcvbnm");
-                Log.wtf("killActivity", "asdfghjklsdfghjkzxcvbnm");
-                Log.wtf("killActivity", "asdfghjklsdfghjkzxcvbnm");
-                Log.wtf("killActivity", "asdfghjklsdfghjkzxcvbnm");
-            }
-        });
-
     }
 
     public void moveFirebaseRecord(DatabaseReference fromPath, final DatabaseReference toPath) {
