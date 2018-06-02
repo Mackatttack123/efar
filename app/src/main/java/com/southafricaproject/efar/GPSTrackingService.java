@@ -13,6 +13,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 public class GPSTrackingService extends Service {
 
     public Context context = this;
@@ -48,11 +52,16 @@ public class GPSTrackingService extends Service {
                     tokens_ref.child(token).child(token).setValue(token);
                     tokens_ref.child(token).child("latitude").setValue(my_lat);
                     tokens_ref.child(token).child("longitude").setValue(my_long);
+                    Date currentTime = Calendar.getInstance().getTime();
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                    String timestamp = simpleDateFormat.format(currentTime);
+                    tokens_ref.child(token).child("last_location_update").setValue(timestamp);
 
                     if(!id.equals("")){
                         DatabaseReference users_ref = database.getReference("users/" + id);
                         users_ref.child("latitude").setValue(my_lat);
                         users_ref.child("longitude").setValue(my_long);
+                        users_ref.child("last_location_update").setValue(timestamp);
                     }
 
                     Log.wtf("location update:", "(" + my_lat + ", " + my_long + ") ---> token: " + token);

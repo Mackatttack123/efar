@@ -134,7 +134,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="0dp"
         android:text="@string/back_button"
-        android:textColor="#025598"
+        android:textColor="@color/EFAR_blue"
         android:textSize="12dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>

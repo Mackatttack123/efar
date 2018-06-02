@@ -1,16 +1,13 @@
 package com.southafricaproject.efar;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.os.Build;
-import android.os.Handler;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Html;
-import android.text.SpannableString;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -18,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -27,6 +25,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import org.json.JSONException;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -34,13 +33,29 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+class Messaage {
+    private String name;
+    private String timestamp;
+    private String message;
+
+    // constructor
+    public Messaage(String name, String timestamp, String message) {
+        this.name = name;
+        this.timestamp = timestamp;
+        this.message = message;
+    }
+
+    // getter
+    public String getName() { return name; }
+    public String getTimestamp() { return timestamp; }
+    public String getMessage() { return message; }
+}
+
 public class ActivityMessagingScreen extends AppCompatActivity {
 
-    final ArrayList<SpannableString> messageArray = new ArrayList<SpannableString>();
-    final ArrayList<SpannableString> HTMLmessageArray = new ArrayList<SpannableString>();
+    final ArrayList<Messaage> messageArray = new ArrayList<Messaage>();
 
     /* for constant listview updating every few seconds */
-    private Handler handler = new Handler();
     public ArrayAdapter adapter;
     public ListView listView;
 
@@ -62,20 +77,57 @@ public class ActivityMessagingScreen extends AppCompatActivity {
         key = bundle.getString("key");
         CheckFunctions.checkIfEmergencyInDatabase(ActivityMessagingScreen.this, this, key);
 
-        adapter = new ArrayAdapter<SpannableString>(this, R.layout.activity_listview, messageArray){
+        adapter = new ArrayAdapter<Messaage>(this, R.layout.activity_listview, messageArray) {
             @Override
-            public View getView(int position, View convertView, ViewGroup parent)
-            {
+            public View getView(int position, View convertView, ViewGroup parent) {
                 SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
                 String name = sharedPreferences.getString("name", "");
+                LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                View left_cell = inflater.inflate(R.layout.message_cell_left, parent, false);
 
-                View itemView = super.getView(position, convertView, parent);
-                if (messageArray.get(position).toString().startsWith(name)){
-                    itemView.setBackgroundColor(Color.argb(100, 0, 200, 0));
-                }else{
-                    itemView.setBackgroundColor(Color.argb(100, 0, 80, 250));
+                LayoutInflater inflater2 = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                View right_cell = inflater2.inflate(R.layout.message_cell_right, parent, false);
+
+                TextView textMessage_left = (TextView)left_cell.findViewById(R.id.txt_msg);
+                TextView name_left = (TextView)left_cell.findViewById(R.id.nameTextView_left);
+                TextView time_left = (TextView)left_cell.findViewById(R.id.timeTextView_left);
+                ConstraintLayout left_message_background = (ConstraintLayout)left_cell.findViewById(R.id.left_message_backgroud);
+
+                TextView textMessage_right = (TextView)right_cell.findViewById(R.id.txt_msg);
+                TextView name_right = (TextView)right_cell.findViewById(R.id.nameTextView_right);
+                TextView time_right = (TextView)right_cell.findViewById(R.id.timeTextView_right);
+                ConstraintLayout right_message_backgroud = (ConstraintLayout)right_cell.findViewById(R.id.right_message_backgroud);
+
+                String timestamp = messageArray.get(position).getTimestamp().toString();
+                String user_name = messageArray.get(position).getName().toString();
+                String message = messageArray.get(position).getMessage().toString();
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                Date timeCreated = null;
+                try {
+                    timeCreated = simpleDateFormat.parse(timestamp);
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
-                return itemView;
+                SimpleDateFormat displayTimeFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");
+                String dipslayTime = displayTimeFormat.format(timeCreated);
+
+                if (user_name.contains(name)) {
+                    textMessage_right.setText(message);
+                    name_right.setText(user_name);
+                    if(dipslayTime != null){
+                        time_right.setText(dipslayTime);
+                    }
+                    right_message_backgroud.setBackgroundColor(Color.argb(255, 2, 55, 98));
+                    return right_cell;
+                } else {
+                    name_left.setText(name);
+                    if(dipslayTime != null){
+                        time_left.setText(dipslayTime);
+                    }
+                    textMessage_left.setText(message);
+                    left_message_background.setBackgroundColor(Color.argb(255, 170, 170, 170));
+                    return left_cell;
+                }
             }
         };
 
@@ -86,9 +138,9 @@ public class ActivityMessagingScreen extends AppCompatActivity {
         FirebaseDatabase.getInstance().getReference("emergencies/" + key).child("messages").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                try{
+                try {
                     displayMessages(dataSnapshot);
-                }catch (NullPointerException e){
+                } catch (NullPointerException e) {
                     Log.wtf("added", "not yet");
                 }
 
@@ -99,9 +151,9 @@ public class ActivityMessagingScreen extends AppCompatActivity {
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                try{
+                try {
                     displayMessages(dataSnapshot);
-                }catch (NullPointerException e){
+                } catch (NullPointerException e) {
                     Log.wtf("added", "not yet");
                 }
 
@@ -137,7 +189,7 @@ public class ActivityMessagingScreen extends AppCompatActivity {
 
         //button to get back to patient screen
         Button sendButton = (Button) findViewById(R.id.send_message_button);
-        final EditText message_to_send =  (EditText) findViewById(R.id.message_text_view);
+        final EditText message_to_send = (EditText) findViewById(R.id.message_text_view);
 
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -145,7 +197,7 @@ public class ActivityMessagingScreen extends AppCompatActivity {
                 SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
                 String name = sharedPreferences.getString("name", "");
                 try {
-                    if(!message_to_send.getText().toString().equals("")){
+                    if (!message_to_send.getText().toString().equals("")) {
                         add_message(name.toString(), message_to_send.getText().toString());
                     }
                 } catch (JSONException e) {
@@ -164,41 +216,23 @@ public class ActivityMessagingScreen extends AppCompatActivity {
         DatabaseReference message_key = messsage_ref.push();
 
         Map<String, String> data = new HashMap<String, String>();
-        data.put("user",name);
+        data.put("user", name);
         Date currentTime = Calendar.getInstance().getTime();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         String timestamp = simpleDateFormat.format(currentTime);
-        data.put("timestamp",timestamp);
-        data.put("message",message.trim());
+        data.put("timestamp", timestamp);
+        data.put("message", message.trim());
         messsage_ref.child(message_key.getKey()).setValue(data);
     }
 
-    private void displayMessages(DataSnapshot dataSnapshot){
-        String user = dataSnapshot.child("user").getValue().toString();
+    private void displayMessages(DataSnapshot dataSnapshot) {
+        String name = dataSnapshot.child("user").getValue().toString();
         String message = dataSnapshot.child("message").getValue().toString();
-        SpannableString display_message;
-        int messageArray_size = messageArray.size() - 1;
-        int HTMLmessageArray_size = HTMLmessageArray.size() - 1;
-        if(messageArray.size() > 0){
-            if(String.valueOf(HTMLmessageArray.get(HTMLmessageArray_size)).startsWith("<i><u>" + user + ":</u></i>")){
-                String last_massage = HTMLmessageArray.get(HTMLmessageArray_size).toString().replace("<i><u>" + user + ":</u></i>", "");
-                display_message = new SpannableString("<i><u>" + user + ":</u></i>" + last_massage + "<br>" + message);
-                messageArray.remove(messageArray_size);
-            }else {
-                display_message = new SpannableString("<i><u>" + user + ":</u></i><br>" + message);
-            }
-        }else{
-            display_message = new SpannableString("<i><u>" + user + ":</u></i><br>" + message);
-        }
+        String timestamp = dataSnapshot.child("timestamp").getValue().toString();
 
-        HTMLmessageArray.add(display_message);
-        if (Build.VERSION.SDK_INT >= 24) {
-            display_message = SpannableString.valueOf(Html.fromHtml(String.valueOf(display_message), 0)); // for 24 api and more
-        } else {
-            display_message = SpannableString.valueOf(Html.fromHtml(String.valueOf(display_message))); // or for older api
-        }
+        Messaage msg_to_add = new Messaage(name, timestamp, message);
 
-        messageArray.add(display_message);
+        messageArray.add(msg_to_add);
         adapter.notifyDataSetChanged();
 
     }
@@ -209,4 +243,5 @@ public class ActivityMessagingScreen extends AppCompatActivity {
         super.onPause();
         overridePendingTransition(0, 0);
     }
+
 }

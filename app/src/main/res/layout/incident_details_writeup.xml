@@ -37,7 +37,7 @@
         app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
-        android:id="@+id/timeTextView"
+        android:id="@+id/timeTextView_right"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
@@ -57,7 +57,7 @@
         android:ems="10"
         android:inputType="time"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/timeTextView"/>
+        app:layout_constraintTop_toBottomOf="@+id/timeTextView_right"/>
 
     <TextView
         android:id="@+id/locationTextView"
