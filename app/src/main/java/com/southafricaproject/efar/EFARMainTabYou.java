@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.telephony.PhoneNumberUtils;
@@ -38,6 +39,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -54,6 +60,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 
 public class EFARMainTabYou extends Fragment{
 
@@ -80,7 +87,7 @@ public class EFARMainTabYou extends Fragment{
         FirebaseDatabase.getInstance().getReference().child("emergencies").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                if(dataSnapshot.exists() && dataSnapshot.hasChild("responding_efar")){
+                if(dataSnapshot.exists() && dataSnapshot.hasChild("responding_efar") && dataSnapshot.hasChild("creation_date")){
                     String id = sharedPreferences.getString("id", "");
                     if(dataSnapshot.child("responding_efar").getValue().toString().contains(id)){
                         key = dataSnapshot.getKey();
@@ -239,32 +246,74 @@ public class EFARMainTabYou extends Fragment{
                             alert.setCancelable(false);
                             alert.setPositiveButton("Submit", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {
-
-                                    String comment = notesEditText.getText().toString();
-
-                                    Date currentTime = Calendar.getInstance().getTime();
-                                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-                                    String timestamp = simpleDateFormat.format(currentTime);
-                                    final FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                    final String keyToUpdate = key;
-                                    DatabaseReference emergency_ref_comment = database.getReference("emergencies/" + keyToUpdate + "/on_scene_first_impression/" + efar_id);
-                                    emergency_ref_comment.setValue(comment);
-                                    DatabaseReference emergency_ref_time = database.getReference("emergencies/" + keyToUpdate + "/on_scene_time/" + efar_id);
-                                    emergency_ref_time.setValue(timestamp);
-                                    DatabaseReference emergency_ref_state = database.getReference("emergencies/" + keyToUpdate + "/state");
-                                    emergency_ref_state.setValue("1.5");
-                                    endButton.setVisibility(View.VISIBLE);
-                                    endButton.setText("End Emergency");
-                                    endButton.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            SharedPreferences.Editor editor = sharedPreferences.edit();
-                                            editor.putString("finished_emergency_key", key);
-                                            editor.putString("finished_emergency_date", time);
-                                            editor.commit();
-                                            launchEfarWriteUpScreen(key);
-                                        }
-                                    });
+                                    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+                                    final FirebaseUser currentUser = mAuth.getCurrentUser();
+                                    if(currentUser == null && getActivity() != null){
+                                        mAuth.signInAnonymously()
+                                                .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<AuthResult> task) {
+                                                        if (task.isSuccessful()) {
+                                                            // Sign in success, update UI with the signed-in user's information
+                                                            String comment = notesEditText.getText().toString();
+                                                            Date currentTime = Calendar.getInstance().getTime();
+                                                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                                                            String timestamp = simpleDateFormat.format(currentTime);
+                                                            final FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                                            final String keyToUpdate = key;
+                                                            DatabaseReference emergency_ref_comment = database.getReference("emergencies/" + keyToUpdate + "/on_scene_first_impression/" + efar_id);
+                                                            emergency_ref_comment.setValue(comment);
+                                                            DatabaseReference emergency_ref_time = database.getReference("emergencies/" + keyToUpdate + "/on_scene_time/" + efar_id);
+                                                            emergency_ref_time.setValue(timestamp);
+                                                            DatabaseReference emergency_ref_state = database.getReference("emergencies/" + keyToUpdate + "/state");
+                                                            emergency_ref_state.setValue("1.5");
+                                                            endButton.setVisibility(View.VISIBLE);
+                                                            endButton.setText("End Emergency");
+                                                            endButton.setOnClickListener(new View.OnClickListener() {
+                                                                @Override
+                                                                public void onClick(View view) {
+                                                                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                                                                    editor.putString("finished_emergency_key", key);
+                                                                    editor.putString("finished_emergency_date", time);
+                                                                    editor.commit();
+                                                                    launchEfarWriteUpScreen(key);
+                                                                }
+                                                            });
+                                                        } else {
+                                                            new AlertDialog.Builder(getActivity())
+                                                                    .setTitle("ERROR:")
+                                                                    .setMessage("Could not send on Scene message!")
+                                                                    .setNegativeButton("No", null)
+                                                                    .show();
+                                                        }
+                                                    }
+                                                });
+                                    }else{
+                                        String comment = notesEditText.getText().toString();
+                                        Date currentTime = Calendar.getInstance().getTime();
+                                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                                        String timestamp = simpleDateFormat.format(currentTime);
+                                        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                        final String keyToUpdate = key;
+                                        DatabaseReference emergency_ref_comment = database.getReference("emergencies/" + keyToUpdate + "/on_scene_first_impression/" + efar_id);
+                                        emergency_ref_comment.setValue(comment);
+                                        DatabaseReference emergency_ref_time = database.getReference("emergencies/" + keyToUpdate + "/on_scene_time/" + efar_id);
+                                        emergency_ref_time.setValue(timestamp);
+                                        DatabaseReference emergency_ref_state = database.getReference("emergencies/" + keyToUpdate + "/state");
+                                        emergency_ref_state.setValue("1.5");
+                                        endButton.setVisibility(View.VISIBLE);
+                                        endButton.setText("End Emergency");
+                                        endButton.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View view) {
+                                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                                editor.putString("finished_emergency_key", key);
+                                                editor.putString("finished_emergency_date", time);
+                                                editor.commit();
+                                                launchEfarWriteUpScreen(key);
+                                            }
+                                        });
+                                    }
                                 }
                             });
                             alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

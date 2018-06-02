@@ -83,6 +83,21 @@ public class ActivityPatientMain extends AppCompatActivity {
         //sign in anonymously if they are not an efar or bypass to efar home if they are
         mAuth = FirebaseAuth.getInstance();
         final FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        if(currentUser == null){
+            mAuth.signInAnonymously()
+                    .addOnCompleteListener(ActivityPatientMain.this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+
+                            } else {
+
+                            }
+                        }
+                    });
+        }
+
         final SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
         boolean efar_logged_in = sharedPreferences.getBoolean("logged_in", false);
         boolean screen_bypass = sharedPreferences.getBoolean("screen_bypass", true);
