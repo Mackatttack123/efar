@@ -66,6 +66,7 @@ public class EFARMainTabYou extends Fragment{
     String info;
     String key;
     String state;
+    Boolean all_tab_done_loading = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -76,6 +77,7 @@ public class EFARMainTabYou extends Fragment{
 
         final SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyData", Context.MODE_PRIVATE);
 
+        all_tab_done_loading = sharedPreferences.getBoolean("all_tab_done_loading", false);
         key = sharedPreferences.getString("responding_to_key", "");
         responding_ids  = sharedPreferences.getString("responding_to_id", "");
         time = sharedPreferences.getString("responding_to_time", "");
@@ -86,8 +88,69 @@ public class EFARMainTabYou extends Fragment{
         info = sharedPreferences.getString("responding_to_info", "");
         state = sharedPreferences.getString("responding_to_state", "");
 
-        Adapter emergencyInfoAdapter = new EmergencyInfoCustomAdapter();
-        emergencyInfoListView.setAdapter((ListAdapter) emergencyInfoAdapter);
+        final TextView messageTextView = (TextView)rootView.findViewById(R.id.messageTextView);
+        messageTextView.setText("Loading . . .");
+
+        final Handler handler = new Handler();
+        final int delay = 100; //milliseconds
+        handler.postDelayed(new Runnable(){
+            public void run(){
+                if(all_tab_done_loading){
+                    Adapter emergencyInfoAdapter = new EmergencyInfoCustomAdapter();
+                    emergencyInfoListView.setAdapter((ListAdapter) emergencyInfoAdapter);
+                    messageTextView.setText("Information about an emergency you are responding to will appear here");
+                }else{
+                    all_tab_done_loading = sharedPreferences.getBoolean("all_tab_done_loading", false);
+                    handler.postDelayed(this, delay);
+                }
+            }
+        }, 100);
+
+        FirebaseDatabase.getInstance().getReference().child("emergencies").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                if(getActivity() != null){
+                    SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                    String responding_to_key = sharedPreferences.getString("responding_to_key", "");
+                    if(key.equals(responding_to_key)){
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putBoolean("responding_to_other", false);
+                        editor.putString("responding_to_key", "");
+                        editor.commit();
+                        editor.commit();
+                    }
+                }
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                if(getActivity() != null){
+                    SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                    String responding_to_key = sharedPreferences.getString("responding_to_key", "");
+                    if(dataSnapshot.getKey().equals(responding_to_key)){
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putBoolean("responding_to_other", false);
+                        editor.putString("responding_to_key", "");
+                        editor.commit();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
 
         return rootView;
     }
@@ -172,6 +235,7 @@ public class EFARMainTabYou extends Fragment{
                         @Override
                         public void onClick(View view) {
 
+                            endButton.setEnabled(false);
                             AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
                             final String efar_id = sharedPreferences.getString("id", "");
                             LayoutInflater inflater = (LayoutInflater) getContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
@@ -211,7 +275,6 @@ public class EFARMainTabYou extends Fragment{
                                     });
                                 }
                             });
-
                             alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {
                                 }
@@ -219,6 +282,7 @@ public class EFARMainTabYou extends Fragment{
                             AlertDialog dialog = alert.create();
                             dialog.show();
                             dialog.getWindow().setBackgroundDrawableResource(R.color.light_grey);
+                            endButton.setEnabled(true);
 
                         }
                     });
@@ -297,13 +361,19 @@ public class EFARMainTabYou extends Fragment{
                 e.printStackTrace();
             }
             SimpleDateFormat displayTimeFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");
-            String dipslayTime = displayTimeFormat.format(timeCreated);
+            String displayTime = "";
+            try {
+                displayTime = displayTimeFormat.format(timeCreated);
+            } catch (Exception e) {
+                displayTime = "N/A";
+            }
+
 
             SpannableString infoTextSpan = new SpannableString("<strong>Information Given: </strong><br>" + info);
 
             SpannableString responderTextSpan = new SpannableString("<strong>Responder ID(s): </strong> " + responding_ids);
 
-            SpannableString createdTextSpan = new SpannableString("<strong>Created: </strong> " + dipslayTime);
+            SpannableString createdTextSpan = new SpannableString("<strong>Created: </strong> " + displayTime);
 
             SpannableString addressTextSpan = new SpannableString("<strong>Incident Address: </strong><br>" + address);
             if(address.equals("N/A")){

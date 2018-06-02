@@ -48,6 +48,9 @@ public class ActivityPatientMain extends AppCompatActivity {
 
     FirebaseAuth mAuth;
 
+    Button toLoginButton;
+    Button toEmergencyListButton;
+
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,22 +86,7 @@ public class ActivityPatientMain extends AppCompatActivity {
         boolean efar_logged_in = sharedPreferences.getBoolean("logged_in", false);
         boolean screen_bypass = sharedPreferences.getBoolean("screen_bypass", true);
         final SharedPreferences.Editor editor = sharedPreferences.edit();
-        if(currentUser == null){
-            mAuth.signInAnonymously()
-                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                // Sign in success, update UI with the signed-in user's information
-                                Log.d("LOGIN", "signInAnonymously:success");
-                            } else {
-                                // If sign in fails, display a message to the user.
-                                Log.w("LOGIN", "signInAnonymously:failure", task.getException());
-                            }
-                        }
-
-                    });
-        }else if(efar_logged_in && screen_bypass && currentUser != null){
+        if(efar_logged_in && screen_bypass && currentUser != null){
             editor.putBoolean("screen_bypass", false);
             editor.apply();
             launchEfarScreen();
@@ -264,7 +252,6 @@ public class ActivityPatientMain extends AppCompatActivity {
                 //check if an efar sent the message and if they are the only one in their area
                 if(dataSnapshot.child("emergency_made_by_efar_token").exists()){
                     SharedPreferences.Editor editor = sharedPreferences.edit();
-                    String creation_date = sharedPreferences.getString("creation_date", "");
                     if(dataSnapshot.child("emergency_made_by_efar_token").getValue().toString().equals(phone_token)){
                         phone_token = "";
                         TextView userUpdate = (TextView) findViewById(R.id.user_update );
@@ -348,32 +335,86 @@ public class ActivityPatientMain extends AppCompatActivity {
                                     {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
-                                            // cancel EFAR here
-                                            TextView userUpdate = (TextView) findViewById(R.id.user_update);
-                                            userUpdate.setText("EFAR Cancelled!");
-                                            // fade out text
-                                            userUpdate.animate().alpha(0.0f).setDuration(3000);
-                                            // when canceled, delete the emergancy and move to canceled
-                                            SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
-                                            final String emergency_key_to_delete = sharedPreferences.getString("emergency_key", "");
-                                            final FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                            DatabaseReference emergency_ref = database.getReference("emergencies/" + emergency_key_to_delete );
-                                            DatabaseReference emergency_state_ref = database.getReference("emergencies/" + emergency_key_to_delete + "/state");
-                                            emergency_state_ref.setValue("-1");
-                                            moveFirebaseRecord(emergency_ref, database.getReference("canceled/" + emergency_key_to_delete));
-                                            emergency_ref.removeValue();
-                                            //clear the emergency key and state
-                                            SharedPreferences.Editor editor = sharedPreferences.edit();
-                                            editor.remove("emergency_key");
-                                            editor.putString("user_emergency_state", "100");
-                                            editor.apply();
-                                            responding_efar_id = null;
-                                            // take away cancel button
-                                            calling_efar = false;
-                                            helpMeButton.setText("Call for Help");
-                                            helpMeButton.setBackgroundColor(Color.RED);
-                                            distance_progress.setVisibility(View.INVISIBLE);
-                                            distance_progress.setProgress(0);
+
+                                            final TextView userUpdate = (TextView) findViewById(R.id.user_update);
+                                            helpMeButton.setEnabled(false);
+                                            userUpdate.setTextColor(Color.argb(255, 0, 0, 0));
+                                            userUpdate.setText("Canceling . . .");
+                                            if(mAuth.getCurrentUser() != null){
+                                                // Sign in success, update UI with the signed-in user's information
+                                                Log.d("LOGIN", "signInAnonymously:success");
+                                                // cancel EFAR here
+                                                userUpdate.setText("EFAR Cancelled!");
+                                                // fade out text
+                                                userUpdate.animate().alpha(0.0f).setDuration(3000);
+                                                // when canceled, delete the emergancy and move to canceled
+                                                SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                                                final String emergency_key_to_delete = sharedPreferences.getString("emergency_key", "");
+                                                final FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                                DatabaseReference emergency_ref = database.getReference("emergencies/" + emergency_key_to_delete );
+                                                DatabaseReference emergency_state_ref = database.getReference("emergencies/" + emergency_key_to_delete + "/state");
+                                                emergency_state_ref.setValue("-1");
+                                                moveFirebaseRecord(emergency_ref, database.getReference("canceled/" + emergency_key_to_delete));
+                                                emergency_ref.removeValue();
+                                                //clear the emergency key and state
+                                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                                editor.remove("emergency_key");
+                                                editor.putString("user_emergency_state", "100");
+                                                editor.apply();
+                                                responding_efar_id = null;
+                                                // take away cancel button
+                                                calling_efar = false;
+                                                helpMeButton.setText("Call for Help");
+                                                helpMeButton.setBackgroundColor(Color.RED);
+                                                distance_progress.setVisibility(View.INVISIBLE);
+                                                distance_progress.setProgress(0);
+                                            }else{
+                                                mAuth.signInAnonymously()
+                                                        .addOnCompleteListener(ActivityPatientMain.this, new OnCompleteListener<AuthResult>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                                                if (task.isSuccessful()) {
+                                                                    // Sign in success, update UI with the signed-in user's information
+                                                                    Log.d("LOGIN", "signInAnonymously:success");
+                                                                    // cancel EFAR here
+                                                                    userUpdate.setText("EFAR Cancelled!");
+                                                                    // fade out text
+                                                                    userUpdate.animate().alpha(0.0f).setDuration(3000);
+                                                                    // when canceled, delete the emergancy and move to canceled
+                                                                    SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                                                                    final String emergency_key_to_delete = sharedPreferences.getString("emergency_key", "");
+                                                                    final FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                                                    DatabaseReference emergency_ref = database.getReference("emergencies/" + emergency_key_to_delete );
+                                                                    DatabaseReference emergency_state_ref = database.getReference("emergencies/" + emergency_key_to_delete + "/state");
+                                                                    emergency_state_ref.setValue("-1");
+                                                                    moveFirebaseRecord(emergency_ref, database.getReference("canceled/" + emergency_key_to_delete));
+                                                                    emergency_ref.removeValue();
+                                                                    //clear the emergency key and state
+                                                                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                                                                    editor.remove("emergency_key");
+                                                                    editor.putString("user_emergency_state", "100");
+                                                                    editor.apply();
+                                                                    responding_efar_id = null;
+                                                                    // take away cancel button
+                                                                    calling_efar = false;
+                                                                    helpMeButton.setText("Call for Help");
+                                                                    helpMeButton.setBackgroundColor(Color.RED);
+                                                                    distance_progress.setVisibility(View.INVISIBLE);
+                                                                    distance_progress.setProgress(0);
+
+                                                                    if (mAuth.getCurrentUser() != null) {
+                                                                        mAuth.getCurrentUser().delete();
+                                                                    }
+                                                                } else {
+                                                                    // If sign in fails, display a message to the user.
+                                                                    helpMeButton.setEnabled(true);
+                                                                    userUpdate.setTextColor(Color.argb(255, 200, 0, 0));
+                                                                    userUpdate.setText("Failed to cancel! ");
+                                                                    Log.w("LOGIN", "signInAnonymously:failure", task.getException());
+                                                                }
+                                                            }
+                                                        });
+                                            }
                                         }
 
                                     })
@@ -384,8 +425,8 @@ public class ActivityPatientMain extends AppCompatActivity {
                 }
         );
 
-        Button toLoginButton = (Button)findViewById(R.id.to_login_button);
-        Button toEmergencyListButton = (Button)findViewById(R.id.to_emergencies_button);
+        toLoginButton = (Button)findViewById(R.id.to_login_button);
+        toEmergencyListButton = (Button)findViewById(R.id.to_emergencies_button);
 
         Boolean logged_in = sharedPreferences.getBoolean("logged_in", false);
 
@@ -409,7 +450,7 @@ public class ActivityPatientMain extends AppCompatActivity {
                     new Button.OnClickListener() {
                         public void onClick(View v) {
                             // go to login screen
-                            launchEfarScreen();
+                            launchEFARScreen();
                         }
                     }
             );
@@ -462,12 +503,20 @@ public class ActivityPatientMain extends AppCompatActivity {
 
             }
         }, delay);
+
     }
 
     // Starts up login screen
     private void launchLoginScreen() {
         Intent toLogin = new Intent(this, ActivityLoginScreen.class);
         startActivity(toLogin);
+        finish();
+    }
+
+    // Starts up login screen
+    private void launchEFARScreen() {
+        Intent toEFARScreen = new Intent(this, ActivityEFARMainTabbed.class);
+        startActivity(toEFARScreen);
         finish();
     }
 
@@ -479,9 +528,44 @@ public class ActivityPatientMain extends AppCompatActivity {
 
     // Starts up launchEfarScreen screen
     private void launchEfarScreen() {
-        Intent toEfarScreen = new Intent(this, ActivityEFARMainTabbed.class);
-        startActivity(toEfarScreen);
-        finish();
+        runOnUiThread(new Runnable(){
+            public void run() {
+                // This runs on the UI thread
+                Log.wtf("TEST", "asdfghjklsdfghjkzxcvbnm");
+                Log.wtf("TEST", "asdfghjklsdfghjkzxcvbnm");
+                Log.wtf("TEST", "asdfghjklsdfghjkzxcvbnm");
+                Log.wtf("TEST", "asdfghjklsdfghjkzxcvbnm");
+                Log.wtf("TEST", "asdfghjklsdfghjkzxcvbnm");
+                Log.wtf("TEST", "asdfghjklsdfghjkzxcvbnm");
+                Log.wtf("TEST", "asdfghjklsdfghjkzxcvbnm");
+                Intent toEfarScreen = new Intent(ActivityPatientMain.this, ActivityEFARMainTabbed.class);
+                Log.wtf("Intent", "asdfghjklsdfghjkzxcvbnm");
+                Log.wtf("Intent", "asdfghjklsdfghjkzxcvbnm");
+                Log.wtf("Intent", "asdfghjklsdfghjkzxcvbnm");
+                Log.wtf("Intent", "asdfghjklsdfghjkzxcvbnm");
+                Log.wtf("Intent", "asdfghjklsdfghjkzxcvbnm");
+                Log.wtf("Intent", "asdfghjklsdfghjkzxcvbnm");
+                Log.wtf("Intent", "asdfghjklsdfghjkzxcvbnm");
+                toEfarScreen.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(toEfarScreen);
+                Log.wtf("startActivity", "asdfghjklsdfghjkzxcvbnm");
+                Log.wtf("startActivity", "asdfghjklsdfghjkzxcvbnm");
+                Log.wtf("startActivity", "asdfghjklsdfghjkzxcvbnm");
+                Log.wtf("startActivity", "asdfghjklsdfghjkzxcvbnm");
+                Log.wtf("startActivity", "asdfghjklsdfghjkzxcvbnm");
+                Log.wtf("startActivity", "asdfghjklsdfghjkzxcvbnm");
+                Log.wtf("startActivity", "asdfghjklsdfghjkzxcvbnm");
+                killActivity();
+                Log.wtf("killActivity", "asdfghjklsdfghjkzxcvbnm");
+                Log.wtf("killActivity", "asdfghjklsdfghjkzxcvbnm");
+                Log.wtf("killActivity", "asdfghjklsdfghjkzxcvbnm");
+                Log.wtf("killActivity", "asdfghjklsdfghjkzxcvbnm");
+                Log.wtf("killActivity", "asdfghjklsdfghjkzxcvbnm");
+                Log.wtf("killActivity", "asdfghjklsdfghjkzxcvbnm");
+                Log.wtf("killActivity", "asdfghjklsdfghjkzxcvbnm");
+            }
+        });
+
     }
 
     public void moveFirebaseRecord(DatabaseReference fromPath, final DatabaseReference toPath) {
@@ -531,6 +615,10 @@ public class ActivityPatientMain extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         overridePendingTransition(0, 0);
+    }
+
+    private void killActivity() {
+        finish();
     }
 
 }

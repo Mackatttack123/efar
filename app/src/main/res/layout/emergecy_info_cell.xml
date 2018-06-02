@@ -11,28 +11,25 @@
         android:id="@+id/imageView5"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="0dp"
         android:background="#eeeeee"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="@+id/messagesButton"
-        android:layout_marginBottom="0dp"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
 
     <ImageView
         android:id="@+id/imageView21"
         android:layout_width="0dp"
         android:layout_height="40dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:background="#dddddd"
-        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/imageView5"
+        android:layout_marginRight="8dp"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"/>
+        android:layout_marginLeft="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"/>
 
     <Button
         android:id="@+id/respondButton"
@@ -48,17 +45,16 @@
         android:textSize="20dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView21"/>
+        app:layout_constraintTop_toBottomOf="@+id/imageView21"
+        android:layout_marginStart="8dp"/>
 
     <Button
         android:id="@+id/messagesButton"
         style="@style/Widget.AppCompat.Button.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="0dp"
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="0dp"
         android:backgroundTint="@color/EFAR_blue"
         android:padding="8dp"
         android:paddingBottom="0dp"
@@ -69,11 +65,26 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/IdTextView"/>
 
+    <ImageButton
+        android:id="@+id/doneButton"
+        style="@style/Widget.AppCompat.Button.Small"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/exit"
+        android:textAllCaps="false"
+        android:textColor="#ff0000"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView21"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/imageView21"/>
+
     <TextView
         android:id="@+id/titleTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:text="Emergency Information"
         android:textAlignment="center"
@@ -81,12 +92,14 @@
         android:textColor="@color/black"
         android:textSize="24dp"
         android:textStyle="bold"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="20dp"
         android:layout_marginLeft="8dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginRight="8dp"
-        app:layout_constraintRight_toRightOf="parent"/>
+        app:layout_constraintTop_toTopOf="@+id/imageView21"
+        android:layout_marginTop="8dp"
+        app:layout_constraintRight_toLeftOf="@+id/doneButton"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView21"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintHorizontal_bias="0.485"/>
 
     <TextView
         android:id="@+id/createdTextView"
@@ -187,7 +200,8 @@
         android:minHeight="0dp"
         android:minWidth="0dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/AddressTextView"/>
+        app:layout_constraintTop_toBottomOf="@+id/AddressTextView"
+        android:layout_marginStart="15dp"/>
 
     <ImageButton
         android:id="@+id/call_button"
@@ -199,15 +213,7 @@
         android:minHeight="0dp"
         android:minWidth="0dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/numberTextView"/>
-
-    <TextView
-        android:id="@+id/spacer"
-        android:layout_width="8dp"
-        android:layout_height="8dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginLeft="50dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@+id/IdTextView"/>
+        app:layout_constraintTop_toBottomOf="@+id/numberTextView"
+        android:layout_marginStart="15dp"/>
 
 </android.support.constraint.ConstraintLayout>

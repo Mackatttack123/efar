@@ -44,6 +44,7 @@ public class ActivityLoginScreen extends AppCompatActivity {
     EditText user_id;
     CheckBox showPasswordCheckBox;
     Button submitButton;
+    Button backButton;
 
     boolean continue_on = true;
 
@@ -58,7 +59,7 @@ public class ActivityLoginScreen extends AppCompatActivity {
         CheckFunctions.runAllAppChecks(ActivityLoginScreen.this, this);
 
         //button to get back to patient screen
-        Button backButton = (Button) findViewById(R.id.login_back_button);
+        backButton = (Button) findViewById(R.id.login_back_button);
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,7 +95,6 @@ public class ActivityLoginScreen extends AppCompatActivity {
         submitButton.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
-
                         closeKeyboard();
                         errorText.setText("Loading...");
                         errorText.setTextColor(Color.BLACK);
@@ -116,11 +116,10 @@ public class ActivityLoginScreen extends AppCompatActivity {
                             }
 
                         }else{
-                            final String name = user_name.getText().toString().toLowerCase();
                             final String id = user_id.getText().toString().toLowerCase();
                             final String password = user_password.getText().toString().toLowerCase();
                             submitButton.setEnabled(false);
-                            checkpassword(password, id, name);
+                            checkpassword(password, id, name_on_database);
                         }
                     }
                 }
@@ -141,6 +140,7 @@ public class ActivityLoginScreen extends AppCompatActivity {
 
     }
 
+    String name_on_database;
     // checks to see if  a user exists in the database
     private void checkUser(String user_name, String user_id) {
         final TextView errorText = (TextView) findViewById(R.id.errorLoginText);
@@ -155,9 +155,10 @@ public class ActivityLoginScreen extends AppCompatActivity {
            public void onDataChange (DataSnapshot snapshot){
                if (snapshot.hasChild(id)) {
                    // check if name matches id in database
-                   String check_name = snapshot.child(id + "/name").getValue().toString().toLowerCase().replace(" ", "");
+                   name_on_database = snapshot.child(id + "/name").getValue().toString();
+                   String name_to_check= snapshot.child(id + "/name").getValue().toString().toLowerCase().replace(" ", "");
 
-                   if (check_name.equals(name)) {
+                   if (name_to_check.equals(name)) {
                         if(snapshot.hasChild(id + "/password")){
                             errorText.setText("Now please enter your password.");
                             errorText.setTextColor(Color.BLACK);
@@ -363,6 +364,7 @@ public class ActivityLoginScreen extends AppCompatActivity {
         }
 
         final TextView errorText = (TextView) findViewById(R.id.errorLoginText);
+        backButton.setEnabled(false);
         //if all matches then go onto the efar screen
         mAuth.signInAnonymously()
                 .addOnCompleteListener(ActivityLoginScreen.this, new OnCompleteListener<AuthResult>() {
@@ -393,6 +395,7 @@ public class ActivityLoginScreen extends AppCompatActivity {
                                     Toast.LENGTH_SHORT).show();
                             errorText.setText("Authentication failed.");
                             submitButton.setEnabled(true);
+                            backButton.setEnabled(true);
                         }
                     }
                 });

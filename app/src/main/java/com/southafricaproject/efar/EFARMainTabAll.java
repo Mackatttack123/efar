@@ -77,11 +77,14 @@ public class EFARMainTabAll extends Fragment{
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.efar_main_all_tab, container, false);
 
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyData", Context.MODE_PRIVATE);
+        final SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyData", Context.MODE_PRIVATE);
         final String id = sharedPreferences.getString("id", "");
 
         final TextView alertText = (TextView)rootView.findViewById(R.id.alert_text);
         alertText.setText("Loading . . .");
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("all_tab_done_loading", false);
+        editor.commit();
 
         adapter = new ArrayAdapter<String>(getActivity(), R.layout.activity_listview, distanceArray){
             @Override
@@ -178,7 +181,6 @@ public class EFARMainTabAll extends Fragment{
         my_lat = gps.getLatitude(); // latitude
         my_long = gps.getLongitude(); // longitude
 
-        SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean("responding_to_other", false);
         editor.commit();
 
@@ -354,6 +356,9 @@ public class EFARMainTabAll extends Fragment{
                     public void run() {
                         updateDistances();
                         adapter.notifyDataSetChanged();
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putBoolean("all_tab_done_loading", true);
+                        editor.commit();
                         alertText.setText("Emergencies within 10km of you will appear here");
                         handler.postDelayed( this, 30 * 1000 );
                     }
@@ -399,6 +404,7 @@ public class EFARMainTabAll extends Fragment{
                         TextView idText = (TextView) cell.findViewById(R.id.IdTextView);
                         final ImageButton call_button = (ImageButton) cell.findViewById(R.id.call_button);
                         final ImageButton to_maps_button = (ImageButton) cell.findViewById(R.id.to_maps_button);
+                        final ImageButton doneButton = (ImageButton) cell.findViewById(R.id.doneButton);
 
                         final String phoneLink = "tel:" + phoneNumber.replaceAll("[^\\d.]", "");
 
@@ -410,6 +416,13 @@ public class EFARMainTabAll extends Fragment{
                                         intent.addCategory(Intent.CATEGORY_BROWSABLE);
                                         intent.setData(Uri.parse(phoneLink));
                                         startActivity(intent);
+                                    }
+                                });
+
+                        doneButton.setOnClickListener(
+                                new Button.OnClickListener() {
+                                    public void onClick(View v) {
+                                        infoDialog.dismiss();
                                     }
                                 });
 
@@ -432,13 +445,18 @@ public class EFARMainTabAll extends Fragment{
                             e.printStackTrace();
                         }
                         SimpleDateFormat displayTimeFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");
-                        String dipslayTime = displayTimeFormat.format(timeCreated);
+                        String displayTime = "";
+                        try {
+                            displayTime = displayTimeFormat.format(timeCreated);
+                        } catch (Exception e) {
+                            displayTime = "N/A";
+                        }
 
                         SpannableString infoTextSpan = new SpannableString("<strong>Information Given: </strong><br>" + info);
 
                         SpannableString responderTextSpan = new SpannableString("<strong>Responder ID(s): </strong> " + efar_ids);
 
-                        SpannableString createdTextSpan = new SpannableString("<strong>Created: </strong> " + dipslayTime);
+                        SpannableString createdTextSpan = new SpannableString("<strong>Created: </strong> " + displayTime);
 
                         SpannableString addressTextSpan = new SpannableString("<strong>Incident Address: </strong><br>" + address);
                         if(address.equals("N/A")){
@@ -503,7 +521,6 @@ public class EFARMainTabAll extends Fragment{
                             setUpButtons(key, time, state, cell);
                         }
                         alert.setView(cell);
-                        alert.setPositiveButton("Close", null);
                         infoDialog = alert.create();
                         infoDialog.show();
                         infoDialog.getWindow().setBackgroundDrawableResource(R.color.light_grey);
@@ -607,7 +624,8 @@ public class EFARMainTabAll extends Fragment{
             @Override
             public void onClick(View view) {
                 boolean responding_to_other = sharedPreferences.getBoolean("responding_to_other", false);
-                if(responding_to_other){
+                String responding_to_key = sharedPreferences.getString("responding_to_key", "");
+                if(responding_to_other || responding_to_key != ""){
                     new AlertDialog.Builder(getContext())
                             .setIcon(android.R.drawable.ic_dialog_alert)
                             .setTitle("Already Responding")

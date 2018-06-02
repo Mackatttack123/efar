@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.content.Context;
 
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.WindowManager;
@@ -17,6 +18,9 @@ import org.json.JSONException;
 
 import java.util.HashMap;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -62,7 +66,7 @@ public class ActivityPatientInfo extends AppCompatActivity {
             }
         });
 
-        Button infoSumbitButton = (Button) findViewById(R.id.patient_info_sumbmit_button);
+        final Button infoSumbitButton = (Button) findViewById(R.id.patient_info_sumbmit_button);
         final EditText patient_phone_number = (EditText) findViewById(R.id.patient_phone_number);
         patient_phone_number.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
         final EditText patient_other_info = (EditText) findViewById(R.id.patient_other_info);
@@ -73,15 +77,45 @@ public class ActivityPatientInfo extends AppCompatActivity {
 
                         final String phone_number = patient_phone_number.getText().toString();
                         final String other_info = patient_other_info.getText().toString();
+                        infoSumbitButton.setEnabled(false);
+                        if(mAuth.getCurrentUser() != null){
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d("LOGIN", "signInAnonymously:success");
+                            try {
+                                add_emergency(phone_number, other_info);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            // go to main screen
+                            finish();
+                        }else{
+                            mAuth.signInAnonymously()
+                                    .addOnCompleteListener(ActivityPatientInfo.this, new OnCompleteListener<AuthResult>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<AuthResult> task) {
+                                            if (task.isSuccessful()) {
+                                                // Sign in success, update UI with the signed-in user's information
+                                                Log.d("LOGIN", "signInAnonymously:success");
+                                                try {
+                                                    add_emergency(phone_number, other_info);
+                                                } catch (JSONException e) {
+                                                    e.printStackTrace();
+                                                }
 
-                        try {
-                            add_emergency(phone_number, other_info);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                                                if (mAuth.getCurrentUser() != null) {
+                                                    mAuth.getCurrentUser().delete();
+                                                }
+                                                // go to main screen
+                                                finish();
+                                            } else {
+                                                // If sign in fails, display a message to the user.
+                                                infoSumbitButton.setEnabled(true);
+                                                Log.w("LOGIN", "signInAnonymously:failure", task.getException());
+                                            }
+                                        }
+
+                                    });
                         }
-
-                        // go to main screen
-                        finish();
                     }
                 }
         );

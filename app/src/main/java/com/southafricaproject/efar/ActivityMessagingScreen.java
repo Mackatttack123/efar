@@ -33,27 +33,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-class Messaage {
-    private String name;
-    private String timestamp;
-    private String message;
-
-    // constructor
-    public Messaage(String name, String timestamp, String message) {
-        this.name = name;
-        this.timestamp = timestamp;
-        this.message = message;
-    }
-
-    // getter
-    public String getName() { return name; }
-    public String getTimestamp() { return timestamp; }
-    public String getMessage() { return message; }
-}
-
 public class ActivityMessagingScreen extends AppCompatActivity {
 
-    final ArrayList<Messaage> messageArray = new ArrayList<Messaage>();
+    final ArrayList<Message> messageArray = new ArrayList<Message>();
 
     /* for constant listview updating every few seconds */
     public ArrayAdapter adapter;
@@ -77,7 +59,7 @@ public class ActivityMessagingScreen extends AppCompatActivity {
         key = bundle.getString("key");
         CheckFunctions.checkIfEmergencyInDatabase(ActivityMessagingScreen.this, this, key);
 
-        adapter = new ArrayAdapter<Messaage>(this, R.layout.activity_listview, messageArray) {
+        adapter = new ArrayAdapter<Message>(this, R.layout.activity_listview, messageArray) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
@@ -120,7 +102,7 @@ public class ActivityMessagingScreen extends AppCompatActivity {
                     right_message_backgroud.setBackgroundColor(Color.argb(255, 2, 55, 98));
                     return right_cell;
                 } else {
-                    name_left.setText(name);
+                    name_left.setText(user_name);
                     if(dipslayTime != null){
                         time_left.setText(dipslayTime);
                     }
@@ -230,7 +212,7 @@ public class ActivityMessagingScreen extends AppCompatActivity {
         String message = dataSnapshot.child("message").getValue().toString();
         String timestamp = dataSnapshot.child("timestamp").getValue().toString();
 
-        Messaage msg_to_add = new Messaage(name, timestamp, message);
+        Message msg_to_add = new Message(name, timestamp, message);
 
         messageArray.add(msg_to_add);
         adapter.notifyDataSetChanged();
