@@ -50,6 +50,7 @@ public class ActivityPatientMain extends AppCompatActivity {
 
     Button toLoginButton;
     Button toEmergencyListButton;
+    Button helpMeButton;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -81,7 +82,7 @@ public class ActivityPatientMain extends AppCompatActivity {
 
         //sign in anonymously if they are not an efar or bypass to efar home if they are
         mAuth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+        final FirebaseUser currentUser = mAuth.getCurrentUser();
         final SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
         boolean efar_logged_in = sharedPreferences.getBoolean("logged_in", false);
         boolean screen_bypass = sharedPreferences.getBoolean("screen_bypass", true);
@@ -95,7 +96,7 @@ public class ActivityPatientMain extends AppCompatActivity {
             editor.apply();
         }
 
-        final Button helpMeButton = (Button)findViewById(R.id.help_me_button);
+        helpMeButton = (Button)findViewById(R.id.help_me_button);
 
         //TODO: show the patient approximatly how far away the efar is via the progress bar
         final ProgressBar distance_progress = (ProgressBar) findViewById(R.id.patient_progress_bar);
@@ -105,7 +106,56 @@ public class ActivityPatientMain extends AppCompatActivity {
         FirebaseDatabase.getInstance().getReference().child("emergencies").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                final String userEmergencyKey = sharedPreferences.getString("emergency_key", "");
+                if(dataSnapshot.exists()){
+                    if(dataSnapshot.getKey().toString().equals(userEmergencyKey)){
+                        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+                        DatabaseReference emergencies_ref = database.getReference("emergencies/");
+                        emergencies_ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(final DataSnapshot snapshot) {
+                                if(currentUser == null){
+                                    mAuth.signInAnonymously()
+                                            .addOnCompleteListener(ActivityPatientMain.this, new OnCompleteListener<AuthResult>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                                    if (task.isSuccessful()) {
+                                                        // Sign in success, update UI with the signed-in user's information
+                                                        if (snapshot.hasChild(userEmergencyKey)) {
+                                                            DatabaseReference emergency_ping_ref = database.getReference("emergencies/" + userEmergencyKey + "/ping");
+                                                            final int min = 0;
+                                                            final int max = 10000;
+                                                            Random r = new Random();
+                                                            int random = r.nextInt((max - min) + 1) + min;
+                                                            emergency_ping_ref.setValue(random);
+                                                        }
+                                                        if (mAuth.getCurrentUser() != null) {
+                                                            mAuth.getCurrentUser().delete();
+                                                        }
+                                                    } else {
 
+                                                    }
+                                                }
+                                            });
+                                }else{
+                                    if (snapshot.hasChild(userEmergencyKey)) {
+                                        DatabaseReference emergency_ping_ref = database.getReference("emergencies/" + userEmergencyKey + "/ping");
+                                        final int min = 0;
+                                        final int max = 10000;
+                                        Random r = new Random();
+                                        int random = r.nextInt((max - min) + 1) + min;
+                                        emergency_ping_ref.setValue(random);
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+                }
             }
 
             @Override
@@ -480,45 +530,6 @@ public class ActivityPatientMain extends AppCompatActivity {
             );
             toEmergencyListButton.setVisibility(View.GONE);
         }
-
-        // check for a pre-existing emergency on this phone by pinging the database and activating the listener above
-        final Handler handler = new Handler();
-        final int delay = 1000; //milliseconds
-
-        handler.postDelayed(new Runnable(){
-            public void run(){
-                final String userEmergencyKey = sharedPreferences.getString("emergency_key", "");
-                if(!userEmergencyKey.equals("")){
-                    String userEmergencyState = sharedPreferences.getString("user_emergency_state", "");
-                    Log.wtf("KEY ------------->", userEmergencyKey + " STATE -------->: " + userEmergencyState);
-                    final FirebaseDatabase database = FirebaseDatabase.getInstance();
-                    DatabaseReference emergencies_ref = database.getReference("emergencies/");
-                    emergencies_ref.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot snapshot) {
-                            if (snapshot.hasChild(userEmergencyKey)) {
-                                DatabaseReference emergency_ping_ref = database.getReference("emergencies/" + userEmergencyKey + "/ping");
-                                final int min = 0;
-                                final int max = 10000;
-                                Random r = new Random();
-                                int random = r.nextInt((max - min) + 1) + min;
-                                emergency_ping_ref.setValue(random);
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
-
-                }else{
-                    handler.postDelayed(this, delay);
-                }
-
-            }
-        }, delay);
-
     }
 
     // Starts up login screen

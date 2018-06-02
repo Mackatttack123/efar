@@ -66,7 +66,6 @@ public class EFARMainTabYou extends Fragment{
     String info;
     String key;
     String state;
-    Boolean all_tab_done_loading = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -75,84 +74,67 @@ public class EFARMainTabYou extends Fragment{
         final ListView emergencyInfoListView = (ListView) rootView.findViewById(R.id.emergencyInfoListView);
         final SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyData", Context.MODE_PRIVATE);
 
-        all_tab_done_loading = sharedPreferences.getBoolean("all_tab_done_loading", false);
-        key = sharedPreferences.getString("responding_to_key", "");
-        responding_ids  = sharedPreferences.getString("responding_to_id", "");
-        time = sharedPreferences.getString("responding_to_time", "");
-        address = sharedPreferences.getString("responding_to_address", "");
-        latitude = sharedPreferences.getString("responding_to_latitude", "");
-        longitude = sharedPreferences.getString("responding_to_longitude", "");
-        phoneNumber = sharedPreferences.getString("responding_to_phone", "");
-        info = sharedPreferences.getString("responding_to_info", "");
-        state = sharedPreferences.getString("responding_to_state", "");
-
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean("responding_to_other", false);
-        editor.commit();
-
         final TextView messageTextView = (TextView)rootView.findViewById(R.id.messageTextView);
         messageTextView.setText("Loading . . .");
-
-        final Handler handler = new Handler();
-        final int delay = 100; //milliseconds
-        handler.postDelayed(new Runnable(){
-            public void run(){
-                if(all_tab_done_loading){
-                    Adapter emergencyInfoAdapter = new EmergencyInfoCustomAdapter();
-                    emergencyInfoListView.setAdapter((ListAdapter) emergencyInfoAdapter);
-                    messageTextView.setText("Information about an emergency you are responding to will appear here");
-                }else{
-                    all_tab_done_loading = sharedPreferences.getBoolean("all_tab_done_loading", false);
-                    handler.postDelayed(this, delay);
-                }
-            }
-        }, 100);
 
         FirebaseDatabase.getInstance().getReference().child("emergencies").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                if(getActivity() != null && dataSnapshot.exists()){
-                    SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyData", Context.MODE_PRIVATE);
-                    String responding_to_key = sharedPreferences.getString("responding_to_key", "");
-                    if(dataSnapshot.getKey().equals(responding_to_key)){
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putBoolean("responding_to_other", true);
-                        editor.commit();
+                if(dataSnapshot.exists() && dataSnapshot.hasChild("responding_efar")){
+                    String id = sharedPreferences.getString("id", "");
+                    if(dataSnapshot.child("responding_efar").getValue().toString().contains(id)){
+                        key = dataSnapshot.getKey();
+                        responding_ids  = dataSnapshot.child("responding_efar").getValue().toString();
+                        time = dataSnapshot.child("creation_date").getValue().toString();
+                        latitude = dataSnapshot.child("latitude").getValue().toString();
+                        longitude = dataSnapshot.child("longitude").getValue().toString();
+                        address = getCompleteAddressString(Double.parseDouble(latitude), Double.parseDouble(longitude));
+                        phoneNumber = dataSnapshot.child("phone_number").getValue().toString();
+                        info = dataSnapshot.child("other_info").getValue().toString();
+                        state = dataSnapshot.child("state").getValue().toString();
+
+                        emergencyInfoListView.setVisibility(View.VISIBLE);
+                        Adapter emergencyInfoAdapter = new EmergencyInfoCustomAdapter();
+                        emergencyInfoListView.setAdapter((ListAdapter) emergencyInfoAdapter);
                     }
                 }
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                if(dataSnapshot.exists() && dataSnapshot.hasChild("responding_efar")){
+                    String id = sharedPreferences.getString("id", "");
+                    if(dataSnapshot.child("responding_efar").getValue().toString().contains(id)){
+                        key = dataSnapshot.getKey();
+                        responding_ids  = dataSnapshot.child("responding_efar").getValue().toString();
+                        time = dataSnapshot.child("creation_date").getValue().toString();
+                        latitude = dataSnapshot.child("latitude").getValue().toString();
+                        longitude = dataSnapshot.child("longitude").getValue().toString();
+                        address = getCompleteAddressString(Double.parseDouble(latitude), Double.parseDouble(longitude));
+                        phoneNumber = dataSnapshot.child("phone_number").getValue().toString();
+                        info = dataSnapshot.child("other_info").getValue().toString();
+                        state = dataSnapshot.child("state").getValue().toString();
+                        emergencyInfoListView.setVisibility(View.VISIBLE);
+                        Adapter emergencyInfoAdapter = new EmergencyInfoCustomAdapter();
+                        emergencyInfoListView.setAdapter((ListAdapter) emergencyInfoAdapter);
+                    }
+                }
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                if(getActivity() != null && dataSnapshot.exists()){
-                    SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyData", Context.MODE_PRIVATE);
-                    String responding_to_key = sharedPreferences.getString("responding_to_key", "");
-                    if(dataSnapshot.getKey().equals(responding_to_key)){
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putBoolean("responding_to_other", false);
-                        editor.putString("responding_to_key", "");
-                        editor.commit();
+                if(dataSnapshot.exists() && dataSnapshot.hasChild("responding_efar")){
+                    String id = sharedPreferences.getString("id", "");
+                    if(dataSnapshot.child("responding_efar").getValue().toString().contains(id)){
+                        emergencyInfoListView.setVisibility(View.GONE);
+                        messageTextView.setText("Information about an emergency you are responding to will appear here");
                     }
                 }
-
             }
 
             @Override
             public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-                if(getActivity() != null){
-                    SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyData", Context.MODE_PRIVATE);
-                    String responding_to_key = sharedPreferences.getString("responding_to_key", "");
-                    if(dataSnapshot.getKey().equals(responding_to_key)){
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putBoolean("responding_to_other", false);
-                        editor.putString("responding_to_key", "");
-                        editor.commit();
-                    }
-                }
+
             }
 
             @Override
@@ -161,7 +143,7 @@ public class EFARMainTabYou extends Fragment{
             }
         });
 
-
+        messageTextView.setText("Information about an emergency you are responding to will appear here");
         return rootView;
     }
 
@@ -297,38 +279,6 @@ public class EFARMainTabYou extends Fragment{
                         }
                     });
                 }
-
-                final Handler handler = new Handler();
-                final int delay = 3000; //milliseconds
-                handler.postDelayed(new Runnable(){
-                    public void run(){
-                        FirebaseDatabase.getInstance().getReference().child("emergencies/" + key).addListenerForSingleValueEvent(new ValueEventListener() {
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                if(!dataSnapshot.exists()){
-                                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                                    editor.putBoolean("responding_to_other", false);
-                                    editor.putString("responding_to_key", "");
-                                    editor.commit();
-                                    cell.setVisibility(View.GONE);
-                                }
-                            }
-                            public void onCancelled(DatabaseError databaseError) {
-
-                            }
-                        });
-                        key = sharedPreferences.getString("responding_to_key", "");
-                        responding_ids  = sharedPreferences.getString("responding_to_id", "");
-                        time = sharedPreferences.getString("responding_to_time", "");
-                        address = sharedPreferences.getString("responding_to_address", "");
-                        latitude = sharedPreferences.getString("responding_to_latitude", "");
-                        longitude = sharedPreferences.getString("responding_to_longitude", "");
-                        phoneNumber = sharedPreferences.getString("responding_to_phone", "");
-                        info = sharedPreferences.getString("responding_to_info", "");
-                        state = sharedPreferences.getString("responding_to_state", "");
-                        notifyDataSetChanged();
-                        handler.postDelayed(this, delay);
-                    }
-                }, delay);
             }
 
             TextView timeText = (TextView) cell.findViewById(R.id.createdTextView);
@@ -448,6 +398,22 @@ public class EFARMainTabYou extends Fragment{
             return cell;
         }
 
+    }
+
+    public String getCompleteAddressString(double LATITUDE, double LONGITUDE) {
+        if(getContext() != null){
+            Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
+            List<Address> addresses = null;
+            try {
+                addresses = geocoder.getFromLocation(LATITUDE, LONGITUDE, 1);
+                return addresses.get(0).getAddressLine(0);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return "N/A";
+            }
+        }else{
+            return "N/A";
+        }
     }
 }
 

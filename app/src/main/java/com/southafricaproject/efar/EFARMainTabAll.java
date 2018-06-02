@@ -82,9 +82,6 @@ public class EFARMainTabAll extends Fragment{
 
         final TextView alertText = (TextView)rootView.findViewById(R.id.alert_text);
         alertText.setText("Loading . . .");
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean("all_tab_done_loading", false);
-        editor.commit();
 
         adapter = new ArrayAdapter<String>(getActivity(), R.layout.activity_listview, distanceArray){
             @Override
@@ -134,18 +131,6 @@ public class EFARMainTabAll extends Fragment{
                     //cell.setBackgroundColor(Color.argb(150, 0, 255, 0));
                     activeStateText.setText("Responded to by you");
                     activeStateText.setTextColor(Color.rgb(2, 55, 98));
-                    final SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyData", Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("responding_to_key", emergenecyArray.get(position).getKey());
-                    editor.putString("responding_to_id", emergenecyArray.get(position).getRespondingEfar());
-                    editor.putString("responding_to_time", emergenecyArray.get(position).getCreationDate());
-                    editor.putString("responding_to_address", emergenecyArray.get(position).getAddress());
-                    editor.putString("responding_to_latitude", emergenecyArray.get(position).getLatitude().toString());
-                    editor.putString("responding_to_longitude", emergenecyArray.get(position).getLongitude().toString());
-                    editor.putString("responding_to_phone", emergenecyArray.get(position).getPhone());
-                    editor.putString("responding_to_info", emergenecyArray.get(position).getInfo());
-                    editor.putString("responding_to_state", emergenecyArray.get(position).getState());
-                    editor.commit();
                 }else{
                     String[] responders = emergenecyArray.get(position).getRespondingEfar().split(",");
                     int num = responders.length;
@@ -181,6 +166,7 @@ public class EFARMainTabAll extends Fragment{
         my_lat = gps.getLatitude(); // latitude
         my_long = gps.getLongitude(); // longitude
 
+        SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean("responding_to_other", false);
         editor.commit();
 
@@ -193,7 +179,7 @@ public class EFARMainTabAll extends Fragment{
                     String e_info = dataSnapshot.child("other_info").getValue().toString();
                     Double e_lat = Double.parseDouble(dataSnapshot.child("latitude").getValue().toString());
                     Double e_long = Double.parseDouble(dataSnapshot.child("longitude").getValue().toString());
-                    String e_address = "";
+                    String e_address;
                     try {
                         e_address = getCompleteAddressString(e_lat, e_long);
                     }catch (Exception e) {
@@ -203,6 +189,12 @@ public class EFARMainTabAll extends Fragment{
                     String e_respondingEfar;
                     try {
                         e_respondingEfar = dataSnapshot.child("responding_efar").getValue().toString();
+                        String id = sharedPreferences.getString("id", "");
+                        if (e_respondingEfar.contains(id)) {
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putBoolean("responding_to_other", true);
+                            editor.commit();
+                        }
                     }catch (Exception e){
                         e_respondingEfar = "N/A";
                     }
@@ -214,15 +206,6 @@ public class EFARMainTabAll extends Fragment{
                         adapter.notifyDataSetChanged();
                         listView.setVisibility(View.VISIBLE);
                         listView.setBackgroundColor(Color.WHITE);
-                    }
-                    if(getActivity() != null){
-                        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyData", Context.MODE_PRIVATE);
-                        String responding_to_key = sharedPreferences.getString("responding_to_key", "");
-                        if(e_key.equals(responding_to_key)){
-                            SharedPreferences.Editor editor = sharedPreferences.edit();
-                            editor.putBoolean("responding_to_other", true);
-                            editor.commit();
-                        }
                     }
                 }catch (NullPointerException e){
                     Log.wtf("added", "not yet");
@@ -264,28 +247,6 @@ public class EFARMainTabAll extends Fragment{
                         distanceArray.add(String.format("%.2f", distance(e_lat, e_long, my_lat, my_long)) + " km");
                         adapter.notifyDataSetChanged();
                     }
-                    if(getActivity() != null){
-                        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyData", Context.MODE_PRIVATE);
-                        String responding_to_key = sharedPreferences.getString("responding_to_key", "");
-                        if(e_key.equals(responding_to_key)){
-                            SharedPreferences.Editor editor = sharedPreferences.edit();
-                            editor.putString("responding_to_id", e_respondingEfar);
-                            editor.putString("responding_to_time", e_creationDate);
-                            editor.putString("responding_to_address", e_address);
-                            editor.putString("responding_to_latitude", e_lat.toString());
-                            editor.putString("responding_to_longitude",e_long.toString());
-                            editor.putString("responding_to_phone", e_phone_number);
-                            editor.putString("responding_to_info", e_info);
-                            editor.putString("responding_to_state", e_state);
-                            if(e_state.equals("0")){
-                                editor.putBoolean("responding_to_other", false);
-                            }
-                            if(e_state.equals("1") && !e_respondingEfar.contains(id)){
-                                editor.putBoolean("responding_to_other", false);
-                            }
-                            editor.commit();
-                        }
-                    }
                 }catch (NullPointerException e){
                     Log.wtf("added", "not yet");
                 }
@@ -312,33 +273,11 @@ public class EFARMainTabAll extends Fragment{
                     listView.setVisibility(View.VISIBLE);
                     Log.d("SIZE:", String.valueOf(emergenecyArray.size()));
                 }
-
-                if(getActivity() != null){
-                    SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyData", Context.MODE_PRIVATE);
-                    String responding_to_key = sharedPreferences.getString("responding_to_key", "");
-                    if(key.equals(responding_to_key)){
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putBoolean("responding_to_other", false);
-                        editor.putString("responding_to_key", "");
-                        editor.commit();
-                        editor.commit();
-                    }
-                }
-
             }
 
             @Override
             public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-                if(getActivity() != null){
-                    SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyData", Context.MODE_PRIVATE);
-                    String responding_to_key = sharedPreferences.getString("responding_to_key", "");
-                    if(dataSnapshot.getKey().equals(responding_to_key)){
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putBoolean("responding_to_other", false);
-                        editor.putString("responding_to_key", "");
-                        editor.commit();
-                    }
-                }
+
             }
 
             @Override
@@ -356,9 +295,6 @@ public class EFARMainTabAll extends Fragment{
                     public void run() {
                         updateDistances();
                         adapter.notifyDataSetChanged();
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putBoolean("all_tab_done_loading", true);
-                        editor.commit();
                         alertText.setText("Emergencies within 10km of you will appear here");
                         handler.postDelayed( this, 30 * 1000 );
                     }
@@ -564,13 +500,17 @@ public class EFARMainTabAll extends Fragment{
     }
 
     private String getCompleteAddressString(double LATITUDE, double LONGITUDE) {
-        Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
-        List<Address> addresses = null;
-        try {
-            addresses = geocoder.getFromLocation(LATITUDE, LONGITUDE, 1);
-            return addresses.get(0).getAddressLine(0);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(getContext() != null){
+            Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
+            List<Address> addresses = null;
+            try {
+                addresses = geocoder.getFromLocation(LATITUDE, LONGITUDE, 1);
+                return addresses.get(0).getAddressLine(0);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return "N/A";
+            }
+        }else{
             return "N/A";
         }
     }
@@ -624,8 +564,7 @@ public class EFARMainTabAll extends Fragment{
             @Override
             public void onClick(View view) {
                 boolean responding_to_other = sharedPreferences.getBoolean("responding_to_other", false);
-                String responding_to_key = sharedPreferences.getString("responding_to_key", "");
-                if(responding_to_other || responding_to_key != ""){
+                if(responding_to_other){
                     new AlertDialog.Builder(getContext())
                             .setIcon(android.R.drawable.ic_dialog_alert)
                             .setTitle("Already Responding")
@@ -643,7 +582,6 @@ public class EFARMainTabAll extends Fragment{
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     SharedPreferences.Editor editor = sharedPreferences.edit();
-                                    editor.putString("responding_to_key", keyToUpdate);
                                     editor.putBoolean("responding_to_other", true);
                                     editor.commit();
                                     final FirebaseDatabase database = FirebaseDatabase.getInstance();
