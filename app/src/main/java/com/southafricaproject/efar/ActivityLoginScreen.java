@@ -336,6 +336,7 @@ public class ActivityLoginScreen extends AppCompatActivity {
                 .setPositiveButton("Accept", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        submitButton.setEnabled(false);
                         finalLogin(name, id);
                     }
 
@@ -391,6 +392,7 @@ public class ActivityLoginScreen extends AppCompatActivity {
                             Toast.makeText(ActivityLoginScreen.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                             errorText.setText("Authentication failed.");
+                            submitButton.setEnabled(true);
                         }
                     }
                 });

@@ -102,3 +102,5 @@ public class GPSTrackingService extends Service {
         super.onTaskRemoved(rootIntent);
     }
 }
+
+

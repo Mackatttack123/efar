@@ -44,7 +44,7 @@ public class ActivityMessagingScreen extends AppCompatActivity {
     public ArrayAdapter adapter;
     public ListView listView;
 
-    public String key = "";
+    public String key;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +59,7 @@ public class ActivityMessagingScreen extends AppCompatActivity {
 
         //check if the emergency is still in the database and kick efar out of activity and back to main if it is not
         Bundle bundle = getIntent().getExtras();
-        final String key = bundle.getString("key");
+        key = bundle.getString("key");
         CheckFunctions.checkIfEmergencyInDatabase(ActivityMessagingScreen.this, this, key);
 
         adapter = new ArrayAdapter<SpannableString>(this, R.layout.activity_listview, messageArray){
@@ -172,6 +172,7 @@ public class ActivityMessagingScreen extends AppCompatActivity {
         data.put("message",message.trim());
         messsage_ref.child(message_key.getKey()).setValue(data);
     }
+
     private void displayMessages(DataSnapshot dataSnapshot){
         String user = dataSnapshot.child("user").getValue().toString();
         String message = dataSnapshot.child("message").getValue().toString();

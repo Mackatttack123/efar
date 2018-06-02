@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -181,7 +182,7 @@ public class ActivityEFARMainTabbed extends AppCompatActivity {
                 case 0:
                     return "All Emergencies";
                 case 1:
-                    return "Your Emergencies";
+                    return "Responding To";
             }
             return null;
         }

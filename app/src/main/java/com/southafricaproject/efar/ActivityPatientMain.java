@@ -518,7 +518,6 @@ public class ActivityPatientMain extends AppCompatActivity {
     // blinking text animation
     public void blinkText(){
         TextView userUpdate = (TextView) findViewById(R.id.user_update );
-
         Animation anim = new AlphaAnimation(1.0f, 0.3f);
         anim.setDuration(800); //manage the time of the blink with this parameter
         anim.setStartOffset(20);

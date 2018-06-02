@@ -73,10 +73,6 @@
             android:screenOrientation="portrait">
         </activity>
         <activity
-            android:name=".ActivityEmergencyInfo"
-            android:screenOrientation="portrait">
-        </activity>
-        <activity
             android:name=".ActivityEFARMainTabbed"
             android:label="@string/title_activity_efarmain_tabbed"
             android:theme="@style/AppTheme"

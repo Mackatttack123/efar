@@ -4,19 +4,27 @@ package com.southafricaproject.efar;
  * Created by mackfitzpatrick on 4/17/18.
  */
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.telephony.PhoneNumberUtils;
+import android.text.Html;
+import android.text.SpannableString;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +32,9 @@ import android.view.ViewGroup;
 
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -33,6 +44,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
@@ -60,7 +72,7 @@ public class EFARMainTabAll extends Fragment{
     public ListView listView;
     private double my_lat;
     private double my_long;
-    int responding_to_counter = 0;
+    AlertDialog infoDialog;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -121,7 +133,18 @@ public class EFARMainTabAll extends Fragment{
                     //cell.setBackgroundColor(Color.argb(150, 0, 255, 0));
                     activeStateText.setText("Responded to by you");
                     activeStateText.setTextColor(Color.rgb(2, 55, 98));
-                    responding_to_counter += 1;
+                    final SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("responding_to_key", emergenecyArray.get(position).getKey());
+                    editor.putString("responding_to_id", emergenecyArray.get(position).getRespondingEfar());
+                    editor.putString("responding_to_time", emergenecyArray.get(position).getCreationDate());
+                    editor.putString("responding_to_address", emergenecyArray.get(position).getAddress());
+                    editor.putString("responding_to_latitude", emergenecyArray.get(position).getLatitude().toString());
+                    editor.putString("responding_to_longitude", emergenecyArray.get(position).getLongitude().toString());
+                    editor.putString("responding_to_phone", emergenecyArray.get(position).getPhone());
+                    editor.putString("responding_to_info", emergenecyArray.get(position).getInfo());
+                    editor.putString("responding_to_state", emergenecyArray.get(position).getState());
+                    editor.commit();
                 }else{
                     String[] responders = emergenecyArray.get(position).getRespondingEfar().split(",");
                     int num = responders.length;
@@ -156,6 +179,11 @@ public class EFARMainTabAll extends Fragment{
         GPSTracker gps = new GPSTracker(getActivity());
         my_lat = gps.getLatitude(); // latitude
         my_long = gps.getLongitude(); // longitude
+
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("responding_to_other", false);
+        editor.commit();
+
         FirebaseDatabase.getInstance().getReference().child("emergencies").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -187,9 +215,19 @@ public class EFARMainTabAll extends Fragment{
                         listView.setVisibility(View.VISIBLE);
                         listView.setBackgroundColor(Color.WHITE);
                     }
+                    if(getActivity() != null){
+                        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                        String responding_to_key = sharedPreferences.getString("responding_to_key", "");
+                        if(e_key.equals(responding_to_key)){
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putBoolean("responding_to_other", true);
+                            editor.commit();
+                        }
+                    }
                 }catch (NullPointerException e){
                     Log.wtf("added", "not yet");
                 }
+
             }
 
             @Override
@@ -226,7 +264,28 @@ public class EFARMainTabAll extends Fragment{
                         distanceArray.add(String.format("%.2f", distance(e_lat, e_long, my_lat, my_long)) + " km");
                         adapter.notifyDataSetChanged();
                     }
-
+                    if(getActivity() != null){
+                        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                        String responding_to_key = sharedPreferences.getString("responding_to_key", "");
+                        if(e_key.equals(responding_to_key)){
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putString("responding_to_id", e_respondingEfar);
+                            editor.putString("responding_to_time", e_creationDate);
+                            editor.putString("responding_to_address", e_address);
+                            editor.putString("responding_to_latitude", e_lat.toString());
+                            editor.putString("responding_to_longitude",e_long.toString());
+                            editor.putString("responding_to_phone", e_phone_number);
+                            editor.putString("responding_to_info", e_info);
+                            editor.putString("responding_to_state", e_state);
+                            if(e_state.equals("0")){
+                                editor.putBoolean("responding_to_other", false);
+                            }
+                            if(e_state.equals("1") && !e_respondingEfar.contains(id)){
+                                editor.putBoolean("responding_to_other", false);
+                            }
+                            editor.commit();
+                        }
+                    }
                 }catch (NullPointerException e){
                     Log.wtf("added", "not yet");
                 }
@@ -254,11 +313,32 @@ public class EFARMainTabAll extends Fragment{
                     Log.d("SIZE:", String.valueOf(emergenecyArray.size()));
                 }
 
+                if(getActivity() != null){
+                    SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                    String responding_to_key = sharedPreferences.getString("responding_to_key", "");
+                    if(key.equals(responding_to_key)){
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putBoolean("responding_to_other", false);
+                        editor.putString("responding_to_key", "");
+                        editor.commit();
+                        editor.commit();
+                    }
+                }
+
             }
 
             @Override
             public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
+                if(getActivity() != null){
+                    SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyData", Context.MODE_PRIVATE);
+                    String responding_to_key = sharedPreferences.getString("responding_to_key", "");
+                    if(dataSnapshot.getKey().equals(responding_to_key)){
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putBoolean("responding_to_other", false);
+                        editor.putString("responding_to_key", "");
+                        editor.commit();
+                    }
+                }
             }
 
             @Override
@@ -291,25 +371,146 @@ public class EFARMainTabAll extends Fragment{
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
 
-                String mapLink = "http://maps.google.com/?q=" + emergenecyArray.get(position).getLatitude() + ","  + emergenecyArray.get(position).getLongitude();
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-                Date timeCreated = null;
-                try {
-                    timeCreated = simpleDateFormat.parse(emergenecyArray.get(position).getCreationDate());
-                } catch (ParseException e) {
-                    e.printStackTrace();
+                final SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyData", Context.MODE_PRIVATE);
+
+                String efar_id = sharedPreferences.getString("id", "");
+                if(emergenecyArray.get(position).getRespondingEfar().contains(efar_id)){
+                    TabLayout tabs = (TabLayout)getActivity().findViewById(R.id.tabs);
+                    tabs.getTabAt(1).select();
+                }else{
+                    if(getActivity() != null){
+                        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+
+                        LayoutInflater inflater = getActivity().getLayoutInflater();
+                        View cell = inflater.inflate(R.layout.emergecy_info_cell, null);
+
+                        String time = emergenecyArray.get(position).getCreationDate();
+                        final String latitude = emergenecyArray.get(position).getLatitude().toString();
+                        final String longitude = emergenecyArray.get(position).getLongitude().toString();
+                        String address = emergenecyArray.get(position).getAddress();
+                        String phoneNumber = emergenecyArray.get(position).getPhone();
+                        String info = emergenecyArray.get(position).getInfo();
+                        String efar_ids = emergenecyArray.get(position).getRespondingEfar();
+                        String key = emergenecyArray.get(position).getKey();
+                        String state = emergenecyArray.get(position).getState();
+
+                        TextView timeText = (TextView) cell.findViewById(R.id.createdTextView);
+                        TextView addressText = (TextView) cell.findViewById(R.id.AddressTextView);
+                        TextView phoneNumberText = (TextView) cell.findViewById(R.id.numberTextView);
+                        TextView infoText = (TextView) cell.findViewById(R.id.infoTextView);
+                        TextView idText = (TextView) cell.findViewById(R.id.IdTextView);
+                        final ImageButton call_button = (ImageButton) cell.findViewById(R.id.call_button);
+                        final ImageButton to_maps_button = (ImageButton) cell.findViewById(R.id.to_maps_button);
+
+                        final String phoneLink = "tel:" + phoneNumber.replaceAll("[^\\d.]", "");
+
+                        call_button.setOnClickListener(
+                                new Button.OnClickListener() {
+                                    public void onClick(View v) {
+                                        Intent intent = new Intent();
+                                        intent.setAction(Intent.ACTION_VIEW);
+                                        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                                        intent.setData(Uri.parse(phoneLink));
+                                        startActivity(intent);
+                                    }
+                                });
+
+                        to_maps_button.setOnClickListener(
+                                new Button.OnClickListener() {
+                                    public void onClick(View v) {
+                                        Intent intent = new Intent();
+                                        intent.setAction(Intent.ACTION_VIEW);
+                                        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                                        intent.setData(Uri.parse("http://maps.google.com/?q=" + latitude + "," + longitude));
+                                        startActivity(intent);
+                                    }
+                                });
+
+                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                        Date timeCreated = null;
+                        try {
+                            timeCreated = simpleDateFormat.parse(time);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        SimpleDateFormat displayTimeFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");
+                        String dipslayTime = displayTimeFormat.format(timeCreated);
+
+                        SpannableString infoTextSpan = new SpannableString("<strong>Information Given: </strong><br>" + info);
+
+                        SpannableString responderTextSpan = new SpannableString("<strong>Responder ID(s): </strong> " + efar_ids);
+
+                        SpannableString createdTextSpan = new SpannableString("<strong>Created: </strong> " + dipslayTime);
+
+                        SpannableString addressTextSpan = new SpannableString("<strong>Incident Address: </strong><br>" + address);
+                        if(address.equals("N/A")){
+                            addressTextSpan = new SpannableString("<strong>Incident Location: </strong> (" + latitude + ", " + longitude + ")");
+                        }
+
+
+                        String formattedNumber = phoneNumber;
+
+                        if(!phoneNumber.equals("N/A")){
+                            if(phoneNumber.startsWith("27")){
+                                phoneNumber = phoneNumber.substring(2, phoneNumber.length());
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                    formattedNumber = "+27 " + PhoneNumberUtils.formatNumber(phoneNumber,Locale.getDefault().getCountry());
+                                } else {
+                                    //Deprecated method
+                                    formattedNumber = "+27 " + PhoneNumberUtils.formatNumber(phoneNumber);
+                                }
+                            }else{
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                    formattedNumber = PhoneNumberUtils.formatNumber(phoneNumber,Locale.getDefault().getCountry());
+                                } else {
+                                    //Deprecated method
+                                    formattedNumber = PhoneNumberUtils.formatNumber(phoneNumber);
+                                }
+                            }
+                        }else{
+                            call_button.setEnabled(false);
+                            call_button.setBackgroundResource(R.drawable.call_disabled);
+                        }
+
+
+                        SpannableString phoneTextSpan = new SpannableString("<strong>Contact Number: </strong> " + formattedNumber);
+
+                        if (Build.VERSION.SDK_INT >= 24) {
+                            // for 24 api and more
+                            addressTextSpan = SpannableString.valueOf(Html.fromHtml(String.valueOf(addressTextSpan), 0));
+                            phoneTextSpan = SpannableString.valueOf(Html.fromHtml(String.valueOf(phoneTextSpan), 0));
+                            createdTextSpan = SpannableString.valueOf(Html.fromHtml(String.valueOf(createdTextSpan), 0));
+                            responderTextSpan = SpannableString.valueOf(Html.fromHtml(String.valueOf(responderTextSpan), 0));
+                            infoTextSpan = SpannableString.valueOf(Html.fromHtml(String.valueOf(infoTextSpan), 0));
+                        } else {
+                            // or for older api
+                            addressTextSpan = SpannableString.valueOf(Html.fromHtml(String.valueOf(addressTextSpan)));
+                            phoneTextSpan = SpannableString.valueOf(Html.fromHtml(String.valueOf(phoneTextSpan)));
+                            createdTextSpan = SpannableString.valueOf(Html.fromHtml(String.valueOf(createdTextSpan)));
+                            responderTextSpan = SpannableString.valueOf(Html.fromHtml(String.valueOf(responderTextSpan)));
+                            infoTextSpan = SpannableString.valueOf(Html.fromHtml(String.valueOf(infoTextSpan)));
+                        }
+
+                        timeText.setText(createdTextSpan);
+                        //to make the link clickable in the textview
+                        addressText.setText(addressTextSpan);
+                        phoneNumberText.setText(phoneTextSpan);
+                        infoText.setText(infoTextSpan);
+                        if(!efar_ids.equals("") && !efar_ids.equals("N/A")) {
+                            idText.setText(responderTextSpan);
+                        }else{
+                            idText.setText("");
+                        }
+                        if(getActivity() != null){
+                            setUpButtons(key, time, state, cell);
+                        }
+                        alert.setView(cell);
+                        alert.setPositiveButton("Close", null);
+                        infoDialog = alert.create();
+                        infoDialog.show();
+                        infoDialog.getWindow().setBackgroundDrawableResource(R.color.light_grey);
+                    }
                 }
-                SimpleDateFormat displayTimeFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");
-                String dipslayTime = displayTimeFormat.format(timeCreated);
-                launchEmergencyInfoScreen(emergenecyArray.get(position).getCreationDate(),
-                        emergenecyArray.get(position).getLatitude().toString(),
-                        emergenecyArray.get(position).getLongitude().toString(),
-                        emergenecyArray.get(position).getAddress(),
-                        emergenecyArray.get(position).getPhone(),
-                        emergenecyArray.get(position).getInfo(),
-                        emergenecyArray.get(position).getRespondingEfar(),
-                        emergenecyArray.get(position).getKey(),
-                        emergenecyArray.get(position).getState());
             }
 
 
@@ -320,21 +521,6 @@ public class EFARMainTabAll extends Fragment{
         client2 = new GoogleApiClient.Builder(getActivity()).addApi(AppIndex.API).build();
 
         return rootView;
-    }
-
-    // Goes to emergency info tab to send more to EFARs
-    private void launchEmergencyInfoScreen(String time, String latitude, String longitude, String address, String phoneNumber, String info, String id, String key, String state) {
-        Intent toEmergnecyInfoScreen = new Intent(getActivity(), ActivityEmergencyInfo.class);
-        toEmergnecyInfoScreen.putExtra("time", time);
-        toEmergnecyInfoScreen.putExtra("lat", latitude);
-        toEmergnecyInfoScreen.putExtra("long", longitude);
-        toEmergnecyInfoScreen.putExtra("address", address);
-        toEmergnecyInfoScreen.putExtra("phoneNumber", phoneNumber);
-        toEmergnecyInfoScreen.putExtra("info", info);
-        toEmergnecyInfoScreen.putExtra("id", id);
-        toEmergnecyInfoScreen.putExtra("key", key);
-        toEmergnecyInfoScreen.putExtra("state", state);
-        startActivity(toEmergnecyInfoScreen);
     }
 
     //distance functions via: http://www.geodatasource.com/developers/java
@@ -382,16 +568,6 @@ public class EFARMainTabAll extends Fragment{
         for (int i = 0; i < emergenecyArray.size(); i++) {
             distanceArray.add(String.format("%.2f", distance(emergenecyArray.get(i).getLatitude(), emergenecyArray.get(i).getLongitude(), my_lat, my_long)) + " km");
         }
-        if(getActivity() != null){
-            SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyData", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            if(responding_to_counter > 0){
-                editor.putBoolean("responding_to_other", true);
-            }else{
-                editor.putBoolean("responding_to_other", false);
-            }
-            editor.commit();
-        }
     }
 
     private void refreshContent(final SwipeRefreshLayout pullToRefresh){
@@ -401,7 +577,100 @@ public class EFARMainTabAll extends Fragment{
                 adapter.notifyDataSetChanged();
                 pullToRefresh.setRefreshing(false);
             }
-        }, 1000);
+        }, 3000);
 
     }
+
+    private void setUpButtons(final String key, final String time, final String state, View view) {
+
+        final Button messageButton = (Button) view.findViewById(R.id.messagesButton);
+        final Button respondButton = (Button) view.findViewById(R.id.respondButton);
+
+        final SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyData", Context.MODE_PRIVATE);
+
+        if(state.equals("1") || state.equals("1.5")){
+            messageButton.setVisibility(View.VISIBLE);
+            messageButton.setText("Message EFARs");
+            messageButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // store emergency key to be passed to messages
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("messaging_key", key);
+                    editor.commit();
+                    launchMessagingScreen(key);
+                }
+            });
+        }else {
+            messageButton.setVisibility(View.GONE);
+        }
+        respondButton.setVisibility(View.VISIBLE);
+        respondButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                boolean responding_to_other = sharedPreferences.getBoolean("responding_to_other", false);
+                if(responding_to_other){
+                    new AlertDialog.Builder(getContext())
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .setTitle("Already Responding")
+                            .setMessage("You are already responding to another emergency!")
+                            .setPositiveButton("Okay", null)
+                            .show();
+                }else{
+                    new AlertDialog.Builder(getContext())
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .setTitle("Respond to Emergency:")
+                            .setMessage("Are you able to respond to this emergency?")
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                            {
+                                final String keyToUpdate = key;
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                                    editor.putString("responding_to_key", keyToUpdate);
+                                    editor.putBoolean("responding_to_other", true);
+                                    editor.commit();
+                                    final FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                    if(!state.equals("1.5")) {
+                                        DatabaseReference emergency_ref = database.getReference("emergencies/" + keyToUpdate + "/state");
+                                        emergency_ref.setValue("1");
+                                    }
+                                    DatabaseReference ref = database.getReference("emergencies/" + keyToUpdate);
+                                    ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            DatabaseReference efar_ref = database.getReference("emergencies/" + keyToUpdate + "/responding_efar");
+                                            if(dataSnapshot.hasChild("responding_efar")){
+                                                String other_efars = dataSnapshot.child("responding_efar").getValue().toString();
+                                                String new_id_set = other_efars + ", " + sharedPreferences.getString("id", "");
+                                                efar_ref.setValue(new_id_set);
+                                            }else{
+                                                efar_ref.setValue(sharedPreferences.getString("id", ""));
+                                            }
+                                            TabLayout tabs = (TabLayout)getActivity().findViewById(R.id.tabs);
+                                            tabs.getTabAt(1).select();
+                                            infoDialog.dismiss();
+
+                                        }
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+                                            // None
+                                        }
+                                    });
+                                }
+                            })
+                            .setNegativeButton("No", null)
+                            .show();
+                }
+            }
+        });
+    }
+
+    // Goes to patient info tab to send more to EFARs
+    private void launchMessagingScreen(String key) {
+        Intent launchMessagingScreen = new Intent(getContext(), ActivityMessagingScreen.class);
+        launchMessagingScreen.putExtra("key", key);
+        startActivity(launchMessagingScreen);
+    }
+
 }
