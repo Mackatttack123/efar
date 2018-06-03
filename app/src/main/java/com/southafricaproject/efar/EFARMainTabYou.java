@@ -410,7 +410,7 @@ public class EFARMainTabYou extends Fragment{
                     }
                 }
             }else{
-                call_button.setEnabled(false);
+                call_button.setVisibility(View.GONE);
             }
 
 

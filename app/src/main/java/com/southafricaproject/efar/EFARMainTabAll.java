@@ -96,11 +96,13 @@ public class EFARMainTabAll extends Fragment{
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-                SimpleDateFormat displayTimeFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");
+                SimpleDateFormat displayTimeFormat = new SimpleDateFormat("HH:mm");
                 String dipslayTime = displayTimeFormat.format(timeCreated);
                 TextView timeText = (TextView) cell.findViewById(R.id.timeTextView_right);
                 timeText.setText(dipslayTime);
                 TextView distanceText =  (TextView) cell.findViewById(R.id.distanceTextView);
+                TextView addressText =  (TextView) cell.findViewById(R.id.addressTextView);
+                addressText.setText(emergenecyArray.get(position).getAddress());
                 distanceText.setText(distanceArray.get(position).toString() + " away");
 
                 GPSTracker gps = new GPSTracker(getActivity());
@@ -301,7 +303,7 @@ public class EFARMainTabAll extends Fragment{
                 }, 0);
             }
             public void onCancelled(DatabaseError databaseError) {
-                alertText.setText("Error: Could not load data");
+                alertText.setText("Error: Could not load data. Pull down to try and refresh.");
             }
         });
 
@@ -420,7 +422,7 @@ public class EFARMainTabAll extends Fragment{
                                 }
                             }
                         }else{
-                            call_button.setEnabled(false);
+                            call_button.setVisibility(View.GONE);
                         }
 
 
@@ -527,8 +529,12 @@ public class EFARMainTabAll extends Fragment{
     private void refreshContent(final SwipeRefreshLayout pullToRefresh){
         new Handler().postDelayed(new Runnable() {
             @Override public void run() {
-                updateDistances();
-                adapter.notifyDataSetChanged();
+                //updateDistances();
+                //adapter.notifyDataSetChanged();
+                if(getActivity() != null){
+                    getActivity().finish();
+                    startActivity(getActivity().getIntent());
+                }
                 pullToRefresh.setRefreshing(false);
             }
         }, 3000);

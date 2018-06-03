@@ -2,6 +2,8 @@ package com.southafricaproject.efar;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.content.Context;
 
@@ -18,6 +20,7 @@ import android.widget.TextView;
 
 import org.json.JSONException;
 
+import java.io.IOException;
 import java.util.HashMap;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -31,6 +34,8 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import java.util.Calendar;
 
 
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -120,6 +125,9 @@ public class ActivityPatientInfo extends AppCompatActivity {
             data.put("other_info","N/A");
         }
 
+        String address = getCompleteAddressString(gps.getLatitude(),gps.getLongitude());
+
+        data.put("address",address);
         data.put("latitude",Double.toString(gps.getLatitude()));
         data.put("longitude",Double.toString(gps.getLongitude()));
         Date currentTime = Calendar.getInstance().getTime();
@@ -151,7 +159,7 @@ public class ActivityPatientInfo extends AppCompatActivity {
         return;
     }
 
-    //disables the werid transition beteen activities
+    //disables the weird transition between activities
     @Override
     public void onPause() {
         super.onPause();
@@ -163,6 +171,18 @@ public class ActivityPatientInfo extends AppCompatActivity {
         Intent toPatientScreen = new Intent(this, ActivityPatientMain.class);
         startActivity(toPatientScreen);
         finish();
+    }
+
+    public String getCompleteAddressString(double LATITUDE, double LONGITUDE) {
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        List<Address> addresses;
+        try {
+            addresses = geocoder.getFromLocation(LATITUDE, LONGITUDE, 1);
+            return addresses.get(0).getAddressLine(0);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "N/A";
+        }
     }
 }
 

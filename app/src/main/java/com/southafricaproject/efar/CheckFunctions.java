@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.support.v4.app.ActivityCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -104,13 +105,16 @@ public class CheckFunctions {
                                         } catch (android.content.ActivityNotFoundException anfe) {
                                             context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
                                         }
-                                        activity.finish();
-                                        activity.startActivity(activity.getIntent());
+                                        LogoutProcedure.logout(context, activity);
+                                        ActivityCompat.finishAffinity(activity);  // Close all activites
+                                        System.exit(0);
                                     }
                                 }).setNegativeButton("Exit App", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        activity.finishAndRemoveTask();
+                                        LogoutProcedure.logout(context, activity);
+                                        ActivityCompat.finishAffinity(activity);  // Close all activites
+                                        System.exit(0);
                                     }
                                 }).setCancelable(false);
                         if (!((Activity) context).isFinishing()) {
