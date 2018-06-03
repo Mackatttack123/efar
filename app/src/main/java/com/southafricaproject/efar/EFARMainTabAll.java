@@ -421,7 +421,6 @@ public class EFARMainTabAll extends Fragment{
                             }
                         }else{
                             call_button.setEnabled(false);
-                            call_button.setBackgroundResource(R.drawable.call_disabled);
                         }
 
 
