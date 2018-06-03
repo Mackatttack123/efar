@@ -48,23 +48,6 @@
         app:layout_constraintTop_toBottomOf="@+id/imageView21"
         android:layout_marginStart="8dp"/>
 
-    <Button
-        android:id="@+id/messagesButton"
-        style="@style/Widget.AppCompat.Button.Small"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:backgroundTint="@color/EFAR_blue"
-        android:padding="8dp"
-        android:paddingBottom="0dp"
-        android:paddingTop="0dp"
-        android:text="Message EFARs"
-        android:textAppearance="@style/TextAppearance.Design.Tab"
-        android:textColor="#ffffff"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/IdTextView"/>
-
     <ImageButton
         android:id="@+id/doneButton"
         style="@style/Widget.AppCompat.Button.Small"
@@ -188,32 +171,46 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/infoTextView"/>
 
-    <ImageButton
+    <Button
         android:id="@+id/to_maps_button"
-        style="@style/Widget.AppCompat.Button"
-        android:layout_width="105dp"
-        android:layout_height="23dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="4dp"
-        android:background="@drawable/go_to_maps_formater"
-        android:elevation="0dp"
-        android:minHeight="0dp"
-        android:minWidth="0dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:backgroundTint="@color/EFAR_blue"
+        android:drawableLeft="@drawable/ic_place_black_24dp"
+        android:drawableTint="#ffffff"
+        android:text="Go To Maps"
+        android:textColor="#ffffff"
+        android:textSize="16dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/AddressTextView"
-        android:layout_marginStart="15dp"/>
+        app:layout_constraintTop_toBottomOf="@+id/AddressTextView"/>
 
-    <ImageButton
+    <Button
         android:id="@+id/call_button"
-        android:layout_width="60dp"
-        android:layout_height="23dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="4dp"
-        android:background="@drawable/call_pressed_formater"
-        android:minHeight="0dp"
-        android:minWidth="0dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:backgroundTint="@color/EFAR_blue"
+        android:drawableLeft="@drawable/ic_phone_black_24dp"
+        android:drawableTint="#ffffff"
+        android:text=" Call"
+        android:textColor="#ffffff"
+        android:textSize="16dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/numberTextView"
-        android:layout_marginStart="15dp"/>
+        app:layout_constraintTop_toBottomOf="@+id/numberTextView"/>
+
+    <Button
+        android:id="@+id/messagesButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:backgroundTint="@color/EFAR_blue"
+        android:drawableLeft="@drawable/ic_forum_black_24dp"
+        android:drawableTint="#ffffff"
+        android:text="Message EFARs"
+        android:textColor="#ffffff"
+        android:textSize="16dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/IdTextView"/>
 
 </android.support.constraint.ConstraintLayout>

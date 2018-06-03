@@ -338,8 +338,8 @@ public class EFARMainTabAll extends Fragment{
                         TextView phoneNumberText = (TextView) cell.findViewById(R.id.numberTextView);
                         TextView infoText = (TextView) cell.findViewById(R.id.infoTextView);
                         TextView idText = (TextView) cell.findViewById(R.id.IdTextView);
-                        final ImageButton call_button = (ImageButton) cell.findViewById(R.id.call_button);
-                        final ImageButton to_maps_button = (ImageButton) cell.findViewById(R.id.to_maps_button);
+                        final Button call_button = (Button) cell.findViewById(R.id.call_button);
+                        final Button to_maps_button = (Button) cell.findViewById(R.id.to_maps_button);
                         final ImageButton doneButton = (ImageButton) cell.findViewById(R.id.doneButton);
 
                         final String phoneLink = "tel:" + phoneNumber.replaceAll("[^\\d.]", "");
