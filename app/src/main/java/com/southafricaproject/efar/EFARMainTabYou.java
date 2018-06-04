@@ -9,12 +9,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Handler;
 
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -22,23 +20,18 @@ import android.os.Bundle;
 import android.telephony.PhoneNumberUtils;
 import android.text.Html;
 import android.text.SpannableString;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.Adapter;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -49,18 +42,16 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Random;
+import java.util.Map;
 
 public class EFARMainTabYou extends Fragment{
 
@@ -73,6 +64,12 @@ public class EFARMainTabYou extends Fragment{
     String info;
     String key;
     String state;
+    Boolean area_unsafe;
+    Boolean severe_trauma;
+    Boolean heart_attack;
+    Button notSafeButton;
+    Button severeTraumaButton;
+    Button heartAttackButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -99,6 +96,36 @@ public class EFARMainTabYou extends Fragment{
                         phoneNumber = dataSnapshot.child("phone_number").getValue().toString();
                         info = dataSnapshot.child("other_info").getValue().toString();
                         state = dataSnapshot.child("state").getValue().toString();
+                        if(dataSnapshot.child("area_unsafe").exists()) {
+                            String area_safe_string = dataSnapshot.child("area_unsafe").getValue().toString();
+                            if(area_safe_string.equals("true")){
+                                area_unsafe = true;
+                            }else{
+                                area_unsafe = false;
+                            }
+                        }else{
+                            area_unsafe = false;
+                        }
+                        if(dataSnapshot.child("severe_trauma").exists()) {
+                            String area_safe_string = dataSnapshot.child("severe_trauma").getValue().toString();
+                            if(area_safe_string.equals("true")){
+                                severe_trauma = true;
+                            }else{
+                                severe_trauma = false;
+                            }
+                        }else{
+                            severe_trauma = false;
+                        }
+                        if(dataSnapshot.child("heart_attack").exists()) {
+                            String area_safe_string = dataSnapshot.child("heart_attack").getValue().toString();
+                            if(area_safe_string.equals("true")){
+                                heart_attack = true;
+                            }else{
+                                heart_attack = false;
+                            }
+                        }else{
+                            heart_attack = false;
+                        }
 
                         emergencyInfoListView.setVisibility(View.VISIBLE);
                         Adapter emergencyInfoAdapter = new EmergencyInfoCustomAdapter();
@@ -121,6 +148,37 @@ public class EFARMainTabYou extends Fragment{
                         phoneNumber = dataSnapshot.child("phone_number").getValue().toString();
                         info = dataSnapshot.child("other_info").getValue().toString();
                         state = dataSnapshot.child("state").getValue().toString();
+                        if(dataSnapshot.child("area_unsafe").exists()) {
+                            String area_safe_string = dataSnapshot.child("area_unsafe").getValue().toString();
+                            if(area_safe_string.equals("true")){
+                                area_unsafe = true;
+                            }else{
+                                area_unsafe = false;
+                            }
+                        }else{
+                            area_unsafe = false;
+                        }
+                        if(dataSnapshot.child("severe_trauma").exists()) {
+                            String area_safe_string = dataSnapshot.child("severe_trauma").getValue().toString();
+                            if(area_safe_string.equals("true")){
+                                severe_trauma = true;
+                            }else{
+                                severe_trauma = false;
+                            }
+                        }else{
+                            severe_trauma = false;
+                        }
+                        if(dataSnapshot.child("heart_attack").exists()) {
+                            String area_safe_string = dataSnapshot.child("heart_attack").getValue().toString();
+                            if(area_safe_string.equals("true")){
+                                heart_attack = true;
+                            }else{
+                                heart_attack = false;
+                            }
+                        }else{
+                            heart_attack = false;
+                        }
+
                         emergencyInfoListView.setVisibility(View.VISIBLE);
                         Adapter emergencyInfoAdapter = new EmergencyInfoCustomAdapter();
                         emergencyInfoListView.setAdapter((ListAdapter) emergencyInfoAdapter);
@@ -201,6 +259,48 @@ public class EFARMainTabYou extends Fragment{
 
                 final Button messageButton = (Button) cell.findViewById(R.id.messagesButton);
                 final Button endButton = (Button) cell.findViewById(R.id.endButton);
+                notSafeButton = (Button) cell.findViewById(R.id.notSafeButton);
+                severeTraumaButton = (Button) cell.findViewById(R.id.severeTraumaButton);
+                heartAttackButton = (Button) cell.findViewById(R.id.heartAttackButton);
+                notSafeButton.setVisibility(View.GONE);
+                severeTraumaButton.setVisibility(View.GONE);
+                heartAttackButton.setVisibility(View.GONE);
+
+                if(!area_unsafe){
+                    notSafeButton.setText("Area\nUnsafe");
+                }else{
+                    notSafeButton.setText("Area\nSafe");
+                }
+                notSafeButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(!area_unsafe){
+                            areaUnsafeAlert();
+                        }else{
+                            areaSafeAlert();
+                        }
+                    }
+                });
+
+                severeTraumaButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        severeTraumaAlert();
+                    }
+                });
+                if(severe_trauma){
+                    severeTraumaButton.setEnabled(false);
+                }
+
+                heartAttackButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        heartAttackAlert();
+                    }
+                });
+                if(heart_attack){
+                    heartAttackButton.setEnabled(false);
+                }
 
                 messageButton.setVisibility(View.VISIBLE);
                 messageButton.setText("Message EFARs");
@@ -227,6 +327,9 @@ public class EFARMainTabYou extends Fragment{
                             launchEfarWriteUpScreen(key);
                         }
                     });
+                    notSafeButton.setVisibility(View.VISIBLE);
+                    severeTraumaButton.setVisibility(View.VISIBLE);
+                    heartAttackButton.setVisibility(View.VISIBLE);
                 }else{
                     endButton.setVisibility(View.VISIBLE);
                     endButton.setText("On Scene");
@@ -279,6 +382,9 @@ public class EFARMainTabYou extends Fragment{
                                                                     launchEfarWriteUpScreen(key);
                                                                 }
                                                             });
+                                                            notSafeButton.setVisibility(View.VISIBLE);
+                                                            severeTraumaButton.setVisibility(View.VISIBLE);
+                                                            heartAttackButton.setVisibility(View.VISIBLE);
                                                         } else {
                                                             new AlertDialog.Builder(getActivity())
                                                                     .setTitle("ERROR:")
@@ -313,6 +419,9 @@ public class EFARMainTabYou extends Fragment{
                                                 launchEfarWriteUpScreen(key);
                                             }
                                         });
+                                        notSafeButton.setVisibility(View.VISIBLE);
+                                        severeTraumaButton.setVisibility(View.VISIBLE);
+                                        heartAttackButton.setVisibility(View.VISIBLE);
                                     }
                                 }
                             });
@@ -378,6 +487,9 @@ public class EFARMainTabYou extends Fragment{
             }
 
 
+            if(info.equals("")){
+                info = "N/A";
+            }
             SpannableString infoTextSpan = new SpannableString("<strong>Information Given: </strong><br>" + info);
 
             SpannableString responderTextSpan = new SpannableString("<strong>Responder ID(s): </strong> " + responding_ids);
@@ -461,6 +573,139 @@ public class EFARMainTabYou extends Fragment{
             }
         }else{
             return "N/A";
+        }
+    }
+
+    public void areaUnsafeAlert() {
+        if (getActivity() != null) {
+            final SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyData", Context.MODE_PRIVATE);
+            AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+            alert.setTitle("AREA UNSAFE:");
+            alert.setMessage("Are you sure you want to notify other EFARs that the emergency scene is unsafe?");
+            alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    // Create new emergency in the database
+                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    DatabaseReference messsage_ref = database.getReference("emergencies/" + key + "/messages");
+                    DatabaseReference message_key = messsage_ref.push();
+                    Map<String, String> data = new HashMap<String, String>();
+                    String name = sharedPreferences.getString("name", "");
+                    data.put("user", "ALERT FROM: " + name);
+                    Date currentTime = Calendar.getInstance().getTime();
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                    String timestamp = simpleDateFormat.format(currentTime);
+                    data.put("timestamp", timestamp);
+                    data.put("message", "AREA UNSAFE AT EMERGENCY SCENE!");
+                    messsage_ref.child(message_key.getKey()).setValue(data);
+                    database.getReference("emergencies/" + key + "/area_unsafe").setValue("true");
+                    area_unsafe = true;
+                    notSafeButton.setText("Area\nSafe");
+                    notSafeButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            areaSafeAlert();
+                        }
+                    });
+                }
+            });
+            alert.setNegativeButton("No", null);
+            alert.show();
+        }
+    }
+
+    public void areaSafeAlert() {
+        if (getActivity() != null) {
+            final SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyData", Context.MODE_PRIVATE);
+            AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+            alert.setTitle("AREA NOW SAFE:");
+            alert.setMessage("Are you sure you want to notify other EFARs that the emergency scene is now safe?");
+            alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    // Create new emergency in the database
+                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    DatabaseReference messsage_ref = database.getReference("emergencies/" + key + "/messages");
+                    DatabaseReference message_key = messsage_ref.push();
+                    Map<String, String> data = new HashMap<String, String>();
+                    String name = sharedPreferences.getString("name", "");
+                    data.put("user", "ALERT FROM: " + name);
+                    data.put("area_unsafe", "false");
+                    Date currentTime = Calendar.getInstance().getTime();
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                    String timestamp = simpleDateFormat.format(currentTime);
+                    data.put("timestamp", timestamp);
+                    data.put("message", "EMERGENCY ARE IS NOW SAFE.");
+                    messsage_ref.child(message_key.getKey()).setValue(data);
+                    database.getReference("emergencies/" + key + "/area_unsafe").setValue("false");
+                    area_unsafe = false;
+                    notSafeButton.setText("Area\nUnsafe");
+                    notSafeButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            areaUnsafeAlert();
+                        }
+                    });
+                }
+            });
+            alert.setNegativeButton("No", null);
+            alert.show();
+        }
+    }
+
+    public void severeTraumaAlert(){
+        if(getActivity() != null) {
+            final SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyData", Context.MODE_PRIVATE);
+            AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+            alert.setTitle("SEVERE TRAUMA:");
+            alert.setMessage("Are you sure you want to notify other EFARs that this emergency involves a severe trauma?");
+            alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    // Create new emergency in the database
+                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    DatabaseReference messsage_ref = database.getReference("emergencies/" + key + "/messages");
+                    DatabaseReference message_key = messsage_ref.push();
+                    Map<String, String> data = new HashMap<String, String>();
+                    String name = sharedPreferences.getString("name", "");
+                    data.put("user", "ALERT FROM: " + name);
+                    Date currentTime = Calendar.getInstance().getTime();
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                    String timestamp = simpleDateFormat.format(currentTime);
+                    data.put("timestamp", timestamp);
+                    data.put("message", "AT LEAST ONE SEVERE TRAUMA PATIENT AT THE EMERGENCY SCENE!");
+                    messsage_ref.child(message_key.getKey()).setValue(data);
+                    database.getReference("emergencies/" + key + "/severe_trauma").setValue("true");
+                }
+            });
+            alert.setNegativeButton("No", null);
+            alert.show();
+        }
+    }
+
+    public void heartAttackAlert(){
+        if(getActivity() != null) {
+            final SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyData", Context.MODE_PRIVATE);
+            AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+            alert.setTitle("HEART ATTACK:");
+            alert.setMessage("Are you sure you want to notify other EFARs that this emergency involves a heart attack?");
+            alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    // Create new emergency in the database
+                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    DatabaseReference messsage_ref = database.getReference("emergencies/" + key + "/messages");
+                    DatabaseReference message_key = messsage_ref.push();
+                    Map<String, String> data = new HashMap<String, String>();
+                    String name = sharedPreferences.getString("name", "");
+                    data.put("user", "ALERT FROM: " + name);
+                    Date currentTime = Calendar.getInstance().getTime();
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                    String timestamp = simpleDateFormat.format(currentTime);
+                    data.put("timestamp", timestamp);
+                    data.put("message", "HEART ATTACK PATIENT AT THE EMERGENCY SCENE!");
+                    messsage_ref.child(message_key.getKey()).setValue(data);
+                    database.getReference("emergencies/" + key + "/heart_attack").setValue("true");
+                }
+            });
+            alert.setNegativeButton("No", null);
+            alert.show();
         }
     }
 }

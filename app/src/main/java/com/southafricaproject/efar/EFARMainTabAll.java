@@ -390,6 +390,9 @@ public class EFARMainTabAll extends Fragment{
                             displayTime = "N/A";
                         }
 
+                        if(info.equals("")){
+                            info = "N/A";
+                        }
                         SpannableString infoTextSpan = new SpannableString("<strong>Information Given: </strong><br>" + info);
 
                         SpannableString responderTextSpan = new SpannableString("<strong>Responder ID(s): </strong> " + efar_ids);

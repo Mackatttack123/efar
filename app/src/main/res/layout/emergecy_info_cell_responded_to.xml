@@ -11,14 +11,14 @@
         android:id="@+id/imageView5"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="0dp"
         android:background="#eeeeee"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="@+id/messagesButton"
-        app:layout_constraintVertical_bias="0.49"/>
+        app:layout_constraintVertical_bias="0.0"/>
 
     <Button
         android:id="@+id/endButton"
@@ -45,13 +45,14 @@
         android:layout_height="40dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:background="#dddddd"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"/>
+        android:layout_marginEnd="8dp"
+        app:layout_constraintHorizontal_bias="0.0"/>
 
     <TextView
         android:id="@+id/titleTextView"
@@ -85,12 +86,8 @@
         android:textSize="14dp"
         android:layout_marginLeft="16dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginRight="16dp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/endButton"/>
+        app:layout_constraintTop_toBottomOf="@+id/call_button"/>
 
     <TextView
         android:id="@+id/AddressTextView"
@@ -100,7 +97,6 @@
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
         android:text="Address: "
         android:textColor="#333"
         android:textColorLink="#0000FF"
@@ -108,7 +104,8 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/createdTextView"/>
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/notSafeButton"/>
 
     <TextView
         android:id="@+id/numberTextView"
@@ -136,14 +133,14 @@
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
         android:text="Information Given:"
         android:textColor="#333"
         android:textSize="14dp"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/call_button"/>
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/createdTextView"/>
 
     <TextView
         android:id="@+id/IdTextView"
@@ -153,7 +150,7 @@
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:text="Redponder ID:"
         android:textColor="#333"
         android:textSize="14dp"
@@ -207,5 +204,40 @@
         android:textSize="16dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/IdTextView"/>
+
+    <Button
+        android:id="@+id/notSafeButton"
+        style="@android:style/Widget.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:text=""
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/endButton"/>
+
+    <Button
+        android:id="@+id/severeTraumaButton"
+        style="@android:style/Widget.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Severe&#10;Trauma"
+        app:layout_constraintLeft_toRightOf="@+id/notSafeButton"
+        app:layout_constraintRight_toLeftOf="@+id/heartAttackButton"
+        app:layout_constraintTop_toBottomOf="@+id/endButton"/>
+
+    <Button
+        android:id="@+id/heartAttackButton"
+        style="@android:style/Widget.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Heart&#10;Attack"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/endButton"/>
 
 </android.support.constraint.ConstraintLayout>

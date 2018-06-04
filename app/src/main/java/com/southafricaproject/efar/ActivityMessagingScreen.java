@@ -93,7 +93,19 @@ public class ActivityMessagingScreen extends AppCompatActivity {
                 SimpleDateFormat displayTimeFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");
                 String dipslayTime = displayTimeFormat.format(timeCreated);
 
-                if (user_name.contains(name)) {
+                if (user_name.contains("ALERT")) {
+                    textMessage_right.setText(message);
+                    name_right.setText(user_name);
+                    if(dipslayTime != null){
+                        time_right.setText(dipslayTime);
+                    }
+                    if(message.contains("EMERGENCY ARE IS NOW SAFE.")){
+                        right_message_backgroud.setBackgroundColor(Color.argb(255, 0, 170, 0));
+                    }else {
+                        right_message_backgroud.setBackgroundColor(Color.argb(255, 200, 0, 0));
+                    }
+                    return right_cell;
+                }else if (user_name.contains(name)) {
                     textMessage_right.setText(message);
                     name_right.setText(user_name);
                     if(dipslayTime != null){
