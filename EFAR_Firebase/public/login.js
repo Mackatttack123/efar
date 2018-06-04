@@ -1,7 +1,3 @@
-document.addEventListener("DOMContentLoaded", function(event) { 
-  //TODO: do stuff here when page loads
-});
-
 function attempt_login(){
 	console.log("checking name");
 	var id_entered = document.getElementById("Username").value;
@@ -17,7 +13,7 @@ function attempt_login(){
 	  }else if(errorCode === 'auth/invalid-email') {
 	    alert('Invalid user.');
 	  } else {
-	    alert(errorMessage);
+	    alert("Wrong username or password.");
 	  }
 	});
 	firebase.auth().onAuthStateChanged(function(user) {
@@ -26,7 +22,7 @@ function attempt_login(){
 			user_email = user.email;
 			user_name = user_email.replace('@email.com','');
 			// ...
-			window.location = 'dispatcherhome.html';
+			window.location = 'dashboard.html';
 		} 
 	});
 }

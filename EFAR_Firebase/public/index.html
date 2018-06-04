@@ -1,204 +1,209 @@
-<!DOCTYPE html>
-<html >
-<head>
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-  <!-- firebase setup -->
-  <script src="https://www.gstatic.com/firebasejs/4.12.0/firebase.js"></script>
-  <script>
-    // Initialize Firebase
-    var config = {
-      apiKey: "AIzaSyBFuWlzZHNH98eipwY9H9H3eLoKKugGDUM",
-      authDomain: "efarapp-a5f18.firebaseapp.com",
-      databaseURL: "https://efarapp-a5f18.firebaseio.com",
-      projectId: "efarapp-a5f18",
-      storageBucket: "efarapp-a5f18.appspot.com",
-      messagingSenderId: "788853816459"
-    };
-    firebase.initializeApp(config);
-  </script>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
 
-  <!-- checking for firebase auth -->
-  <script>
-    var user_email;
-    var user_id;
-    firebase.auth().onAuthStateChanged(function(user) {
-      if (user) {
-        // User is signed in.
-        window.location = 'dispatcherhome.html';
-        // ...
-      } else {
-        document.getElementsByTagName("html")[0].style.visibility = "visible";
+    <link rel="shortcut icon" href="icon.ico">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+    <!-- firebase setup -->
+    <script src="https://www.gstatic.com/firebasejs/4.12.0/firebase.js"></script>
+    <script>
+      // Initialize Firebase
+      var config = {
+        apiKey: "AIzaSyBFuWlzZHNH98eipwY9H9H3eLoKKugGDUM",
+        authDomain: "efarapp-a5f18.firebaseapp.com",
+        databaseURL: "https://efarapp-a5f18.firebaseio.com",
+        projectId: "efarapp-a5f18",
+        storageBucket: "efarapp-a5f18.appspot.com",
+        messagingSenderId: "788853816459"
+      };
+      firebase.initializeApp(config);
+    </script>
+
+    <!-- checking for firebase auth -->
+    <script>
+      var user_email;
+      var user_id;
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          // User is signed in.
+          user_email = user.email;
+          user_id = user_email.replace('@email.com','');
+          firebase.database().ref('/dispatchers/' + user_id + "/dipatcher_name").set(user_id);
+          // ...
+          window.location = 'dashboard.html';
+        }else{
+          document.getElementsByTagName("html")[0].style.visibility = "visible";
+        }
+      });
+    </script>
+
+     <!-- P5.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.10/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.10/addons/p5.dom.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.10/addons/p5.sound.min.js"></script>
+
+    <!-- my javascript -->
+    <script src="login.js"></script>
+    <link rel="stylesheet" href="hidepage.css">
+
+
+    <style type="text/css">
+
+      .btn {
+        color: grey;
       }
-    });
-  </script>
 
-  <!-- Style sheets -->
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="generator" content="Mobirise v4.6.6, mobirise.com">
-  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
-  <link rel="shortcut icon" href="assets/images/efar-logo-black-122x130.png" type="image/x-icon">
-  <meta name="description" content="">
-  <title>Login</title>
-  <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
-  <link rel="stylesheet" href="assets/bootstrap/css/bootstrap-grid.min.css">
-  <link rel="stylesheet" href="assets/bootstrap/css/bootstrap-reboot.min.css">
-  <link rel="stylesheet" href="assets/dropdown/css/style.css">
-  <link rel="stylesheet" href="assets/theme/css/style.css">
-  <link rel="stylesheet" href="assets/mobirise/css/mbr-additional.css" type="text/css">
-  <link rel="stylesheet" href="assets/web/assets/mobirise-icons/mobirise-icons.css">
-  <link rel="stylesheet" href="assets/tether/tether.min.css">
-  <link rel="stylesheet" href="hidepage.css">
+      .btn:hover {
+        color: var(--efar-blue);
+      }
 
-  <!-- P5.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.10/p5.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.10/addons/p5.dom.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.10/addons/p5.sound.min.js"></script>
+      .cont-efar {
+        color: white;
+        font-weight: normal;
+      }
 
-  <!-- my javascript -->
-  <script src="patientinfo.js"></script>
-  <script src="login.js"></script>
-  
-</head>
+      .cont-efar:hover {
+        color: white;
+      }
 
-<body style="background-color: #000000 !important;">
-  <!-- Page top navigation bar-->
-  <section class="menu cid-qNlaB05VQl" once="menu" id="menu1-e">
-    <nav class="navbar navbar-expand beta-menu navbar-dropdown align-items-center navbar-fixed-top navbar-toggleable-sm">
-        <!--
-        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <div class="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </button>
-        -->
-        <div class="menu-logo">
-            <div class="navbar-brand">
-                <span class="navbar-logo">
-                    <a href="http://www.efarsystem.com/">
-                         <img src="assets/images/efar-logo-black-122x130.png" alt="efar-logo-black-122x130" title="" style="height: 3.8rem;">
-                    </a>
-                </span>
-                <span class="navbar-caption-wrap"><a class="navbar-caption text-white display-4" href="http://www.efarsystem.com/">
-                        EFAR</a>
-                </span>
-            </div>
+      /* roboto-regular - latin */
+      @font-face {
+        font-family: 'Roboto';
+        font-style: normal;
+        font-weight: 400;
+        src: url('../fonts/roboto-v18-latin-regular.eot'); /* IE9 Compat Modes */
+        src: local('Roboto'), local('Roboto-Regular'),
+             url('../fonts/roboto-v18-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+             url('../fonts/roboto-v18-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
+             url('../fonts/roboto-v18-latin-regular.woff') format('woff'), /* Modern Browsers */
+             url('../fonts/roboto-v18-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+             url('../fonts/roboto-v18-latin-regular.svg#Roboto') format('svg'); /* Legacy iOS */
+      }
+      /* roboto-700 - latin */
+      @font-face {
+        font-family: 'Roboto';
+        font-style: normal;
+        font-weight: 700;
+        src: url('../fonts/roboto-v18-latin-700.eot'); /* IE9 Compat Modes */
+        src: local('Roboto Bold'), local('Roboto-Bold'),
+             url('../fonts/roboto-v18-latin-700.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+             url('../fonts/roboto-v18-latin-700.woff2') format('woff2'), /* Super Modern Browsers */
+             url('../fonts/roboto-v18-latin-700.woff') format('woff'), /* Modern Browsers */
+             url('../fonts/roboto-v18-latin-700.ttf') format('truetype'), /* Safari, Android, iOS */
+             url('../fonts/roboto-v18-latin-700.svg#Roboto') format('svg'); /* Legacy iOS */
+      }
+
+      /* roboto-700italic - latin */
+      @font-face {
+        font-family: 'Roboto';
+        font-style: italic;
+        font-weight: 700;
+        src: url('../fonts/roboto-v18-latin-700italic.eot'); /* IE9 Compat Modes */
+        src: local('Roboto Bold Italic'), local('Roboto-BoldItalic'),
+             url('../fonts/roboto-v18-latin-700italic.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+             url('../fonts/roboto-v18-latin-700italic.woff2') format('woff2'), /* Super Modern Browsers */
+             url('../fonts/roboto-v18-latin-700italic.woff') format('woff'), /* Modern Browsers */
+             url('../fonts/roboto-v18-latin-700italic.ttf') format('truetype'), /* Safari, Android, iOS */
+             url('../fonts/roboto-v18-latin-700italic.svg#Roboto') format('svg'); /* Legacy iOS */
+      }
+
+      :root{
+        --efar-blue:rgb(2, 55, 98);
+      }
+
+      html,
+      body {
+        min-height: 100vh;
+      }
+
+    /*for login*/
+      .loginCard {
+        position: absolute;
+        width: 100%;
+        max-width: 400px;
+        height: 430px;
+        z-index: 15;
+        top: calc(30% - 100px);
+        left: 50%;
+        margin: 0 0 0 -200px;
+        background: white;
+        box-shadow: 0px 2px 5px gray;
+        border-radius: 10px;
+      }
+
+      .loginField {
+        padding: 30px;
+        height: 100%;
+      }
+
+      .loginHeader {
+      }
+
+      .loginForm {
+        text-align: right;
+        padding: 50px 10px 0px 10px;
+        height: calc(100% - 50px);
+      }
+
+      .usernamePassword {
+        width: 100%;
+        padding: 5px 10px 5px 10px;
+        margin: 0px 0px 50px 0px;
+      }
+
+      .footer {
+        position: relative;
+        right: 21px;
+        top: 35px;
+        font-style: italic;
+        font-size: 10px;
+        color: grey;
+        width: 400px;
+      }
+    </style>  
+
+
+    <title>LOGIN</title>
+  </head>
+  <body style="background-color: #d3dee7; font-family: Roboto; min-width: 400px; min-height: 430px;">
+
+    <div class="loginCard">
+      <div class="loginField">
+        <div class= "loginHeader">
+          <img src="letterhead.svg" style="height: 50px;">
+          <span class="navbar-text" style="font-family: Roboto; font-style: italic; font-weight: 700; 
+          color: var(--efar-blue); float: right;  padding: 13px 0px 13px 0px;">
+            EFAR DISPATCH
+          </span>
         </div>
-        <!--
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav nav-dropdown nav-right" data-app-modern-menu="true">
-              <li class="nav-item">
-                <a class="nav-link link text-white display-4" href="index.html">
-                    <span class="mbri-home mbr-iconfont mbr-iconfont-btn"></span>Home</a>
-              </li>
-              <li class="nav-item">
-                <div class="nav-item dropdown open">
-                  <a class="nav-link link text-white dropdown-toggle display-4" data-toggle="dropdown-submenu" aria-expanded="true">
-                    <span class="mbri-login mbr-iconfont mbr-iconfont-btn"></span>Login</a>
-                    <form class="dropdown-menu dropdown-menu-right p-4" style="background-color: #cccccc; width: 250px">
-                      <div class="form-group">
-                        <label for="dropdownFormID">ID</label>
-                        <input type="text" class="form-control" id="dropdownFormID" placeholder="ID" onclick="this.select()">
-                      </div>
-                      <div class="form-group">
-                        <label for="dropdownFormPassword">Password</label>
-                        <input type="password" class="form-control" id="dropdownFormPassword" placeholder="Password" onclick="this.select()">
-                      </div>
-                      <button type="button" class="btn btn-primary" onclick="attempt_login()">Login</button>
-                    </form>
-                </div>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link link text-white display-4" href="https://mobirise.com">
-                  <span class="mbri-setting mbr-iconfont mbr-iconfont-btn"></span>Settings</a>
-              <li>
-            </ul>
+        <form class="loginForm">
+          <input type="text" class="usernamePassword" name="username" id="Username" placeholder="Username">
+          <input type="password" class="usernamePassword" name="password" id="Password" placeholder="Password">
+          <button type="button" id="call_efar_button" onclick="attempt_login()"  class="btn btn-primary cont-efar" style="padding: 5px 10px 5px 10px; font-size: 16px; font-weight: 700; display: inline-block;"><i class="material-icons" style="font-size: 16px; position: relative; top: 1.5px; right: 3px; width: 16px;">lock_open</i>LOGIN</button>
+        </form>
+        <div class="footer">
+          Technology by Mack FitzPatrick and Haakon Sigurslid &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;  EFAR System
         </div>
-        -->
-    </nav>
-</section>
+      </div>
 
-<!-- 
-<script language="javascript"> 
-  function showCheckAlert() {
-    var alert = document.getElementById("info");
-    var call_efar = document.getElementById("card");
-    alert.style.display = "block";
-    call_efar.style.display = "none";
-  }
-  function hideCheckAlert() {
-    var alert = document.getElementById("info");
-    var call_efar = document.getElementById("card");
-    alert.style.display = "none";
-    call_efar.style.display = "block";
-  }
-</script>
--->
 
-<!-- Page body for EFAR emergenecy button-->
-<section class="features3 cid-qNlbiC5je7" id="features3-h">
-    <div class="container">
-        <div class="media-container-row">
-            <div class="card p-3 col-12 col-md-6">
-              <div style="display: block" id="info">
-                  <center>
-                    <form>
-                      <h1><hr>Login Information:<hr></h1>
-                      <div class="form-group">
-                        <label for="Username">Username:</label>
-                        <input type="text" class="form-control" id="Username" placeholder="Enter Username">
-                        
-                      </div>
-                      <div class="form-group">
-                        <label for="Password">Password:</label>
-                        <input type="password" class="form-control" id="Password" placeholder="Enter Password">
-                      </div>
-                      <hr>
-                      <button type="button" class="btn btn-primary btn-lg" id="call_efar_button" onclick="attempt_login()">Submit</button>
-                    </form>
-                  </center>
-                </div>
-                <!--
-                <div class="card-wrapper" id="card" onclick="showCheckAlert()">
-                  <div class="card-img">
-                    <img src="assets/images/red_phone.png" alt="Phone-Image" title="" style="padding-top: 30px; height: auto; width: 60%">
-                  </div>
-                  <div class="card-box">
-                      <h4 class="card-title mbr-fonts-style display-1">
-                          Call EFAR</h4>
-                  </div>
-                </div>
-                -->
-            </div>  
-        </div>
     </div>
-</section>
+    
 
+    
 
-<!-- Page footer -->
-<section once="" class="cid-qNlbjyVert" id="footer6-i">
-    <div class="container">
-        <div class="media-container-row align-center mbr-white">
-            <div class="col-12">
-                <p class="mbr-text mb-0 mbr-fonts-style display-7">
-                    Mack FitzPatrick - Created 2018</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-  <script src="assets/web/assets/jquery/jquery.min.js"></script>
-  <script src="assets/popper/popper.min.js"></script>
-  <script src="assets/tether/tether.min.js"></script>
-  <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-  <script src="assets/smoothscroll/smooth-scroll.js"></script>
-  <script src="assets/dropdown/js/script.min.js"></script>
-  <script src="assets/touchswipe/jquery.touch-swipe.min.js"></script>
-  <script src="assets/theme/js/script.js"></script>
-  
-  
-</body>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+  </body>
 </html>

@@ -1,13 +1,26 @@
 function setup() {
-	var efar_data_table = select("#efar_data_table");
-    firebase.database().ref("/users/").on('value', function(snapshot) {
-        snapshot.forEach(function(snapshot) {
-        	var id = snapshot.child("id").val();
-        	var name = snapshot.child("name").val();
-        	var lat = snapshot.child("latitude").val();
-        	var long = snapshot.child("longitude").val();
-        	var phone = snapshot.child("phone").val();
-        	var logged_in = snapshot.child("logged_in").val();
+    canvas = createCanvas(0, 0);
+    canvas.remove();
+    populateEFARTable();
+}
+
+function populateEFARTable(){
+    firebase.database().ref("/users").on('value', function(snapshot) {
+        var efar_data_table_body = select("#efar_data_table_body");
+        efar_data_table_body.html("");
+        snapshot.forEach(function(childSnapshot) {
+            var id = childSnapshot.child("id").val();
+            var name = childSnapshot.child("name").val();
+            var lat = childSnapshot.child("latitude").val();
+            var long = childSnapshot.child("longitude").val();
+            var phone;
+            if(childSnapshot.hasChild("phone")){
+                phone = childSnapshot.child("phone").val();
+            }else{
+                phone = "N/A";
+            }
+            
+            var logged_in = childSnapshot.child("logged_in").val();
 
             if(lat === null){
                 lat = "N/A";
@@ -19,13 +32,13 @@ function setup() {
                 logged_in = "N/A";
             }
 
-        	newDiv = createElement("tr", "<td>" + id 
-        		+ "</td><td>" + name 
-        		+ "</td><td>" + phone 
-        		+ "</td><td>" + lat 
-        		+ "</td><td>" + long 
-        		+ "</td><td>" + logged_in + "</td>");
-        	newDiv.parent("efar_data_table_body");
+            newDiv = createElement("tr", "<td>" + id 
+                + "</td><td>" + name 
+                + "</td><td>" + phone 
+                + "</td><td>" + lat 
+                + "</td><td>" + long 
+                + "</td><td>" + logged_in + "</td>");
+            newDiv.parent("efar_data_table_body");
         });
     });
 }
@@ -35,7 +48,11 @@ function addNewEFAR(){
     var name = document.getElementById("new_EFAR_Name").value;
     var phone = document.getElementById("new_EFAR_Phone").value;
 
-    if(id != "" && name != "" && phone != ""){
+    if(id != "" && name != ""){
+
+        if(phone === null || phone == ""){
+            phone = "";
+        }
 
         var EFAR_package = {
             id: id, 
@@ -44,7 +61,6 @@ function addNewEFAR(){
         }
 
         //TODO: Maybe check if id is already in the database so someone doesnt get overwritten?
-
         firebase.database().ref("/users/" + id).set(EFAR_package).then(
                 function onSuccess(res) {
                     document.getElementById("new_EFAR_ID").value = "";
@@ -53,7 +69,7 @@ function addNewEFAR(){
                     location.reload();
               });
     }else{
-        alert("You cannot leave any field empty.");
+        alert("You cannot leave the Name or ID field empty!");
     }
         
 }
