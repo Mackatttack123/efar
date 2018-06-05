@@ -239,11 +239,15 @@ exports.checkStates = functions.database.ref('/emergencies').onWrite((snap, cont
 	});
 });
 
-exports.checkNewTokens = functions.database.ref('/tokens/{token_id}').onWrite((snap, context) => {
-	if(snap.child("latitude").val() === 0.0 && snap.child("longitude").val() === 0.0){
-		snap.ref.remove();
-	}
-	return;
+exports.checkNewTokens = functions.database.ref('/tokens').onWrite((snap, context) => {
+	return admin.database().ref('/tokens').once('value', function(snapshot) {
+		snapshot.forEach(function(childSnapshot) {
+			if(childSnapshot.child("latitude").val() === 0.0 && childSnapshot.child("longitude").val() === 0.0){
+				childSnapshot.ref.remove();
+			}
+    	});
+    	return;
+	});
 });
 
 
