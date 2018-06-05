@@ -76,8 +76,8 @@ public class ActivityLoginScreen extends AppCompatActivity {
         user_password = (EditText) findViewById(R.id.login_password_field);
         showPasswordCheckBox = (CheckBox) findViewById(R.id.checkBoxShowPassword);
 
-        user_password.setVisibility(View.INVISIBLE);
-        showPasswordCheckBox.setVisibility(View.INVISIBLE);
+        user_password.setVisibility(View.GONE);
+        showPasswordCheckBox.setVisibility(View.GONE);
         submitButton.setText("Continue");
 
         final TextView errorText = (TextView) findViewById(R.id.errorLoginText);

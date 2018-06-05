@@ -231,22 +231,16 @@ exports.cleanEmergecyData = functions.database.ref('/emergencies').onWrite((snap
 	});
 });
 
-exports.cleanTokenData = functions.database.ref('/tokens').onWrite((snap, context) => {
+exports.cleanTokenData = functions.database.ref('/tokens/{id}').onWrite((snap, context) => {
 	return admin.database().ref('/tokens').once('value', function(snapshot) {
 		snapshot.forEach(function(childSnapshot) {
+			// remove 0.0 corrdiate tokens
 			if(childSnapshot.child("latitude").val() === 0.0 && childSnapshot.child("longitude").val() === 0.0){
 				childSnapshot.ref.remove();
 			}
-    	});
-    	return;
-	});
-});
-
-exports.checkTokenDuplicates = functions.database.ref('/tokens/{token_id}').onCreate((snap, context) => {
-	return admin.database().ref('/tokens').once('value', function(snapshot) {
-		snapshot.forEach(function(childSnapshot) {
-			if(childSnapshot.hasChild("token_users_name") && snap.hasChild("token_users_name")){
-				if(childSnapshot.child("token_users_name").val() === snap.child("token_users_name").val() && snap.key !== childSnapshot.key){
+			// remove duplicaute user tokens
+			if(childSnapshot.hasChild("token_users_name") && snap.after.hasChild("token_users_name")){
+				if(childSnapshot.child("token_users_name").val() === snap.after.child("token_users_name").val() && snap.after.key !== childSnapshot.key){
 					console.log(childSnapshot.child("token_users_name").val());
 					childSnapshot.ref.remove();
 				}
