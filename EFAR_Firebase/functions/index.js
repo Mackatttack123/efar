@@ -220,9 +220,9 @@ exports.cleanEmergecyData = functions.database.ref('/emergencies').onWrite((snap
 	return admin.database().ref('/emergencies').once('value', function(snapshot) {
 		snapshot.forEach(function(childSnapshot) {
 			if(!childSnapshot.hasChild("state")){
-	    		moveFbRecord(childSnapshot.ref, admin.database().ref('/canceled/' + childSnapshot.key));
+	    		childSnapshot.ref.remove();
 	    	}else if(!childSnapshot.hasChild("other_info")){
-	    		moveFbRecord(childSnapshot.ref, admin.database().ref('/canceled/' + childSnapshot.key));
+	    		childSnapshot.ref.remove();
 	    	}else if(childSnapshot.child("state").val() === "-2" || childSnapshot.child("state").val() === "-3" || childSnapshot.child("state").val() === "-4"){
 	    		moveFbRecord(childSnapshot.ref, admin.database().ref('/canceled/' + childSnapshot.key));
 	    	}
