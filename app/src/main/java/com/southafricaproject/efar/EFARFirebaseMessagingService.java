@@ -27,92 +27,62 @@ public class EFARFirebaseMessagingService extends FirebaseMessagingService {
 
 
         SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
-        boolean efar_logged_in = sharedPreferences.getBoolean("logged_in", false);
 
-        // only send if an efar is logged in
-        if(efar_logged_in){
-            // If the application is in the foreground handle both data and notification messages here.
-            // Also if you intend on generating your own notifications as a result of a received FCM
-            // message, here is where that should be initiated.
-            Log.d(TAG, "From: " + remoteMessage.getFrom());
-            Log.d(TAG, "Notification Message Body: " + remoteMessage.getData().get("body"));
-            Intent intent = new Intent(this, ActivityEFARMainTabbed.class);
-            //intent.putExtra("NotiClick",true);
-            //intent.putExtra("NotiMesssage",remoteMessage.getData().get("body").replace("Patient Message: ", ""));
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
-            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this);
-            notificationBuilder.setContentTitle(remoteMessage.getData().get("title"));
+        // If the application is in the foreground handle both data and notification messages here.
+        // Also if you intend on generating your own notifications as a result of a received FCM
+        // message, here is where that should be initiated.
+        Log.d(TAG, "From: " + remoteMessage.getFrom());
+        Log.d(TAG, "Notification Message Body: " + remoteMessage.getData().get("body"));
+        Intent intent = new Intent(this, ActivityEFARMainTabbed.class);
+        //intent.putExtra("NotiClick",true);
+        //intent.putExtra("NotiMesssage",remoteMessage.getData().get("body").replace("Patient Message: ", ""));
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this);
+        notificationBuilder.setContentTitle(remoteMessage.getData().get("title"));
 
-            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-            notificationBuilder.setContentText(remoteMessage.getData().get("body"));
-            notificationBuilder.setAutoCancel(true);
-            notificationBuilder.setSmallIcon(R.mipmap.ic_launcher);
-            notificationBuilder.setContentIntent(pendingIntent);
+        notificationBuilder.setContentText(remoteMessage.getData().get("body"));
+        notificationBuilder.setAutoCancel(true);
+        notificationBuilder.setSmallIcon(R.mipmap.ic_launcher);
+        notificationBuilder.setContentIntent(pendingIntent);
 
-            Notification note = notificationBuilder.build();
+        Notification note = notificationBuilder.build();
 
-            //make the phone vibrate when notification is received
-            if(remoteMessage.getData().get("title").equals("NEW EMERGANCY!")){
-                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                long[] pattern = {0, 1000, 300, 1000, 300, 1000, 300, 1000, 300};
-                v.vibrate(pattern, -1);
-                notificationBuilder.setVibrate(new long[] {0, 1000, 300, 1000, 300 });
-                notificationBuilder.setLights(0xff00ff00, 3000, 3000);
+        //make the phone vibrate when notification is received
+        if (remoteMessage.getData().get("title").equals("NEW EMERGENCY!")) {
+            Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+            long[] pattern = {0, 1000, 300, 1000, 300, 1000, 300, 1000, 300};
+            v.vibrate(pattern, -1);
+            notificationBuilder.setVibrate(new long[]{0, 1000, 300, 1000, 300});
+            notificationBuilder.setLights(0xff00ff00, 3000, 3000);
 
-                note.flags = Notification.FLAG_INSISTENT;
-
-                //Turn on Sound Normal mode if do not disturp isn't on
-                AudioManager am;
-                am = (AudioManager) getBaseContext().getSystemService(Context.AUDIO_SERVICE);
-                if(am.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE){
-                    am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-                    am.setStreamVolume(AudioManager.STREAM_RING,am.getStreamMaxVolume(AudioManager.STREAM_RING),0);
-                }
-                if(notificationManager.isNotificationPolicyAccessGranted()) {
-                    am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-                    am.setStreamVolume(AudioManager.STREAM_RING,am.getStreamMaxVolume(AudioManager.STREAM_RING),0);
-                }
-            }else if(remoteMessage.getData().get("title").equals("Emergency Canceled:")){
-                vibrate(100);
-            }else if(remoteMessage.getData().get("title").equals("Emergency Over:")){
-                vibrate(100);
-            }else if(remoteMessage.getData().get("title").contains("Message")){
-                vibrate(100);
-            }
-
-            note.defaults |= Notification.DEFAULT_SOUND;
-            // clear the notification after its selected
-            note.flags |= Notification.FLAG_AUTO_CANCEL;
-            notificationManager.notify(0, note);
-        }else if(remoteMessage.getData().get("title").equals("EFAR Verification Code")){
-            // If the application is in the foreground handle both data and notification messages here.
-            // Also if you intend on generating your own notifications as a result of a received FCM
-            // message, here is where that should be initiated.
-            Log.d(TAG, "From: " + remoteMessage.getFrom());
-            Log.d(TAG, "Notification Message Body: " + remoteMessage.getData().get("body"));
-            Intent intent = new Intent(this, ActivityEFARMainTabbed.class);
-            //intent.putExtra("NotiClick",true);
-            //intent.putExtra("NotiMesssage",remoteMessage.getData().get("body").replace("Patient Message: ", ""));
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
-            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this);
-            notificationBuilder.setContentTitle(remoteMessage.getData().get("title"));
-            vibrate(100);
-            notificationBuilder.setContentText(remoteMessage.getData().get("body"));
-            notificationBuilder.setAutoCancel(true);
-            notificationBuilder.setSmallIcon(R.mipmap.ic_launcher);
-            notificationBuilder.setContentIntent(pendingIntent);
-            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-            Notification note = notificationBuilder.build();
             note.flags = Notification.FLAG_INSISTENT;
-            note.defaults |= Notification.DEFAULT_SOUND;
-            // clear the notification after its selected
-            note.flags |= Notification.FLAG_AUTO_CANCEL;
-            notificationManager.notify(0, note);
+
+            //Turn on Sound Normal mode if do not disturp isn't on
+            AudioManager am;
+            am = (AudioManager) getBaseContext().getSystemService(Context.AUDIO_SERVICE);
+            if (am.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE) {
+                am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+                am.setStreamVolume(AudioManager.STREAM_RING, am.getStreamMaxVolume(AudioManager.STREAM_RING), 0);
+            }
+            if (notificationManager.isNotificationPolicyAccessGranted()) {
+                am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+                am.setStreamVolume(AudioManager.STREAM_RING, am.getStreamMaxVolume(AudioManager.STREAM_RING), 0);
+            }
+        } else if (remoteMessage.getData().get("title").equals("Emergency Canceled:")) {
+            vibrate(100);
+        } else if (remoteMessage.getData().get("title").equals("Emergency Over:")) {
+            vibrate(100);
+        } else if (remoteMessage.getData().get("title").contains("Message")) {
+            vibrate(100);
         }
+
+        note.defaults |= Notification.DEFAULT_SOUND;
+        // clear the notification after its selected
+        note.flags |= Notification.FLAG_AUTO_CANCEL;
+        notificationManager.notify(0, note);
     }
 
     public void vibrate(int duration)

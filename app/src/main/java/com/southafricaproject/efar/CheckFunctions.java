@@ -38,8 +38,8 @@ public class CheckFunctions {
         checkForUpdates(context, activity);
         checkOtherDeviceLogin(context, activity);
         //clear all notifications when app is opened
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.cancelAll();
+        //NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        //notificationManager.cancelAll();
     }
 
     public static void checkConnection(final Context context){

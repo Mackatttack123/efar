@@ -203,6 +203,7 @@ public class ActivityLoginScreen extends AppCompatActivity {
                 if(snapshot.child(id + "/password").exists()){
                     check_password = snapshot.child(id + "/password").getValue().toString();
                 }else{
+                    errorText.setText("Cannot check password at this time. Try again later.");
                     check_password = "!@#LSKF%)D:}{WKDL{WER_";
                 }
 

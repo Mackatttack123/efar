@@ -17,7 +17,7 @@ const admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
 
 const MAX_EFAR_TRAVEL_RADIUS = 2.0; //in kilometers
-const MAX_NUMBER_OF_EFARS_TO_NOTIFY = 5;
+const MAX_NUMBER_OF_EFARS_TO_NOTIFY = 25;
 
 exports.sendPushAdded = functions.database.ref('/emergencies/{id}').onCreate((snap, context) => {
 	return admin.database().ref('/tokens').once('value').then(function(snapshot) {
@@ -27,7 +27,7 @@ exports.sendPushAdded = functions.database.ref('/emergencies/{id}').onCreate((sn
 		});
 	    var payload = {
  			data: {
- 				title: "NEW EMERGANCY!",
+ 				title: "NEW EMERGENCY!",
 				body: "Patient Message: " + snap.child('other_info').val(),
  				//badge: '1',
  				sound: 'default',
@@ -38,7 +38,7 @@ exports.sendPushAdded = functions.database.ref('/emergencies/{id}').onCreate((sn
 		if(efarArray.length > 0){
 			if(efarArray[0].distance < MAX_EFAR_TRAVEL_RADIUS){
 				tokens_to_send_to = [];
-					/*
+					
 					if(efarArray.length >= MAX_NUMBER_OF_EFARS_TO_NOTIFY){
 						//only send to the 5 closest efars
 						for (var i = MAX_NUMBER_OF_EFARS_TO_NOTIFY-1; i >= 0; i--) {
@@ -57,8 +57,9 @@ exports.sendPushAdded = functions.database.ref('/emergencies/{id}').onCreate((sn
 							}
 						}
 					}
-					*/
+					
 					//send to all efars within a MAX_EFAR_TRAVEL_RADIUS range
+					/*
 					for (var j = efarArray.length - 1; j >= 0; j--) {
 						//only send to efars in range
 						if (efarArray[j].distance < MAX_EFAR_TRAVEL_RADIUS) {
@@ -66,6 +67,7 @@ exports.sendPushAdded = functions.database.ref('/emergencies/{id}').onCreate((sn
 							console.log(efarArray[j].token);
 						}
 					}
+					*/
 					// check if an efar created the emergency and if so don't send them a notification
 					for (var k = tokens_to_send_to.length - 1; k >= 0; k--) {
 						if(tokens_to_send_to[k] === snap.child('emergency_made_by_efar_token').val()){
@@ -227,9 +229,9 @@ function moveFbRecord(oldRef, newRef) {
 exports.checkStates = functions.database.ref('/emergencies').onWrite((snap, context) => {
 	return admin.database().ref('/emergencies').once('value', function(snapshot) {
 		snapshot.forEach(function(childSnapshot) {
-			console.log(childSnapshot.child("state").val().toString());
-			var state = childSnapshot.child("state").val().toString().trim();
-	    	if(state === "-2" || state === "-3" || state === "-4"){
+			if(!childSnapshot.hasChild("state")){
+	    		moveFbRecord(childSnapshot.ref, admin.database().ref('/canceled/' + childSnapshot.key));
+	    	}else if(childSnapshot.child("state").val() === "-2" || childSnapshot.child("state").val() === "-3" || childSnapshot.child("state").val() === "-4"){
 	    		moveFbRecord(childSnapshot.ref, admin.database().ref('/canceled/' + childSnapshot.key));
 	    	}
     	});
@@ -237,7 +239,7 @@ exports.checkStates = functions.database.ref('/emergencies').onWrite((snap, cont
 	});
 });
 
-exports.checkNewTokens = functions.database.ref('/tokens/{token_id}').onCreate((snap, context) => {
+exports.checkNewTokens = functions.database.ref('/tokens/{token_id}').onWrite((snap, context) => {
 	if(snap.child("latitude").val() === 0.0 && snap.child("longitude").val() === 0.0){
 		snap.ref.remove();
 	}

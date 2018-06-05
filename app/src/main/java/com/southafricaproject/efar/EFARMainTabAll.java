@@ -304,6 +304,9 @@ public class EFARMainTabAll extends Fragment{
             }
             public void onCancelled(DatabaseError databaseError) {
                 alertText.setText("Error: Could not load data. Pull down to try and refresh.");
+                // TESTING THE CODE BELOW, MAY CAUSE ERROR //
+                refreshContent(pullToRefresh);
+                // TESTING THE CODE ABOVE, MAY CAUSE ERROR //
             }
         });
 

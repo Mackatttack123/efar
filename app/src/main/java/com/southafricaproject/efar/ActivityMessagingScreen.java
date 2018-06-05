@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -53,6 +54,8 @@ public class ActivityMessagingScreen extends AppCompatActivity {
         //check if a forced app update is needed
         //check if an logged in on another phone
         CheckFunctions.runAllAppChecks(ActivityMessagingScreen.this, this);
+
+        Toast.makeText(ActivityMessagingScreen.this, "CAUTION: Do not send patient identifying information.", Toast.LENGTH_LONG).show();
 
         //check if the emergency is still in the database and kick efar out of activity and back to main if it is not
         Bundle bundle = getIntent().getExtras();
