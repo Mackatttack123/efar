@@ -46,6 +46,7 @@ public class GPSTrackingService extends Service {
                 DatabaseReference tokens_ref = database.getReference("tokens");
                 SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
                 String id = sharedPreferences.getString("id", "");
+                String name = sharedPreferences.getString("name", "N/A");
                 Boolean logged_in = sharedPreferences.getBoolean("logged_in", false);
 
                 if(logged_in){
@@ -56,12 +57,15 @@ public class GPSTrackingService extends Service {
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
                     String timestamp = simpleDateFormat.format(currentTime);
                     tokens_ref.child(token).child("last_location_update").setValue(timestamp);
+                    tokens_ref.child(token).child("current_app_version").setValue(BuildConfig.VERSION_NAME);
+                    tokens_ref.child(token).child("token_users_name").setValue(name);
 
                     if(!id.equals("")){
                         DatabaseReference users_ref = database.getReference("users/" + id);
                         users_ref.child("latitude").setValue(my_lat);
                         users_ref.child("longitude").setValue(my_long);
                         users_ref.child("last_location_update").setValue(timestamp);
+                        users_ref.child("current_app_version").setValue(BuildConfig.VERSION_NAME);
                     }
 
                     Log.wtf("location update:", "(" + my_lat + ", " + my_long + ") ---> token: " + token);
