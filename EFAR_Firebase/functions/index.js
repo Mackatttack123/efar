@@ -19,7 +19,7 @@ admin.initializeApp(functions.config().firebase);
 const MAX_EFAR_TRAVEL_RADIUS = 2.0; //in kilometers
 const MAX_NUMBER_OF_EFARS_TO_NOTIFY = 25;
 
-exports.sendPushAdded = functions.database.ref('/emergencies/{id}').onCreate((snap, context) => {
+exports.sendNotifyAdded = functions.database.ref('/emergencies/{id}').onCreate((snap, context) => {
 	return admin.database().ref('/tokens').once('value').then(function(snapshot) {
 	    var efarArray = snapshotToArray(snapshot, snap.child('latitude').val(), snap.child('longitude').val());
 	    efarArray.sort(function(a, b) {
@@ -58,16 +58,6 @@ exports.sendPushAdded = functions.database.ref('/emergencies/{id}').onCreate((sn
 						}
 					}
 					
-					//send to all efars within a MAX_EFAR_TRAVEL_RADIUS range
-					/*
-					for (var j = efarArray.length - 1; j >= 0; j--) {
-						//only send to efars in range
-						if (efarArray[j].distance < MAX_EFAR_TRAVEL_RADIUS) {
-							tokens_to_send_to.push(efarArray[j].token);
-							console.log(efarArray[j].token);
-						}
-					}
-					*/
 					// check if an efar created the emergency and if so don't send them a notification
 					for (var k = tokens_to_send_to.length - 1; k >= 0; k--) {
 						if(tokens_to_send_to[k] === snap.child('emergency_made_by_efar_token').val()){
@@ -114,7 +104,7 @@ function snapshotToArray(snapshot, incoming_latitude, incoming_longitude) {
 }
 
 //send notifications to efars when they get messages 
-exports.sendPushMessage = functions.database.ref('/emergencies/{id}/messages/{uid}').onCreate((snap, context) => {
+exports.sendNotifyMessage = functions.database.ref('/emergencies/{id}/messages/{uid}').onCreate((snap, context) => {
 	var user = snap.child("user").val()
 	const payload = {
 		data: {
@@ -146,7 +136,7 @@ exports.sendPushMessage = functions.database.ref('/emergencies/{id}/messages/{ui
     });	
 });
 
-exports.sendPushCanceled = functions.database.ref('/canceled/{id}').onCreate((snap, context) => {
+exports.sendNotifyCanceled = functions.database.ref('/canceled/{id}').onCreate((snap, context) => {
 	const payload = {
 		data: {
 			title: "Emergency Canceled:",
@@ -175,7 +165,7 @@ exports.sendPushCanceled = functions.database.ref('/canceled/{id}').onCreate((sn
 	}
 });
 
-exports.sendPushCompleted = functions.database.ref('/completed/{id}').onCreate((snap, context) => {
+exports.sendNotifyCompleted = functions.database.ref('/completed/{id}').onCreate((snap, context) => {
 	const payload = {
 		data: {
 			title: "Emergency Over:",
@@ -226,10 +216,12 @@ function moveFbRecord(oldRef, newRef) {
      });
 }
 
-exports.checkStates = functions.database.ref('/emergencies').onWrite((snap, context) => {
+exports.cleanEmergecyData = functions.database.ref('/emergencies').onWrite((snap, context) => {
 	return admin.database().ref('/emergencies').once('value', function(snapshot) {
 		snapshot.forEach(function(childSnapshot) {
 			if(!childSnapshot.hasChild("state")){
+	    		moveFbRecord(childSnapshot.ref, admin.database().ref('/canceled/' + childSnapshot.key));
+	    	}else if(!childSnapshot.hasChild("other_info")){
 	    		moveFbRecord(childSnapshot.ref, admin.database().ref('/canceled/' + childSnapshot.key));
 	    	}else if(childSnapshot.child("state").val() === "-2" || childSnapshot.child("state").val() === "-3" || childSnapshot.child("state").val() === "-4"){
 	    		moveFbRecord(childSnapshot.ref, admin.database().ref('/canceled/' + childSnapshot.key));
@@ -239,11 +231,25 @@ exports.checkStates = functions.database.ref('/emergencies').onWrite((snap, cont
 	});
 });
 
-exports.checkNewTokens = functions.database.ref('/tokens').onWrite((snap, context) => {
+exports.cleanTokenData = functions.database.ref('/tokens').onWrite((snap, context) => {
 	return admin.database().ref('/tokens').once('value', function(snapshot) {
 		snapshot.forEach(function(childSnapshot) {
 			if(childSnapshot.child("latitude").val() === 0.0 && childSnapshot.child("longitude").val() === 0.0){
 				childSnapshot.ref.remove();
+			}
+    	});
+    	return;
+	});
+});
+
+exports.checkTokenDuplicates = functions.database.ref('/tokens/{token_id}').onCreate((snap, context) => {
+	return admin.database().ref('/tokens').once('value', function(snapshot) {
+		snapshot.forEach(function(childSnapshot) {
+			if(childSnapshot.hasChild("token_users_name") && snap.hasChild("token_users_name")){
+				if(childSnapshot.child("token_users_name").val() === snap.child("token_users_name").val() && snap.key !== childSnapshot.key){
+					console.log(childSnapshot.child("token_users_name").val());
+					childSnapshot.ref.remove();
+				}
 			}
     	});
     	return;
