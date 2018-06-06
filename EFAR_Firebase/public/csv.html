@@ -46,17 +46,15 @@
       });
     </script>
 
-     <!-- P5.js -->
+  	 <!-- P5.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.10/p5.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.10/addons/p5.dom.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.10/addons/p5.sound.min.js"></script>
 
-    <!-- my javascript -->
-    <script src="login.js"></script>
-    <script src="admin.js"></script>
-    <link rel="stylesheet" href="hidepage.css">
+  	<!-- my javascript -->
+    <script src="csv.js"></script>
 
-    <style>
+      <style>
       #map {
         height: 100%;
         width: 100%
@@ -186,7 +184,7 @@
     </style>  
 
 
-    <title>PERSONNEL</title>
+    <title>DATA</title>
   </head>
   <body style="background-color: #d3dee7; font-family: Roboto;">
 
@@ -207,7 +205,7 @@
             <a class="nav-link" href="admin.html" style="font-family: Roboto; font-weight: 700; color: var(--efar-blue);">PERSONNEL<span class="sr-only">(current)</span></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="data.html" style="font-family: Roboto; font-weight: 700;">DATA</a>
+            <a class="nav-link" href="https://efarapp-a5f18.firebaseio.com/.json?auth=n8g00RPXVM2TbtZXpJ9RDblgRCi866SHu6WGTPYK&print=pretty" style="font-family: Roboto; font-weight: 700;">DATA</a>
           </li>
         </ul>
         <ul class="navbar-nav ml-auto">
@@ -218,43 +216,11 @@
       </div>
     </nav>
 
-    <!-- Page body for EFAR emergenecy button-->
-    <section class="features3 cid-qNlbiC5je7" id="features3-h">
-        <div class="container">
-          <center>
-            <h1>Register EFAR Data</h1>
-            <hr>
-          <button onclick="addNewEFAR()">Add New EFAR</button>
-          <label for="new_EFAR_ID">ID:</label>
-          <input type="text" name="new_EFAR_ID" id="new_EFAR_ID">
-          <label for="new_EFAR_Name">Name:</label>
-          <input type="text" name="new_EFAR_Name" id="new_EFAR_Name">
-          <label for="new_EFAR_Phone">Phone #:</label>
-          <input type="text" name="new_EFAR_Phone" id="new_EFAR_Phone">
-          <p></p>
-            <h3>Registered EFARs</h1>
-            <hr>
-            <table bgcolor="#eeffee" width="100%" border="1" cellpadding="10" id="efar_data_table">
-              <thead>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Phone</th> 
-                <th>Last Latitude</th>
-                <th>Last Longitude</th>
-                <th>Logged In</th>
-              </thead>
-              <tbody id="efar_data_table_body">
-              </tbody>
-            </table>
-            <hr>
-          </center>
-        </div>
-    </section>
-
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
   </body>
 </html>
+
+
+
+
+
+

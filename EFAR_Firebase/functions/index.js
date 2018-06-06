@@ -231,7 +231,7 @@ exports.cleanEmergecyData = functions.database.ref('/emergencies').onWrite((snap
 	});
 });
 
-exports.cleanTokenData = functions.database.ref('/tokens/{id}').onWrite((snap, context) => {
+exports.cleanTokenData = functions.database.ref('/tokens/{id}').onCreate((snap, context) => {
 	return admin.database().ref('/tokens').once('value', function(snapshot) {
 		snapshot.forEach(function(childSnapshot) {
 			// remove 0.0 corrdiate tokens

@@ -67,13 +67,13 @@ function updateAllCalls(){
             //add current call state
             if(state == "0"){
                 current_state_div = createDiv("Contacting EFAR");
-                current_state_div.attribute("style", "background-color: red; color: white; font-size: 12px; display: table; padding: 0px 4px 0px 4px; border-radius: 2px;");
+                current_state_div.attribute("style", "background-color: var(--efar-blue); color: white; font-size: 16px; display: table; padding: 0px 4px 0px 4px; border-radius: 2px; margin-bottom: 4px;");
             }else if(state == "1"){
                 current_state_div = createDiv("EFAR Contacted");
-                current_state_div.attribute("style", "background-color: orange; color: white; font-size: 12px; display: table; padding: 0px 4px 0px 4px; border-radius: 2px;");
+                current_state_div.attribute("style", "background-color: orange; color: white; font-size: 16px; display: table; padding: 0px 4px 0px 4px; border-radius: 2px; margin-bottom: 4px;");
             }else if(state == "1.5"){
                 current_state_div = createDiv("EFAR on Scene");
-                current_state_div.attribute("style", "background-color: green; color: white; font-size: 12px; display: table; padding: 0px 4px 0px 4px; border-radius: 2px;");
+                current_state_div.attribute("style", "background-color: green; color: white; font-size: 16px; display: table; padding: 0px 4px 0px 4px; border-radius: 2px; margin-bottom: 4px;");
             }
             current_state_div.parent(key);
 
@@ -94,6 +94,38 @@ function updateAllCalls(){
                 on_scene_div = createDiv(on_scene_first_impression);
                 on_scene_div.attribute("style", "font-size: 12px; font-weight: 400;");
                 on_scene_div.parent(key);
+            }
+
+            if(childSnapshot.hasChild("area_unsafe")){
+            	var area_unsafe = childSnapshot.child("area_unsafe").val();
+            	if(area_unsafe.trim() === "true"){
+            		unsafe_div = createDiv("AREA UNSAFE");
+	            	unsafe_div.attribute("style", "background-color: red; color: white; font-size: 12px; display: table; padding: 0px 4px 0px 4px; border-radius: 2px; margin-bottom: 4px;");
+	            	unsafe_div.parent(key);
+            	}else{
+            		unsafe_div = createDiv("AREA SAFE");
+            		unsafe_div.attribute("style", "background-color: green; color: white; font-size: 12px; display: table; padding: 0px 4px 0px 4px; border-radius: 2px; margin-bottom: 4px;");
+            		unsafe_div.parent(key);
+            	}
+
+            }
+
+            if(childSnapshot.hasChild("heart_attack")){
+            	var heart_attack = childSnapshot.child("heart_attack").val();
+            	if(heart_attack.trim() === "true"){
+            		heart_attack_div = createDiv("HEART ATTACK");
+	            	heart_attack_div.attribute("style", "background-color: red; color: white; font-size: 12px; display: table; padding: 0px 4px 0px 4px; border-radius: 2px; margin-bottom: 4px;");
+	            	heart_attack_div.parent(key);
+            	}
+            }
+
+            if(childSnapshot.hasChild("severe_trauma")){
+            	var severe_trauma = childSnapshot.child("severe_trauma").val();
+            	if(severe_trauma.trim() === "true"){
+            		severe_trauma_div = createDiv("SEVERE TRAUMA");
+	            	severe_trauma_div.attribute("style", "background-color: red; color: white; font-size: 12px; display: table; padding: 0px 4px 0px 4px; border-radius: 2px; margin-bottom: 4px;");
+	            	severe_trauma_div.parent(key);
+            	}
             }
 
             //TODO: add elapsed time
@@ -184,13 +216,13 @@ function setUpMyCalls(){
 			        //add current call state
 			        if(state == "0"){
 			            current_state_div = createDiv("Contacting EFAR");
-			            current_state_div.attribute("style", "background-color: red; color: white; font-size: 12px; display: table; padding: 0px 4px 0px 4px; border-radius: 2px;");
+			            current_state_div.attribute("style", "background-color: var(--efar-blue); color: white; font-size: 16px; display: table; padding: 0px 4px 0px 4px; border-radius: 2px; margin-bottom: 4px;");
 			        }else if(state == "1"){
 			            current_state_div = createDiv("EFAR Contacted");
-			            current_state_div.attribute("style", "background-color: orange; color: white; font-size: 12px; display: table; padding: 0px 4px 0px 4px; border-radius: 2px;");
+			            current_state_div.attribute("style", "background-color: orange; color: white; font-size: 16px; display: table; padding: 0px 4px 0px 4px; border-radius: 2px; margin-bottom: 4px;");
 			        }else if(state == "1.5"){
 			            current_state_div = createDiv("EFAR on Scene");
-			            current_state_div.attribute("style", "background-color: green; color: white; font-size: 12px; display: table; padding: 0px 4px 0px 4px; border-radius: 2px;");
+			            current_state_div.attribute("style", "background-color: green; color: white; font-size: 16px; display: table; padding: 0px 4px 0px 4px; border-radius: 2px; margin-bottom: 4px;");
 			        }
 			        current_state_div.parent(key);
 
@@ -211,6 +243,38 @@ function setUpMyCalls(){
 		                on_scene_div = createDiv(on_scene_first_impression);
 		                on_scene_div.attribute("style", "font-size: 12px; font-weight: 400;");
 		                on_scene_div.parent(key);
+		            }
+
+		            if(childSnapshot.hasChild("area_unsafe")){
+		            	var area_unsafe = childSnapshot.child("area_unsafe").val();
+		            	if(area_unsafe.trim() === "true"){
+		            		unsafe_div = createDiv("AREA UNSAFE");
+			            	unsafe_div.attribute("style", "background-color: red; color: white; font-size: 12px; display: table; padding: 0px 4px 0px 4px; border-radius: 2px; margin-bottom: 4px;");
+			            	unsafe_div.parent(key);
+		            	}else{
+		            		unsafe_div = createDiv("AREA SAFE");
+		            		unsafe_div.attribute("style", "background-color: green; color: white; font-size: 12px; display: table; padding: 0px 4px 0px 4px; border-radius: 2px; margin-bottom: 4px;");
+		            		unsafe_div.parent(key);
+		            	}
+
+		            }
+
+		            if(childSnapshot.hasChild("heart_attack")){
+		            	var heart_attack = childSnapshot.child("heart_attack").val();
+		            	if(heart_attack.trim() === "true"){
+		            		heart_attack_div = createDiv("HEART ATTACK");
+			            	heart_attack_div.attribute("style", "background-color: red; color: white; font-size: 12px; display: table; padding: 0px 4px 0px 4px; border-radius: 2px; margin-bottom: 4px;");
+			            	heart_attack_div.parent(key);
+		            	}
+		            }
+
+		            if(childSnapshot.hasChild("severe_trauma")){
+		            	var severe_trauma = childSnapshot.child("severe_trauma").val();
+		            	if(severe_trauma.trim() === "true"){
+		            		severe_trauma_div = createDiv("SEVERE TRAUMA");
+			            	severe_trauma_div.attribute("style", "background-color: red; color: white; font-size: 12px; display: table; padding: 0px 4px 0px 4px; border-radius: 2px; margin-bottom: 4px;");
+			            	severe_trauma_div.parent(key);
+		            	}
 		            }
 
 			        //TODO: add elapsed time
@@ -329,7 +393,7 @@ function setUpInfoAndMessagesRight(id){
 	        		address_div = createDiv("Could not get address");
 	        		document.getElementById("titleAddress").innerHTML = "Emergecy";
 	        	}else{
-	        		address_div = createDiv(address);
+	        		address_div = createDiv("<strong>" + address + "</strong>");
 	        		document.getElementById("titleAddress").innerHTML = address; 
 	        		document.getElementById("map-input").value = address;
 	        		goToAddress(address, false);
@@ -355,13 +419,13 @@ function setUpInfoAndMessagesRight(id){
 	        //add current call state
 	        if(state == "0"){
 	            current_state_div = createDiv("Contacting EFAR");
-	            current_state_div.attribute("style", "background-color: red; color: white; font-size: 12px; display: table; padding: 0px 4px 0px 4px; border-radius: 2px;");
+	            current_state_div.attribute("style", "background-color: var(--efar-blue); color: white; font-size: 16px; display: table; padding: 0px 4px 0px 4px; border-radius: 2px; margin-bottom: 4px;");
 	        }else if(state == "1"){
 	            current_state_div = createDiv("EFAR Contacted");
-	            current_state_div.attribute("style", "background-color: orange; color: white; font-size: 12px; display: table; padding: 0px 4px 0px 4px; border-radius: 2px;");
+	            current_state_div.attribute("style", "background-color: orange; color: white; font-size: 16px; display: table; padding: 0px 4px 0px 4px; border-radius: 2px; margin-bottom: 4px;");
 	        }else if(state == "1.5"){
 	            current_state_div = createDiv("EFAR on Scene");
-	            current_state_div.attribute("style", "background-color: green; color: white; font-size: 12px; display: table; padding: 0px 4px 0px 4px; border-radius: 2px;");
+	            current_state_div.attribute("style", "background-color: green; color: white; font-size: 16px; display: table; padding: 0px 4px 0px 4px; border-radius: 2px; margin-bottom: 4px;");
 	        }
 	        current_state_div.parent("#info_field");
 
@@ -376,12 +440,81 @@ function setUpInfoAndMessagesRight(id){
                 	}
                 	break;
                 }
-                on_scene_div_title = createDiv("ON SCENE NOTES:");
+                on_scene_div_title = createDiv("<strong>ON SCENE NOTES:</strong>");
                 on_scene_div_title.attribute("style", "font-size: 12px;");
-                on_scene_div_title.parent(key);
+                on_scene_div_title.parent("#info_field");
                 on_scene_div = createDiv(on_scene_first_impression);
                 on_scene_div.attribute("style", "font-size: 12px; font-weight: 400;");
-                on_scene_div.parent(key);
+                on_scene_div.parent("#info_field");
+            }
+
+            if(emergency_snapshot.hasChild("area_unsafe")){
+            	var area_unsafe = emergency_snapshot.child("area_unsafe").val();
+            	if(area_unsafe.trim() === "true"){
+            		unsafe_div = createDiv("AREA UNSAFE");
+	            	unsafe_div.attribute("style", "background-color: red; color: white; font-size: 12px; display: table; padding: 0px 4px 0px 4px; border-radius: 2px; margin-bottom: 4px;");
+	            	unsafe_div.parent("#info_field");
+            	}else{
+            		unsafe_div = createDiv("AREA SAFE");
+            		unsafe_div.attribute("style", "background-color: green; color: white; font-size: 12px; display: table; padding: 0px 4px 0px 4px; border-radius: 2px; margin-bottom: 4px;");
+            		unsafe_div.parent("#info_field");
+            	}
+
+            }
+
+            if(emergency_snapshot.hasChild("heart_attack")){
+            	var heart_attack = emergency_snapshot.child("heart_attack").val();
+            	if(heart_attack.trim() === "true"){
+            		heart_attack_div = createDiv("HEART ATTACK");
+	            	heart_attack_div.attribute("style", "background-color: red; color: white; font-size: 12px; display: table; padding: 0px 4px 0px 4px; border-radius: 2px; margin-bottom: 4px;");
+	            	heart_attack_div.parent("#info_field");
+            	}
+            }
+
+            if(emergency_snapshot.hasChild("severe_trauma")){
+            	var severe_trauma = emergency_snapshot.child("severe_trauma").val();
+            	if(severe_trauma.trim() === "true"){
+            		severe_trauma_div = createDiv("SEVERE TRAUMA");
+	            	severe_trauma_div.attribute("style", "background-color: red; color: white; font-size: 12px; display: table; padding: 0px 4px 0px 4px; border-radius: 2px; margin-bottom: 4px;");
+	            	severe_trauma_div.parent("#info_field");
+            	}
+            }
+
+            if(emergency_snapshot.hasChild("responding_efar")){
+            	var EFARs = [];
+		        id_array = [];
+		        try {
+		            id_array = emergency_snapshot.child("responding_efar").val().split(', ');
+		        }
+		        catch(err) {
+		            location.reload();
+		        }
+		        
+
+		        for (var i = 0; i < id_array.length; i++) {
+		          firebase.database().ref("/users/" + id_array[i]).on("value", function(snapshot) {
+		  
+		            var name = snapshot.child("name").val();
+		            var phone = "No phone number avalivble"
+		            if(snapshot.hasChild("phone")){
+		            	phone = snapshot.child("phone").val();
+		            }
+		            var EFAR = {name: name, phone: phone};
+		            EFARs.push(EFAR);
+
+		          }, function (errorObject) {
+		            console.log("The read failed: " + errorObject.code);
+		          });
+		        }
+		        efars_div_title = createDiv("<strong>Respodning EFAR(s):</strong>");
+                efars_div_title.attribute("style", "font-size: 12px;");
+                efars_div_title.parent("#info_field");
+
+		        for (var i = EFARs.length - 1; i >= 0; i--) {
+		        	efar_div = createDiv(EFARs[i].name + ": " + EFARs[i].phone);
+		        	efar_div.attribute("style", "font-size: 12px; font-weight: 400;");
+	                efar_div.parent("#info_field");
+		        }
             }
 
 	        //TODO: add elapsed time

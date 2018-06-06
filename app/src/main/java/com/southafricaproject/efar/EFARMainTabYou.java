@@ -633,7 +633,7 @@ public class EFARMainTabYou extends Fragment{
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
                     String timestamp = simpleDateFormat.format(currentTime);
                     data.put("timestamp", timestamp);
-                    data.put("message", "EMERGENCY ARE IS NOW SAFE.");
+                    data.put("message", "EMERGENCY AREA IS NOW SAFE.");
                     messsage_ref.child(message_key.getKey()).setValue(data);
                     database.getReference("emergencies/" + key + "/area_unsafe").setValue("false");
                     area_unsafe = false;
