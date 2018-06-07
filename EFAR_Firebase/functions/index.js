@@ -239,7 +239,7 @@ exports.cleanTokenData = functions.database.ref('/tokens/{id}').onCreate((snap, 
 				childSnapshot.ref.remove();
 			}
 			// remove duplicaute user tokens
-			if(childSnapshot.hasChild("token_users_name") && snap.after.hasChild("token_users_name")){
+			if(childSnapshot.child("token_users_name").exists() && snap.after.child("token_users_name").exists()){
 				if(childSnapshot.child("token_users_name").val() === snap.after.child("token_users_name").val() && snap.after.key !== childSnapshot.key){
 					console.log(childSnapshot.child("token_users_name").val());
 					childSnapshot.ref.remove();

@@ -14,10 +14,24 @@ function setup() {
 	info_and_messages_my_calls.hide();
     updateAllCalls();
     updateMyCurrentCalls();
+    select("#data_link").hide();
+    select("#personnel_link").hide();
+}
+
+function checkGrapple(){
+	firebase.database().ref("/dispatchers/" + user_id).once('value', function(snapshot) {
+		if(snapshot.child("grapple").exists()){
+			if(snapshot.child("grapple").val().trim() === "hook"){
+				select("#data_link").show();
+    			select("#personnel_link").show();
+			}
+		}
+	});
 }
 
 function updateAllCalls(){
     firebase.database().ref("/emergencies").on('value', function(emergencies_snapshot) {
+    	checkGrapple();
     	if(!emergencies_snapshot.exists()){
     		var all_calls_div = document.getElementById("all_calls_div");
 			all_calls_div.innerHTML = '';
@@ -74,7 +88,10 @@ function updateAllCalls(){
             }else if(state == "1.5"){
                 current_state_div = createDiv("EFAR on Scene");
                 current_state_div.attribute("style", "background-color: green; color: white; font-size: 16px; display: table; padding: 0px 4px 0px 4px; border-radius: 2px; margin-bottom: 4px;");
-            }
+            }else if(state == "1.75"){
+	            current_state_div = createDiv("EFAR Requesting end!");
+	            current_state_div.attribute("style", "background-color: red; color: white; font-size: 20px; display: table; padding: 0px 4px 0px 4px; border-radius: 2px; margin-bottom: 4px;");
+	        }
             current_state_div.parent(key);
 
             //add on scene notes if possible
@@ -223,6 +240,9 @@ function setUpMyCalls(){
 			        }else if(state == "1.5"){
 			            current_state_div = createDiv("EFAR on Scene");
 			            current_state_div.attribute("style", "background-color: green; color: white; font-size: 16px; display: table; padding: 0px 4px 0px 4px; border-radius: 2px; margin-bottom: 4px;");
+			        }else if(state == "1.75"){
+			            current_state_div = createDiv("EFAR Requesting end!");
+			            current_state_div.attribute("style", "background-color: red; color: white; font-size: 20px; display: table; padding: 0px 4px 0px 4px; border-radius: 2px; margin-bottom: 4px;");
 			        }
 			        current_state_div.parent(key);
 
@@ -426,8 +446,19 @@ function setUpInfoAndMessagesRight(id){
 	        }else if(state == "1.5"){
 	            current_state_div = createDiv("EFAR on Scene");
 	            current_state_div.attribute("style", "background-color: green; color: white; font-size: 16px; display: table; padding: 0px 4px 0px 4px; border-radius: 2px; margin-bottom: 4px;");
+	        }else if(state == "1.75"){
+	            current_state_div = createDiv("EFAR Requesting end!");
+	            current_state_div.attribute("style", "background-color: red; color: white; font-size: 20px; display: table; padding: 0px 4px 0px 4px; border-radius: 2px; margin-bottom: 4px;");
 	        }
 	        current_state_div.parent("#info_field");
+
+	        if(state == "1.75"){
+	        	endButton = createButton("End Emergency");
+		        endButton.attribute("class", "btn btn-secondary");
+		        endButton.attribute("style", "color: white");
+			    endButton.parent("#info_field");
+			    endButton.attribute("onclick", "endEmergency(id);");
+	        }
 
 	        //add on scene notes if possible
             if(emergency_snapshot.hasChild("on_scene_first_impression")){
@@ -523,6 +554,23 @@ function setUpInfoAndMessagesRight(id){
 	        // elapsed_time_div.parent("#info_field");
 		});
 	}
+}
+
+function endEmergency(key){
+	if (confirm('End this emergency?')) {
+		closeInfoAndMessage();
+		moveFbRecord(firebase.database().ref('/emergencies/' + key), firebase.database().ref('/completed/' + key));
+		firebase.database().ref('/emergencies/' + key).remove();
+	}
+}
+
+function moveFbRecord(oldRef, newRef) {    
+     oldRef.once('value', function(snap)  {
+          newRef.update( snap.val(), function(error) {
+               if( !error ) {  oldRef.remove(); }
+               else if( typeof(console) !== 'undefined' && console.error ) {  console.error(error); }
+          });
+     });
 }
 
 function closeInfoAndMessage(){

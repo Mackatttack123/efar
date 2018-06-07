@@ -70,6 +70,7 @@ public class EFARMainTabYou extends Fragment{
     Button notSafeButton;
     Button severeTraumaButton;
     Button heartAttackButton;
+    Button endButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -258,7 +259,7 @@ public class EFARMainTabYou extends Fragment{
                 final SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyData", Context.MODE_PRIVATE);
 
                 final Button messageButton = (Button) cell.findViewById(R.id.messagesButton);
-                final Button endButton = (Button) cell.findViewById(R.id.endButton);
+                endButton = (Button) cell.findViewById(R.id.endButton);
                 notSafeButton = (Button) cell.findViewById(R.id.notSafeButton);
                 severeTraumaButton = (Button) cell.findViewById(R.id.severeTraumaButton);
                 heartAttackButton = (Button) cell.findViewById(R.id.heartAttackButton);
@@ -315,21 +316,11 @@ public class EFARMainTabYou extends Fragment{
                     }
                 });
                 if(state.equals("1.5")){
+                    setEndEmergency();
+                }else if(state.equals("1.75")){
                     endButton.setVisibility(View.VISIBLE);
-                    endButton.setText("End Emergency");
-                    endButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            SharedPreferences.Editor editor = sharedPreferences.edit();
-                            editor.putString("finished_emergency_key", key);
-                            editor.putString("finished_emergency_date", time);
-                            editor.commit();
-                            launchEfarWriteUpScreen(key);
-                        }
-                    });
-                    notSafeButton.setVisibility(View.VISIBLE);
-                    severeTraumaButton.setVisibility(View.VISIBLE);
-                    heartAttackButton.setVisibility(View.VISIBLE);
+                    endButton.setEnabled(false);
+                    endButton.setText("Waiting for dispatch");
                 }else{
                     endButton.setVisibility(View.VISIBLE);
                     endButton.setText("On Scene");
@@ -370,21 +361,7 @@ public class EFARMainTabYou extends Fragment{
                                                             emergency_ref_time.setValue(timestamp);
                                                             DatabaseReference emergency_ref_state = database.getReference("emergencies/" + keyToUpdate + "/state");
                                                             emergency_ref_state.setValue("1.5");
-                                                            endButton.setVisibility(View.VISIBLE);
-                                                            endButton.setText("End Emergency");
-                                                            endButton.setOnClickListener(new View.OnClickListener() {
-                                                                @Override
-                                                                public void onClick(View view) {
-                                                                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                                                                    editor.putString("finished_emergency_key", key);
-                                                                    editor.putString("finished_emergency_date", time);
-                                                                    editor.commit();
-                                                                    launchEfarWriteUpScreen(key);
-                                                                }
-                                                            });
-                                                            notSafeButton.setVisibility(View.VISIBLE);
-                                                            severeTraumaButton.setVisibility(View.VISIBLE);
-                                                            heartAttackButton.setVisibility(View.VISIBLE);
+                                                            setEndEmergency();
                                                         } else {
                                                             new AlertDialog.Builder(getActivity())
                                                                     .setTitle("ERROR:")
@@ -407,21 +384,7 @@ public class EFARMainTabYou extends Fragment{
                                         emergency_ref_time.setValue(timestamp);
                                         DatabaseReference emergency_ref_state = database.getReference("emergencies/" + keyToUpdate + "/state");
                                         emergency_ref_state.setValue("1.5");
-                                        endButton.setVisibility(View.VISIBLE);
-                                        endButton.setText("End Emergency");
-                                        endButton.setOnClickListener(new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View view) {
-                                                SharedPreferences.Editor editor = sharedPreferences.edit();
-                                                editor.putString("finished_emergency_key", key);
-                                                editor.putString("finished_emergency_date", time);
-                                                editor.commit();
-                                                launchEfarWriteUpScreen(key);
-                                            }
-                                        });
-                                        notSafeButton.setVisibility(View.VISIBLE);
-                                        severeTraumaButton.setVisibility(View.VISIBLE);
-                                        heartAttackButton.setVisibility(View.VISIBLE);
+                                        setEndEmergency();
                                     }
                                 }
                             });
@@ -558,6 +521,27 @@ public class EFARMainTabYou extends Fragment{
             return cell;
         }
 
+    }
+
+    public void setEndEmergency(){
+        if(getActivity() != null) {
+            final SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyData", Context.MODE_PRIVATE);
+            endButton.setVisibility(View.VISIBLE);
+            endButton.setText("End Emergency");
+            endButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("finished_emergency_key", key);
+                    editor.putString("finished_emergency_date", time);
+                    editor.commit();
+                    launchEfarWriteUpScreen(key);
+                }
+            });
+            notSafeButton.setVisibility(View.VISIBLE);
+            severeTraumaButton.setVisibility(View.VISIBLE);
+            heartAttackButton.setVisibility(View.VISIBLE);
+        }
     }
 
     public String getCompleteAddressString(double LATITUDE, double LONGITUDE) {

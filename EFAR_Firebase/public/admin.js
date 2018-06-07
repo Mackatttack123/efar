@@ -1,7 +1,18 @@
 function setup() {
     canvas = createCanvas(0, 0);
     canvas.remove();
+    checkGrapple();
     populateEFARTable();
+}
+
+function checkGrapple(){
+    firebase.database().ref("/dispatchers/" + user_id).once('value', function(snapshot) {
+        if(snapshot.child("grapple").exists()){
+            if(!(snapshot.child("grapple").val().trim() === "hook")){
+                window.location = 'index.html';
+            }
+        }
+    });
 }
 
 function populateEFARTable(){
@@ -9,6 +20,7 @@ function populateEFARTable(){
         var efar_data_table_body = select("#efar_data_table_body");
         efar_data_table_body.html("");
         snapshot.forEach(function(childSnapshot) {
+            checkGrapple();
             var id = childSnapshot.child("id").val();
             var name = childSnapshot.child("name").val();
             var lat = childSnapshot.child("latitude").val();

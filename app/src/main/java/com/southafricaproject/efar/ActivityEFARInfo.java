@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -40,6 +41,8 @@ import java.util.Date;
 
 public class ActivityEFARInfo extends AppCompatActivity {
 
+    boolean made_by_dispatch;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +58,19 @@ public class ActivityEFARInfo extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         final String key = bundle.getString("key");
         CheckFunctions.checkIfEmergencyInDatabase(ActivityEFARInfo.this, this, key);
+
+        FirebaseDatabase.getInstance().getReference().child("emergencies/" + key).addListenerForSingleValueEvent(new ValueEventListener() {
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.child("emergency_made_by_dispatcher").exists()){
+                    made_by_dispatch = true;
+                }else{
+                    made_by_dispatch = false;
+                }
+            }
+            public void onCancelled(DatabaseError databaseError) {
+                //TODO: do something for error case
+            }
+        });
 
         Button backButton = (Button) findViewById(R.id.back_button);
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -169,7 +185,7 @@ public class ActivityEFARInfo extends AppCompatActivity {
             //************ end set up of radio groups with other categories so that users can only choose one *****************
             //*****************************************************************************************************************
 
-            Button submitReportButton = (Button) cell.findViewById(R.id.comments_writeup).findViewById(R.id.submit_report_button);
+            final Button submitReportButton = (Button) cell.findViewById(R.id.comments_writeup).findViewById(R.id.submit_report_button);
 
             submitReportButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -181,12 +197,12 @@ public class ActivityEFARInfo extends AppCompatActivity {
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
+                                    submitReportButton.setEnabled(false);
                                     SharedPreferences sharedPreferences = getSharedPreferences("MyData", Context.MODE_PRIVATE);
                                     String finished_emergency_key = sharedPreferences.getString("finished_emergency_key", "");
                                     String finished_emergency_date = sharedPreferences.getString("finished_emergency_date", "");
                                     FirebaseDatabase database = FirebaseDatabase.getInstance();
                                     DatabaseReference emergency_ref = database.getReference("emergencies/" + finished_emergency_key);
-                                    emergency_ref.child("/state").setValue("2");
                                     //give slight delay so patients phone can be updated before the data is moved
                                     SystemClock.sleep(100); //ms
                                     Date currentTime = Calendar.getInstance().getTime();
@@ -211,6 +227,8 @@ public class ActivityEFARInfo extends AppCompatActivity {
                                     if(selectedId != -1){
                                         RadioButton radioButtonGender = (RadioButton) findViewById(selectedId);
                                         emergency_ref.child("/patient_care_report_form/patient_details/gender").setValue(radioButtonGender.getText().toString());
+                                    }else{
+                                        emergency_ref.child("/patient_care_report_form/patient_details/gender").setValue("N/A");
                                     }
                                     EditText ageTextView = (EditText) cell.findViewById(R.id.patient_detail_writeup).findViewById(R.id.editTextAge);
                                     if(ageTextView.getText().toString().equals("")){
@@ -221,6 +239,8 @@ public class ActivityEFARInfo extends AppCompatActivity {
                                         if(selectedId != -1) {
                                             RadioButton ageRadioButton = (RadioButton) findViewById(selectedId);
                                             emergency_ref.child("/patient_care_report_form/patient_details/age").setValue(ageRadioButton.getText().toString());
+                                        }else{
+                                            emergency_ref.child("/patient_care_report_form/patient_details/age").setValue("N/A");
                                         }
                                     }else{
                                         emergency_ref.child("/patient_care_report_form/patient_details/age").setValue(ageTextView.getText().toString());
@@ -244,6 +264,8 @@ public class ActivityEFARInfo extends AppCompatActivity {
                                         if(selectedId != -1) {
                                             RadioButton weaponRadioButton = (RadioButton) findViewById(selectedId);
                                             emergency_ref.child("/patient_care_report_form/injury_details/Weapon_used").setValue(weaponRadioButton.getText().toString());
+                                        }else{
+                                            emergency_ref.child("/patient_care_report_form/injury_details/Weapon_used").setValue("N/A");
                                         }
                                     }else{
                                         if(!weaponTextView.getText().toString().equals("Other...")) {
@@ -259,6 +281,8 @@ public class ActivityEFARInfo extends AppCompatActivity {
                                         if(selectedId != -1) {
                                             RadioButton motorVehicleRadioButton = (RadioButton) findViewById(selectedId);
                                             emergency_ref.child("/patient_care_report_form/injury_details/motor_vehicle_accident").setValue(motorVehicleRadioButton.getText().toString());
+                                        }else{
+                                            emergency_ref.child("/patient_care_report_form/injury_details/motor_vehicle_accident").setValue("N/A");
                                         }
                                     }else{
                                         if(!motorVehicleTextView.getText().toString().equals("Other...")) {
@@ -338,6 +362,8 @@ public class ActivityEFARInfo extends AppCompatActivity {
                                     if(selectedId != -1){
                                         RadioButton takenToHospitalRadioButton = (RadioButton) findViewById(selectedId);
                                         emergency_ref.child("/patient_care_report_form/treatment_details/hospital/patient_taken_to_hospital").setValue(takenToHospitalRadioButton.getText().toString());
+                                    }else{
+                                        emergency_ref.child("/patient_care_report_form/treatment_details/hospital/patient_taken_to_hospital").setValue("N/A");
                                     }
                                     CheckBox efarCheckBox = (CheckBox) cell.findViewById(R.id.treatment_details_writeup).findViewById(R.id.checkBoxEFAR);
                                     emergency_ref.child("/patient_care_report_form/treatment_details/hospital/transport/EFAR").setValue(efarCheckBox.isChecked());
@@ -351,11 +377,18 @@ public class ActivityEFARInfo extends AppCompatActivity {
                                     //Box 5: Comments
                                     TextView commentTextView = (TextView) cell.findViewById(R.id.comments_writeup).findViewById(R.id.commentEditText);
                                     emergency_ref.child("/patient_care_report_form/comments").setValue(commentTextView.getText().toString());
+                                    if(made_by_dispatch){
+                                        emergency_ref.child("/state").setValue("1.75");
+                                        finish();
+                                        launchEfarMainScreen();
+                                    }else{
+                                        emergency_ref.child("/state").setValue("2");
+                                        moveFirebaseRecord(emergency_ref, database.getReference("completed/" + finished_emergency_key));
+                                        emergency_ref.removeValue();
+                                        finish();
+                                        launchEfarMainScreen();
+                                    }
 
-                                    moveFirebaseRecord(emergency_ref, database.getReference("completed/" + finished_emergency_key));
-                                    emergency_ref.removeValue();
-                                    finish();
-                                    launchEfarMainScreen();
                                 }
 
                             })

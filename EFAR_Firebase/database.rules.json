@@ -30,7 +30,7 @@
     },
     "version": {
       ".read": true,
-      ".write": true
+      ".write": "auth != null"
     }
   }
 }

@@ -126,17 +126,17 @@ public class EFARMainTabAll extends Fragment{
 
                 TextView activeStateText =  (TextView) cell.findViewById(R.id.stateTextView);
                 if (emergenecyArray.get(position).getState().equals("0")){
-                    //cell.setBackgroundColor(Color.argb(150, 255, 0, 0));
                     activeStateText.setText("Awaiting Response!");
                     activeStateText.setTextColor(Color.rgb(200, 0, 0));
+                }else if(emergenecyArray.get(position).getState().equals("1.75")){
+                    activeStateText.setText("Waiting for Dispatch");
+                    activeStateText.setTextColor(Color.rgb(122, 66, 244));
                 }else if(emergenecyArray.get(position).getRespondingEfar().contains(id)){
-                    //cell.setBackgroundColor(Color.argb(150, 0, 255, 0));
                     activeStateText.setText("Responded to by you");
                     activeStateText.setTextColor(Color.rgb(2, 55, 98));
                 }else{
                     String[] responders = emergenecyArray.get(position).getRespondingEfar().split(",");
                     int num = responders.length;
-                    //cell.setBackgroundColor(Color.argb(150, 255, 255, 0));
                     activeStateText.setText("Responded to by " + num);
                     activeStateText.setTextColor(Color.rgb(81, 150, 80));
                 }
@@ -461,7 +461,7 @@ public class EFARMainTabAll extends Fragment{
                             idText.setText("");
                         }
                         if(getActivity() != null){
-                            setUpButtons(key, time, state, cell);
+                            setUpButtons(key, state, cell);
                         }
                         alert.setView(cell);
                         infoDialog = alert.create();
@@ -547,7 +547,7 @@ public class EFARMainTabAll extends Fragment{
 
     }
 
-    private void setUpButtons(final String key, final String time, final String state, View view) {
+    private void setUpButtons(final String key, final String state, View view) {
 
         final Button messageButton = (Button) view.findViewById(R.id.messagesButton);
         final Button respondButton = (Button) view.findViewById(R.id.respondButton);
@@ -570,65 +570,69 @@ public class EFARMainTabAll extends Fragment{
         }else {
             messageButton.setVisibility(View.GONE);
         }
-        respondButton.setVisibility(View.VISIBLE);
-        respondButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                boolean responding_to_other = sharedPreferences.getBoolean("responding_to_other", false);
-                if(responding_to_other){
-                    new AlertDialog.Builder(getContext())
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setTitle("Already Responding")
-                            .setMessage("You are already responding to another emergency!")
-                            .setPositiveButton("Okay", null)
-                            .show();
-                }else{
-                    new AlertDialog.Builder(getContext())
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setTitle("Respond to Emergency:")
-                            .setMessage("Are you able to respond to this emergency?")
-                            .setPositiveButton("Yes", new DialogInterface.OnClickListener()
-                            {
-                                final String keyToUpdate = key;
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                                    editor.putBoolean("responding_to_other", true);
-                                    editor.commit();
-                                    final FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                    if(!state.equals("1.5")) {
-                                        DatabaseReference emergency_ref = database.getReference("emergencies/" + keyToUpdate + "/state");
-                                        emergency_ref.setValue("1");
-                                    }
-                                    DatabaseReference ref = database.getReference("emergencies/" + keyToUpdate);
-                                    ref.addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(DataSnapshot dataSnapshot) {
-                                            DatabaseReference efar_ref = database.getReference("emergencies/" + keyToUpdate + "/responding_efar");
-                                            if(dataSnapshot.hasChild("responding_efar")){
-                                                String other_efars = dataSnapshot.child("responding_efar").getValue().toString();
-                                                String new_id_set = other_efars + ", " + sharedPreferences.getString("id", "");
-                                                efar_ref.setValue(new_id_set);
-                                            }else{
-                                                efar_ref.setValue(sharedPreferences.getString("id", ""));
-                                            }
-                                            TabLayout tabs = (TabLayout)getActivity().findViewById(R.id.tabs);
-                                            tabs.getTabAt(1).select();
-                                            infoDialog.dismiss();
+        if(state.equals("1.75")){
+            respondButton.setVisibility(View.GONE);
+        }else{
+            respondButton.setVisibility(View.VISIBLE);
+            respondButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    boolean responding_to_other = sharedPreferences.getBoolean("responding_to_other", false);
+                    if(responding_to_other){
+                        new AlertDialog.Builder(getContext())
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .setTitle("Already Responding")
+                                .setMessage("You are already responding to another emergency!")
+                                .setPositiveButton("Okay", null)
+                                .show();
+                    }else{
+                        new AlertDialog.Builder(getContext())
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .setTitle("Respond to Emergency:")
+                                .setMessage("Are you able to respond to this emergency?")
+                                .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                                {
+                                    final String keyToUpdate = key;
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                                        editor.putBoolean("responding_to_other", true);
+                                        editor.commit();
+                                        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                        if(!state.equals("1.5")) {
+                                            DatabaseReference emergency_ref = database.getReference("emergencies/" + keyToUpdate + "/state");
+                                            emergency_ref.setValue("1");
+                                        }
+                                        DatabaseReference ref = database.getReference("emergencies/" + keyToUpdate);
+                                        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                                DatabaseReference efar_ref = database.getReference("emergencies/" + keyToUpdate + "/responding_efar");
+                                                if(dataSnapshot.hasChild("responding_efar")){
+                                                    String other_efars = dataSnapshot.child("responding_efar").getValue().toString();
+                                                    String new_id_set = other_efars + ", " + sharedPreferences.getString("id", "");
+                                                    efar_ref.setValue(new_id_set);
+                                                }else{
+                                                    efar_ref.setValue(sharedPreferences.getString("id", ""));
+                                                }
+                                                TabLayout tabs = (TabLayout)getActivity().findViewById(R.id.tabs);
+                                                tabs.getTabAt(1).select();
+                                                infoDialog.dismiss();
 
-                                        }
-                                        @Override
-                                        public void onCancelled(DatabaseError databaseError) {
-                                            // None
-                                        }
-                                    });
-                                }
-                            })
-                            .setNegativeButton("No", null)
-                            .show();
+                                            }
+                                            @Override
+                                            public void onCancelled(DatabaseError databaseError) {
+                                                // None
+                                            }
+                                        });
+                                    }
+                                })
+                                .setNegativeButton("No", null)
+                                .show();
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     // Goes to patient info tab to send more to EFARs

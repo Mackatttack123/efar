@@ -9,21 +9,34 @@ function setup(){
     loading_text = select("#loading_text");
     completed_info_text = select("#completed_info_text");
     completed_download_button = select("#completed_download_button");
+    checkGrapple();
+}
+
+function checkGrapple(){
+    firebase.database().ref("/dispatchers/" + user_id).once('value', function(snapshot) {
+        if(snapshot.child("grapple").exists()){
+            if(!(snapshot.child("grapple").val().trim() === "hook")){
+                window.location = 'index.html';
+            }
+        }
+    });
 }
 
 function getFirebaseRawCompleted(){
     firebase.database().ref("completed").on('value', function(snap){
         snap.forEach(function(childNode){
-                var xmlHttp = new XMLHttpRequest();
-                xmlHttp.open( "GET", "https://efarapp-a5f18.firebaseio.com/completed/" + childNode.key + ".json?auth=n8g00RPXVM2TbtZXpJ9RDblgRCi866SHu6WGTPYK&print=pretty", false ); // false for synchronous request
-                xmlHttp.send( null );
-                console.log(xmlHttp.responseText);
-                itemsCompletedNotFormatted.push(JSON.parse(xmlHttp.responseText));
+            checkGrapple();
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.open( "GET", "https://efarapp-a5f18.firebaseio.com/completed/" + childNode.key + ".json?auth=n8g00RPXVM2TbtZXpJ9RDblgRCi866SHu6WGTPYK&print=pretty", false ); // false for synchronous request
+            xmlHttp.send( null );
+            console.log(xmlHttp.responseText);
+            itemsCompletedNotFormatted.push(JSON.parse(xmlHttp.responseText));
         });
         completed_ready_to_download = true;
         loading_text.hide();
         completed_info_text.attribute("style", "visibility: block");
         completed_download_button.attribute("style", "visibility: block");
+        select("#json_links").attribute("style", "visibility: block;");
     });
 }
 
