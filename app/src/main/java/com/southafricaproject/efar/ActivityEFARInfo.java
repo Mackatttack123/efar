@@ -245,6 +245,9 @@ public class ActivityEFARInfo extends AppCompatActivity {
                                     }else{
                                         emergency_ref.child("/patient_care_report_form/patient_details/age").setValue(ageTextView.getText().toString());
                                     }
+                                    if(ageTextView.getText().toString() == null){
+                                        emergency_ref.child("/patient_care_report_form/patient_details/age").setValue("N/A");
+                                    }
 
                                     //Box 2: Incident Details
                                     EditText emsTimeTextView = (EditText) cell.findViewById(R.id.incident_details_writeup).findViewById(R.id.editTextEMSTime);

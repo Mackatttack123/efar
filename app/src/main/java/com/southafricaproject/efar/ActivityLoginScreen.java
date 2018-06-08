@@ -207,7 +207,7 @@ public class ActivityLoginScreen extends AppCompatActivity {
                     check_password = "!@#LSKF%)D:}{WKDL{WER_";
                 }
 
-                if (check_password.equals(password)) {
+                if (check_password.toLowerCase().equals(password.toLowerCase())) {
                     errorText.setText("");
                     //Run through the 3 agreements/legal stuff as alerts for EFARs to agree to
                     showNonDisclosureAgreement(name, id);

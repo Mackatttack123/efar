@@ -391,7 +391,7 @@ function addEmergency() {
 
 function setUpInfoAndMessagesRight(id){
 	if(messagingOpen){
-		closeInfoAndMessage()
+		closeInfoAndMessage();
 	}else{
 		messagingOpen = true;
 		updateMessages();
@@ -537,7 +537,7 @@ function setUpInfoAndMessagesRight(id){
 		            console.log("The read failed: " + errorObject.code);
 		          });
 		        }
-		        efars_div_title = createDiv("<strong>Respodning EFAR(s):</strong>");
+		        efars_div_title = createDiv("<strong>Responding EFAR(s):</strong>");
                 efars_div_title.attribute("style", "font-size: 12px;");
                 efars_div_title.parent("#info_field");
 
