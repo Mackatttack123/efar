@@ -128,6 +128,12 @@ function getFirebaseCompletedData(){
         if(item.other_info === undefined || item.other_info === ""){
             item.other_info = "N/A";
         }
+        if(item.patient_care_report_form.patient_details.age === undefined || item.patient_care_report_form.patient_details.age === ""){
+            item.patient_care_report_form.patient_details.age = "N/A";
+        }
+        if(item.patient_care_report_form.patient_details.gender === undefined || item.patient_care_report_form.patient_details.gender === ""){
+            item.patient_care_report_form.patient_details.gender = "N/A";
+        }
         // format the data
         itemsCompletedFormatted.push({
             //basic details

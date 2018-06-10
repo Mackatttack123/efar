@@ -615,8 +615,10 @@ public class EFARMainTabAll extends Fragment{
                                                 }else{
                                                     efar_ref.setValue(sharedPreferences.getString("id", ""));
                                                 }
-                                                TabLayout tabs = (TabLayout)getActivity().findViewById(R.id.tabs);
-                                                tabs.getTabAt(1).select();
+                                                if(getActivity() != null){
+                                                    TabLayout tabs = (TabLayout)getActivity().findViewById(R.id.tabs);
+                                                    tabs.getTabAt(1).select();
+                                                }
                                                 infoDialog.dismiss();
 
                                             }

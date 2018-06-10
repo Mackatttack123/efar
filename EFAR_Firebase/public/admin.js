@@ -16,7 +16,7 @@ function checkGrapple(){
 }
 
 function populateEFARTable(){
-    firebase.database().ref("/users").on('value', function(snapshot) {
+    firebase.database().ref("/users").once('value', function(snapshot) {
         var efar_data_table_body = select("#efar_data_table_body");
         efar_data_table_body.html("");
         snapshot.forEach(function(childSnapshot) {
